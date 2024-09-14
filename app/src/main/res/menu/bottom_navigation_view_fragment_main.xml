@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2024 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/activityFragment"
+        android:icon="@drawable/ic_home"
+        android:title="@string/main_fragment_section_activity"
+        app:tint="?attr/colorOnSurface" />
+
+    <item
+        android:id="@+id/searchFragment"
+        android:icon="@drawable/ic_search"
+        android:title="@string/main_fragment_section_search"
+        app:tint="?attr/colorOnSurface" />
+
+    <item
+        android:id="@+id/libraryFragment"
+        android:icon="@drawable/ic_library_music"
+        android:title="@string/main_fragment_section_library"
+        app:tint="?attr/colorOnSurface" />
+
+</menu>

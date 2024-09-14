@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2024 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string name="app_name">Music</string>
+
+    <!-- Toast messages -->
+    <string name="app_permissions_toast">Permissions not granted by the user.</string>
+
+    <!-- Request status error types -->
+    <string name="request_status_error_type_unknown">Unknown</string>
+    <string name="request_status_error_type_not_found">Not found</string>
+    <string name="request_status_error_type_io">I/O error</string>
+    <string name="request_status_error_type_authentication_required">Authentication required</string>
+    <string name="request_status_error_type_invalid_credentials">Invalid credentials</string>
+
+    <!-- Main fragment sections -->
+    <string name="main_fragment_section_activity">Activity</string>
+    <string name="main_fragment_section_search">Search</string>
+    <string name="main_fragment_section_library">Library</string>
+
+    <!-- Library fragment menus -->
+    <string name="library_fragment_menu_albums">Albums</string>
+    <string name="library_fragment_menu_artists">Artists</string>
+    <string name="library_fragment_menu_genres">Genres</string>
+    <string name="library_fragment_menu_playlists">Playlists</string>
+
+    <!-- No elements -->
+    <string name="no_albums">No albums</string>
+    <string name="no_artists">No artists</string>
+    <string name="no_genres">No genres</string>
+    <string name="no_playlists">No playlists</string>
+    <string name="no_audios">No audios</string>
+    <string name="no_results">No results</string>
+
+    <!-- Genres -->
+    <string name="genre_unknown">Unknown</string>
+
+    <!-- Artist fragment -->
+    <string name="albums_header">Albums</string>
+</resources>

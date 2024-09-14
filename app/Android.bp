@@ -1,0 +1,74 @@
+//
+// SPDX-FileCopyrightText: 2024 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "Twelve",
+
+    defaults: ["aapt_version_code_defaults"],
+
+    srcs: ["src/main/java/**/*.kt"],
+    resource_dirs: ["src/main/res"],
+    manifest: "src/main/AndroidManifest.xml",
+
+    sdk_version: "35",
+    product_specific: true,
+
+    use_embedded_native_libs: true,
+
+    overrides: [
+        "Music",
+    ],
+
+    required: [
+        "initial-package-stopped-states-org.lineageos.twelve",
+        "preinstalled-packages-org.lineageos.twelve",
+    ],
+
+    static_libs: [
+        // DO NOT EDIT THIS SECTION MANUALLY
+        "androidx.activity_activity",
+        "androidx.appcompat_appcompat",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx.core_core-ktx",
+        "androidx.fragment_fragment-ktx",
+        "androidx.lifecycle_lifecycle-service",
+        "Twelve_androidx.media3_media3-common-ktx",
+        "Twelve_androidx.media3_media3-exoplayer",
+        "Twelve_androidx.media3_media3-exoplayer-midi",
+        "Twelve_androidx.media3_media3-session",
+        "Twelve_androidx.media3_media3-ui",
+        "androidx.navigation_navigation-fragment-ktx",
+        "androidx.navigation_navigation-ui-ktx",
+        "androidx.recyclerview_recyclerview",
+        "androidx.viewpager2_viewpager2",
+        "kotlinx_coroutines_guava",
+        "Twelve_com.google.android.material_material",
+        "kotlin-stdlib-jdk8",
+    ],
+
+    optimize: {
+        proguard_flags_files: ["proguard-rules.pro"],
+    },
+}
+
+prebuilt_etc {
+    name: "initial-package-stopped-states-org.lineageos.twelve",
+    product_specific: true,
+    sub_dir: "sysconfig",
+    src: "initial-package-stopped-states-org.lineageos.twelve.xml",
+    filename_from_src: true,
+}
+
+prebuilt_etc {
+    name: "preinstalled-packages-org.lineageos.twelve",
+    product_specific: true,
+    sub_dir: "sysconfig",
+    src: "preinstalled-packages-org.lineageos.twelve.xml",
+    filename_from_src: true,
+}
