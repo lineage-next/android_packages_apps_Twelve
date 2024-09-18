@@ -5,6 +5,7 @@
 
 package org.lineageos.twelve.services
 
+import android.content.Intent
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
@@ -34,6 +35,14 @@ class PlaybackService : MediaLibraryService() {
         mediaLibrarySession = MediaLibrarySession.Builder(
             this, exoPlayer, mediaLibrarySessionCallback
         ).build()
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        val player = mediaLibrarySession?.player ?: return
+        if (player.playWhenReady) {
+            player.pause()
+        }
+        stopSelf()
     }
 
     override fun onDestroy() {
