@@ -12,7 +12,6 @@ import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 
 class PlaybackService : MediaLibraryService() {
-    private var player: ExoPlayer? = null
     private var mediaLibrarySession: MediaLibrarySession? = null
 
     private val mediaLibrarySessionCallback = object : MediaLibrarySession.Callback {
@@ -32,17 +31,13 @@ class PlaybackService : MediaLibraryService() {
             .setHandleAudioBecomingNoisy(true)
             .build()
 
-        player = exoPlayer
-
         mediaLibrarySession = MediaLibrarySession.Builder(
             this, exoPlayer, mediaLibrarySessionCallback
         ).build()
     }
 
     override fun onDestroy() {
-        player?.release()
-        player = null
-
+        mediaLibrarySession?.player?.release()
         mediaLibrarySession?.release()
         mediaLibrarySession = null
 
