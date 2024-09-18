@@ -82,6 +82,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                             is Audio -> viewModel.playAudio(
                                 currentList.filterIsInstance<Audio>(), bindingAdapterPosition
                             )
+
+                            else -> {}
                         }
                     }
                 }
@@ -120,8 +122,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                         view.headlineText = item.name
                         view.supportingText = item.uri.toString()
                     }
-
-                    else -> throw Exception("Invalid item type")
                 }
             }
         }
@@ -214,7 +214,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 is Audio -> oldItem.areItemsTheSame(newItem)
                 is Genre -> oldItem.areItemsTheSame(newItem)
                 is Playlist -> oldItem.areItemsTheSame(newItem)
-                else -> throw Exception("Invalid item type")
             }
 
             override fun areContentsTheSame(
@@ -226,7 +225,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 is Audio -> oldItem.areContentsTheSame(newItem)
                 is Genre -> oldItem.areContentsTheSame(newItem)
                 is Playlist -> oldItem.areContentsTheSame(newItem)
-                else -> throw Exception("Invalid item type")
             }
         }
     }

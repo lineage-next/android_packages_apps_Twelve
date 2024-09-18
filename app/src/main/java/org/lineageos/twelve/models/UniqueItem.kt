@@ -10,7 +10,7 @@ import kotlin.reflect.safeCast
 /**
  * An item that can be uniquely identified.
  */
-interface UniqueItem<T> {
+sealed interface UniqueItem<T> {
     /**
      * Return whether this item is the same as the other.
      */
