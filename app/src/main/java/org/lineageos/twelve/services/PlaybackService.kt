@@ -12,12 +12,18 @@ import androidx.annotation.OptIn
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ServiceLifecycleDispatcher
+import androidx.lifecycle.coroutineScope
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
+import androidx.media3.session.SessionError
+import com.google.common.collect.ImmutableList
+import kotlinx.coroutines.guava.future
 import org.lineageos.twelve.MainActivity
 
 class PlaybackService : MediaLibraryService(), LifecycleOwner {
@@ -50,6 +56,47 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
             }
             // Default commands with default custom layout for all other controllers.
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session).build()
+        }
+
+        @OptIn(UnstableApi::class)
+        override fun onPlaybackResumption(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo
+        ) = lifecycle.coroutineScope.future<MediaSession.MediaItemsWithStartPosition> {
+            throw UnsupportedOperationException()
+        }
+
+        @OptIn(UnstableApi::class)
+        override fun onGetLibraryRoot(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            params: LibraryParams?
+        ) = lifecycle.coroutineScope.future {
+            LibraryResult.ofError<MediaItem>(SessionError.ERROR_NOT_SUPPORTED)
+        }
+
+        @OptIn(UnstableApi::class)
+        override fun onGetChildren(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            parentId: String,
+            page: Int,
+            pageSize: Int,
+            params: LibraryParams?
+        ) = lifecycle.coroutineScope.future {
+            LibraryResult.ofError<ImmutableList<MediaItem>>(SessionError.ERROR_NOT_SUPPORTED)
+        }
+
+        @OptIn(UnstableApi::class)
+        override fun onGetSearchResult(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            query: String,
+            page: Int,
+            pageSize: Int,
+            params: LibraryParams?
+        ) = lifecycle.coroutineScope.future {
+            LibraryResult.ofError<ImmutableList<MediaItem>>(SessionError.ERROR_NOT_SUPPORTED)
         }
     }
 
