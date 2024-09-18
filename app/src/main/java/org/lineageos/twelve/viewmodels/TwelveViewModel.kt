@@ -80,16 +80,17 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
             initialValue = RequestStatus.Loading()
         )
 
-    fun playAudio(audio: Audio) {
+    fun playAudio(audio: List<Audio>, position: Int) {
         mediaController.value?.apply {
-            setMediaItem(
-                MediaItem.Builder()
-                    .setUri(audio.uri)
-                    .setMimeType(audio.mimeType)
-                    .build()
-            )
+            setMediaItems(audio.map { it.toMediaItem() }, true)
             prepare()
+            seekToDefaultPosition(position)
             play()
         }
     }
+
+    private fun Audio.toMediaItem() = MediaItem.Builder()
+        .setUri(uri)
+        .setMimeType(mimeType)
+        .build()
 }

@@ -66,7 +66,7 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
                 view.setLeadingIconImage(R.drawable.ic_music_note)
                 view.setOnClickListener {
                     item?.let {
-                        viewModel.playAudio(it)
+                        viewModel.playAudio(currentList, bindingAdapterPosition)
                     }
                 }
             }

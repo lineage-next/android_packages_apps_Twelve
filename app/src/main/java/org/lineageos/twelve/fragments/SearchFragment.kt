@@ -79,7 +79,9 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                                 ArtistFragment.createBundle(it.uri)
                             )
 
-                            is Audio -> viewModel.playAudio(it)
+                            is Audio -> viewModel.playAudio(
+                                currentList.filterIsInstance<Audio>(), bindingAdapterPosition
+                            )
                         }
                     }
                 }
