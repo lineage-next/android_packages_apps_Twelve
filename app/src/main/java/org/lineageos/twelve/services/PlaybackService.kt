@@ -8,11 +8,13 @@ package org.lineageos.twelve.services
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.IBinder
+import androidx.annotation.OptIn
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ServiceLifecycleDispatcher
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
@@ -26,7 +28,29 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
     private var mediaLibrarySession: MediaLibrarySession? = null
 
     private val mediaLibrarySessionCallback = object : MediaLibrarySession.Callback {
-        // TODO
+        @OptIn(UnstableApi::class)
+        override fun onConnect(
+            session: MediaSession,
+            controller: MediaSession.ControllerInfo
+        ): MediaSession.ConnectionResult {
+            val sessionCommands = MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
+                .build()
+            if (session.isMediaNotificationController(controller)) {
+                val playerCommands =
+                    MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
+                        .build()
+                return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
+                    .setAvailablePlayerCommands(playerCommands)
+                    .setAvailableSessionCommands(sessionCommands)
+                    .build()
+            } else if (session.isAutoCompanionController(controller)) {
+                return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
+                    .setAvailableSessionCommands(sessionCommands)
+                    .build()
+            }
+            // Default commands with default custom layout for all other controllers.
+            return MediaSession.ConnectionResult.AcceptedResultBuilder(session).build()
+        }
     }
 
     override fun onCreate() {
