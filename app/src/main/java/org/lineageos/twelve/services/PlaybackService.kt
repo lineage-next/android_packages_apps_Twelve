@@ -20,7 +20,9 @@ class PlaybackService : MediaLibraryService() {
     override fun onCreate() {
         super.onCreate()
 
-        val exoPlayer = ExoPlayer.Builder(this).build()
+        val exoPlayer = ExoPlayer.Builder(this)
+            .setHandleAudioBecomingNoisy(true)
+            .build()
 
         player = exoPlayer
 
