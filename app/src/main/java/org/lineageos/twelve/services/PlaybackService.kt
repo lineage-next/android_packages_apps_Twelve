@@ -15,10 +15,13 @@ import androidx.lifecycle.ServiceLifecycleDispatcher
 import androidx.lifecycle.coroutineScope
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
+import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
 import kotlinx.coroutines.launch
@@ -64,6 +67,48 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
             val settable = SettableFuture.create<MediaSession.MediaItemsWithStartPosition>()
             lifecycle.coroutineScope.launch {
                 // TODO: Implement playback resumption.
+            }
+            return settable
+        }
+
+        override fun onGetLibraryRoot(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            params: LibraryParams?
+        ): ListenableFuture<LibraryResult<MediaItem>> {
+            val settable = SettableFuture.create<LibraryResult<MediaItem>>()
+            lifecycle.coroutineScope.launch {
+                // TODO: Implement library browsing.
+            }
+            return settable
+        }
+
+        override fun onGetChildren(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            parentId: String,
+            page: Int,
+            pageSize: Int,
+            params: LibraryParams?
+        ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+            val settable = SettableFuture.create<LibraryResult<ImmutableList<MediaItem>>>()
+            lifecycle.coroutineScope.launch {
+                // TODO: Implement library browsing.
+            }
+            return settable
+        }
+
+        override fun onGetSearchResult(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            query: String,
+            page: Int,
+            pageSize: Int,
+            params: LibraryParams?
+        ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+            val settable = SettableFuture.create<LibraryResult<ImmutableList<MediaItem>>>()
+            lifecycle.coroutineScope.launch {
+                // TODO: Implement library browsing.
             }
             return settable
         }
