@@ -21,11 +21,20 @@ class NowPlayingViewModel(application: Application) : TwelveViewModel(applicatio
     }
 
     fun seekToPrevious() {
-        mediaController.value?.seekToPrevious()
+        mediaController.value?.let {
+            val currentMediaItemIndex = it.currentMediaItemIndex
+            it.seekToPrevious()
+            if (it.currentMediaItemIndex < currentMediaItemIndex) {
+                it.play()
+            }
+        }
     }
 
     fun seekToNext() {
-        mediaController.value?.seekToNext()
+        mediaController.value?.let {
+            it.seekToNext()
+            it.play()
+        }
     }
 
     fun toggleShuffleMode() {
