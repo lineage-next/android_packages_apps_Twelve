@@ -96,7 +96,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                     is Album -> {
                         view.setTrailingIconImage(R.drawable.ic_album)
                         view.headlineText = item.title
-                        view.supportingText = item.uri.toString()
+                        view.supportingText = item.artistName
                     }
 
                     is Artist -> {

@@ -55,6 +55,7 @@ class LocalDataSource(context: Context) : MediaDataSource {
         val albumId = it.getLong(indexCache[i++])
         val album = it.getString(indexCache[i++])
         val artistId = it.getLong(indexCache[i++])
+        val artist = it.getString(indexCache[i++])
         val lastYear = it.getInt(indexCache[i++])
 
         val uri = ContentUris.withAppendedId(albumsUri, albumId)
@@ -70,6 +71,7 @@ class LocalDataSource(context: Context) : MediaDataSource {
             uri,
             album,
             artistUri,
+            artist,
             lastYear.takeIf { it != 0 },
             thumbnail,
         )
@@ -367,6 +369,7 @@ class LocalDataSource(context: Context) : MediaDataSource {
             MediaStore.Audio.AudioColumns._ID,
             MediaStore.Audio.AlbumColumns.ALBUM,
             MediaStore.Audio.AlbumColumns.ARTIST_ID,
+            MediaStore.Audio.AlbumColumns.ARTIST,
             MediaStore.Audio.AlbumColumns.LAST_YEAR,
         )
 

@@ -64,7 +64,7 @@ class AlbumsFragment : Fragment(R.layout.fragment_albums) {
 
             override fun ViewHolder.onBindView(item: Album) {
                 view.headlineText = item.title
-                view.supportingText = item.uri.toString()
+                view.supportingText = item.artistName
             }
         }
     }
