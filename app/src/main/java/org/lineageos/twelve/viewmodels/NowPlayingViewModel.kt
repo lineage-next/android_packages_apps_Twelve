@@ -39,7 +39,7 @@ class NowPlayingViewModel(application: Application) : TwelveViewModel(applicatio
 
     fun toggleShuffleMode() {
         mediaController.value?.apply {
-            setShuffleModeEnabled(!shuffleModeEnabled)
+            shuffleModeEnabled = shuffleModeEnabled.not()
         }
     }
 

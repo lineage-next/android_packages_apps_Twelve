@@ -30,7 +30,9 @@ import kotlinx.coroutines.guava.await
 import org.lineageos.twelve.TwelveApplication
 import org.lineageos.twelve.ext.applicationContext
 import org.lineageos.twelve.ext.playbackStatusFlow
+import org.lineageos.twelve.ext.typedRepeatMode
 import org.lineageos.twelve.models.Audio
+import org.lineageos.twelve.models.RepeatMode
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.services.PlaybackService
 import kotlin.math.min
@@ -124,6 +126,10 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
 
     fun playAudio(audio: List<Audio>, position: Int) {
         mediaController.value?.apply {
+            // Reset playback settings
+            shuffleModeEnabled = false
+            typedRepeatMode = RepeatMode.NONE
+
             setMediaItems(audio.map { it.toMediaItem() }, true)
             prepare()
             seekToDefaultPosition(position)
