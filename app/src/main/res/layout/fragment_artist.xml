@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             app:expandedTitleMarginBottom="28dp"
             app:expandedTitleTextAppearance="?attr/textAppearanceHeadlineMedium"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:maxLines="3">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
