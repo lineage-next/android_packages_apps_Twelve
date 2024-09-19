@@ -20,8 +20,9 @@ fun Player.playbackStatusFlow() = callbackFlow {
             currentMediaItem,
             mediaMetadata,
             duration,
-            currentPosition.takeIf { duration != null },
+            duration?.let { currentPosition },
             isPlaying,
+            playbackParameters,
             shuffleModeEnabled,
             typedRepeatMode,
         )
