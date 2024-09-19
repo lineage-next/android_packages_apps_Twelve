@@ -18,7 +18,6 @@ object PermissionsUtils {
     val mainPermissions = mutableListOf<String>().apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(Manifest.permission.READ_MEDIA_AUDIO)
-            add(Manifest.permission.READ_MEDIA_IMAGES)
         } else {
             add(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
