@@ -16,7 +16,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
@@ -81,14 +80,12 @@ class AlbumsFragment : Fragment(R.layout.fragment_albums) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = GridLayoutManager(requireContext(), 1)
 
         permissionsGatedCallback.runAfterPermissionsCheck()
     }
 
     override fun onDestroyView() {
         recyclerView.adapter = null
-        recyclerView.layoutManager = null
 
         super.onDestroyView()
     }

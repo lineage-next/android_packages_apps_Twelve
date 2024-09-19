@@ -107,7 +107,6 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
 
     override fun onDestroyView() {
         albumsRecyclerView.adapter = null
-        albumsRecyclerView.layoutManager = null
 
         super.onDestroyView()
     }
