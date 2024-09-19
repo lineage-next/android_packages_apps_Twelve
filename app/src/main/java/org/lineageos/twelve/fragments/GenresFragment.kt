@@ -62,7 +62,6 @@ class GenresFragment : Fragment(R.layout.fragment_genres) {
                 } ?: run {
                     view.headlineText = getString(R.string.genre_unknown)
                 }
-                view.supportingText = item.uri.toString()
             }
         }
     }

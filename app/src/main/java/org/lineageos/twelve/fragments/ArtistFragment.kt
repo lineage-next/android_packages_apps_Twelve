@@ -102,7 +102,6 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
 
             override fun ViewHolder.onBindView(item: Playlist) {
                 view.headlineText = item.name
-                view.supportingText = item.uri.toString()
             }
         }
     }

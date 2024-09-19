@@ -57,7 +57,6 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
 
         override fun ViewHolder.onBindView(item: Playlist) {
             view.headlineText = item.name
-            view.supportingText = item.uri.toString()
         }
     }
 
