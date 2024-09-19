@@ -128,105 +128,113 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.playbackStatus.collectLatest {
-                    when (it) {
-                        is RequestStatus.Loading -> {
-                            // Do nothing
-                        }
+                launch {
+                    viewModel.playbackStatus.collectLatest {
+                        when (it) {
+                            is RequestStatus.Loading -> {
+                                // Do nothing
+                            }
 
-                        is RequestStatus.Success -> {
-                            val playbackStatus = it.data
+                            is RequestStatus.Success -> {
+                                val playbackStatus = it.data
 
-                            playbackStatus.mediaItem?.localConfiguration?.mimeType
-                                ?.takeIf { mimeType -> mimeType.contains('/') }
-                                ?.substringAfterLast('/')
-                                ?.also {
-                                    fileTypeTextView.text = it
-                                    fileTypeMaterialCardView.isVisible = true
+                                playbackStatus.mediaItem?.localConfiguration?.mimeType
+                                    ?.takeIf { mimeType -> mimeType.contains('/') }
+                                    ?.substringAfterLast('/')
+                                    ?.also {
+                                        fileTypeTextView.text = it
+                                        fileTypeMaterialCardView.isVisible = true
+                                    } ?: run {
+                                    fileTypeMaterialCardView.isVisible = false
+                                }
+
+                                playbackStatus.mediaMetadata.artworkData?.also { artworkData ->
+                                    BitmapFactory.decodeByteArray(
+                                        artworkData, 0, artworkData.size
+                                    )?.let { bitmap ->
+                                        albumArtImageView.setImageBitmap(bitmap)
+                                    }
+                                } ?: playbackStatus.mediaMetadata.artworkUri?.also { artworkUri ->
+                                    albumArtImageView.setImageURI(artworkUri)
+                                } ?: albumArtImageView.setImageResource(R.drawable.ic_music_note)
+
+                                val audioTitle = playbackStatus.mediaMetadata.displayTitle
+                                    ?: playbackStatus.mediaMetadata.title
+                                audioTitle?.let { title ->
+                                    audioTitleTextView.text = title
+                                    audioTitleTextView.isVisible = true
                                 } ?: run {
-                                fileTypeMaterialCardView.isVisible = false
-                            }
-
-                            playbackStatus.mediaMetadata.artworkData?.also { artworkData ->
-                                BitmapFactory.decodeByteArray(
-                                    artworkData, 0, artworkData.size
-                                )?.let { bitmap ->
-                                    albumArtImageView.setImageBitmap(bitmap)
+                                    audioTitleTextView.isVisible = false
                                 }
-                            } ?: playbackStatus.mediaMetadata.artworkUri?.also { artworkUri ->
-                                albumArtImageView.setImageURI(artworkUri)
-                            } ?: albumArtImageView.setImageResource(R.drawable.ic_music_note)
 
-                            val audioTitle = playbackStatus.mediaMetadata.displayTitle
-                                ?: playbackStatus.mediaMetadata.title
-                            audioTitle?.let { title ->
-                                audioTitleTextView.text = title
-                                audioTitleTextView.isVisible = true
-                            } ?: run {
-                                audioTitleTextView.isVisible = false
-                            }
-
-                            playbackStatus.mediaMetadata.artist?.let { artist ->
-                                artistNameTextView.text = artist
-                                artistNameTextView.isVisible = true
-                            } ?: run {
-                                artistNameTextView.isVisible = false
-                            }
-
-                            playbackStatus.mediaMetadata.albumTitle?.let { albumTitle ->
-                                albumTitleTextView.text = albumTitle
-                                albumTitleTextView.isVisible = true
-                            } ?: run {
-                                albumTitleTextView.isVisible = false
-                            }
-
-                            val currentPositionSecs =
-                                playbackStatus.currentPositionMs?.let { currentPositionMs ->
-                                    currentPositionMs / 1000
-                                } ?: 0L
-                            val durationSecs = playbackStatus.durationMs?.let { durationMs ->
-                                durationMs / 1000
-                            } ?: 0L
-
-                            val newValueTo = durationSecs.toFloat().takeIf { it > 0 } ?: 1f
-                            val valueToChanged = progressSlider.valueTo != newValueTo
-                            if (valueToChanged) {
-                                progressSlider.valueTo = newValueTo
-                            }
-                            if (!isProgressSliderDragging || valueToChanged) {
-                                progressSlider.value = currentPositionSecs.toFloat()
-                            }
-
-                            currentTimestampTextView.text = TimestampFormatter.formatTimestampSecs(
-                                currentPositionSecs
-                            )
-                            durationTimestampTextView.text = TimestampFormatter.formatTimestampSecs(
-                                durationSecs
-                            )
-
-                            playPauseImageButton.setImageResource(
-                                when (playbackStatus.isPlaying) {
-                                    true -> R.drawable.ic_pause
-                                    false -> R.drawable.ic_play_arrow
+                                playbackStatus.mediaMetadata.artist?.let { artist ->
+                                    artistNameTextView.text = artist
+                                    artistNameTextView.isVisible = true
+                                } ?: run {
+                                    artistNameTextView.isVisible = false
                                 }
-                            )
 
-                            shuffleMarkerImageButton.isVisible = playbackStatus.shuffleModeEnabled
-
-                            repeatImageButton.setImageResource(
-                                when (playbackStatus.repeatMode) {
-                                    RepeatMode.NONE,
-                                    RepeatMode.ALL -> R.drawable.ic_repeat
-
-                                    RepeatMode.ONE -> R.drawable.ic_repeat_one
+                                playbackStatus.mediaMetadata.albumTitle?.let { albumTitle ->
+                                    albumTitleTextView.text = albumTitle
+                                    albumTitleTextView.isVisible = true
+                                } ?: run {
+                                    albumTitleTextView.isVisible = false
                                 }
+
+                                playPauseImageButton.setImageResource(
+                                    when (playbackStatus.isPlaying) {
+                                        true -> R.drawable.ic_pause
+                                        false -> R.drawable.ic_play_arrow
+                                    }
+                                )
+
+                                shuffleMarkerImageButton.isVisible =
+                                    playbackStatus.shuffleModeEnabled
+
+                                repeatImageButton.setImageResource(
+                                    when (playbackStatus.repeatMode) {
+                                        RepeatMode.NONE,
+                                        RepeatMode.ALL -> R.drawable.ic_repeat
+
+                                        RepeatMode.ONE -> R.drawable.ic_repeat_one
+                                    }
+                                )
+                                repeatMarkerImageButton.isVisible =
+                                    playbackStatus.repeatMode != RepeatMode.NONE
+                            }
+
+                            is RequestStatus.Error -> throw Exception(
+                                "Error while getting playback status"
                             )
-                            repeatMarkerImageButton.isVisible =
-                                playbackStatus.repeatMode != RepeatMode.NONE
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.durationCurrentPositionMs.collectLatest { durationCurrentPositionMs ->
+                        val (durationMs, currentPositionMs) = durationCurrentPositionMs
+
+                        val currentPositionSecs = currentPositionMs?.let {
+                            it / 1000
+                        } ?: 0L
+                        val durationSecs = durationMs?.let {
+                            it / 1000
+                        } ?: 0L
+
+                        val newValueTo = durationSecs.toFloat().takeIf { it > 0 } ?: 1f
+                        val valueToChanged = progressSlider.valueTo != newValueTo
+                        if (valueToChanged) {
+                            progressSlider.valueTo = newValueTo
+                        }
+                        if (!isProgressSliderDragging || valueToChanged) {
+                            progressSlider.value = currentPositionSecs.toFloat()
                         }
 
-                        is RequestStatus.Error -> throw Exception(
-                            "Error while getting playback status"
+                        currentTimestampTextView.text = TimestampFormatter.formatTimestampSecs(
+                            currentPositionSecs
+                        )
+                        durationTimestampTextView.text = TimestampFormatter.formatTimestampSecs(
+                            durationSecs
                         )
                     }
                 }

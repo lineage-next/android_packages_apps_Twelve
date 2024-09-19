@@ -5,7 +5,6 @@
 
 package org.lineageos.twelve.ext
 
-import androidx.media3.common.C
 import androidx.media3.common.Player
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -14,20 +13,15 @@ import org.lineageos.twelve.models.RepeatMode
 
 fun Player.playbackStatusFlow() = callbackFlow {
     val updatePlaybackStatus = {
-        val duration = duration.takeIf { it != C.TIME_UNSET }
-
-        val playbackStatus = PlaybackStatus(
-            currentMediaItem,
-            mediaMetadata,
-            duration,
-            duration?.let { currentPosition },
-            isPlaying,
-            playbackParameters,
-            shuffleModeEnabled,
-            typedRepeatMode,
+        trySend(
+            PlaybackStatus(
+                currentMediaItem,
+                mediaMetadata,
+                isPlaying,
+                shuffleModeEnabled,
+                typedRepeatMode,
+            )
         )
-
-        trySend(playbackStatus)
     }
 
     val listener = object : Player.Listener {

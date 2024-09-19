@@ -93,19 +93,27 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.playbackStatus.collectLatest {
-                    when (it) {
-                        is RequestStatus.Loading -> {
-                            // Do nothing
-                        }
+                launch {
+                    viewModel.durationCurrentPositionMs.collectLatest {
+                        nowPlayingBar.updateDurationCurrentPositionMs(it.first, it.second)
+                    }
+                }
 
-                        is RequestStatus.Success -> {
-                            nowPlayingBar.updatePlaybackStatus(it.data)
-                        }
+                launch {
+                    viewModel.playbackStatus.collectLatest {
+                        when (it) {
+                            is RequestStatus.Loading -> {
+                                // Do nothing
+                            }
 
-                        is RequestStatus.Error -> throw Exception(
-                            "Error while getting playback status"
-                        )
+                            is RequestStatus.Success -> {
+                                nowPlayingBar.updatePlaybackStatus(it.data)
+                            }
+
+                            is RequestStatus.Error -> throw Exception(
+                                "Error while getting playback status"
+                            )
+                        }
                     }
                 }
             }

@@ -83,20 +83,18 @@ class NowPlayingBar @JvmOverloads constructor(
             }
         )
 
-        val currentPositionSecs = playbackStatus.currentPositionMs?.let { currentPositionMs ->
-            currentPositionMs / 1000
-        }?.toInt() ?: 0
-        val durationSecs = playbackStatus.durationMs?.let { durationMs ->
-            durationMs / 1000
-        }?.toInt()?.takeIf { it != 0 } ?: 1
-
-        circularProgressIndicator.max = durationSecs
-        circularProgressIndicator.setProgressCompat(currentPositionSecs, true)
-
         if (playbackStatus.mediaItem != null) {
             slideUp()
         } else {
             slideDown()
         }
+    }
+
+    fun updateDurationCurrentPositionMs(durationMs: Long?, currentPositionMs: Long?) {
+        val currentPositionSecs = currentPositionMs?.let { it / 1000 }?.toInt() ?: 0
+        val durationSecs = durationMs?.let { it / 1000 }?.toInt()?.takeIf { it != 0 } ?: 1
+
+        circularProgressIndicator.max = durationSecs
+        circularProgressIndicator.setProgressCompat(currentPositionSecs, true)
     }
 }

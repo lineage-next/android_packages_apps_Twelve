@@ -7,7 +7,6 @@ package org.lineageos.twelve.models
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.PlaybackParameters
 
 /**
  * Playback status reported by the service.
@@ -15,10 +14,7 @@ import androidx.media3.common.PlaybackParameters
 data class PlaybackStatus(
     val mediaItem: MediaItem?,
     val mediaMetadata: MediaMetadata,
-    val durationMs: Long?,
-    val currentPositionMs: Long?,
     val isPlaying: Boolean,
-    val playbackParameters: PlaybackParameters,
     val shuffleModeEnabled: Boolean,
     val repeatMode: RepeatMode,
 )
