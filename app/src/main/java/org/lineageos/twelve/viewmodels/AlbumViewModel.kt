@@ -7,10 +7,15 @@ package org.lineageos.twelve.viewmodels
 
 import android.app.Application
 import android.net.Uri
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 
 class AlbumViewModel(application: Application) : TwelveViewModel(application) {
     private val albumUri = MutableStateFlow<Uri?>(null)
@@ -21,6 +26,12 @@ class AlbumViewModel(application: Application) : TwelveViewModel(application) {
             mediaRepository.album(it)
         } ?: flowOf(null)
     }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            null
+        )
 
     fun loadAlbum(albumUri: Uri) {
         this.albumUri.value = albumUri
