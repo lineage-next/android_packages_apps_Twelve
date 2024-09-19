@@ -30,9 +30,12 @@ import org.lineageos.twelve.models.Genre
 import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.query.Query
+import org.lineageos.twelve.query.and
 import org.lineageos.twelve.query.eq
 import org.lineageos.twelve.query.`in`
+import org.lineageos.twelve.query.join
 import org.lineageos.twelve.query.like
+import org.lineageos.twelve.query.neq
 
 /**
  * [MediaStore.Audio] backed data source.
@@ -294,14 +297,18 @@ class LocalDataSource(context: Context) : MediaDataSource {
                 albumsUri,
                 albumsProjection,
                 bundleOf(
-                    ContentResolver.QUERY_ARG_SQL_SELECTION to
-                            (MediaStore.Audio.AudioColumns._ID `in` List(albumIds.size) {
-                                Query.ARG
-                            }).build(),
-                    ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to
-                            albumIds
-                                .map { it.toString() }
-                                .toTypedArray(),
+                    ContentResolver.QUERY_ARG_SQL_SELECTION to listOf(
+                        MediaStore.Audio.AudioColumns.ARTIST_ID neq Query.ARG,
+                        MediaStore.Audio.AudioColumns._ID `in` List(albumIds.size) {
+                            Query.ARG
+                        },
+                    ).join(Query::and)?.build(),
+                    ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
+                        ContentUris.parseId(artistUri).toString(),
+                        *albumIds
+                            .map { it.toString() }
+                            .toTypedArray(),
+                    ),
                 )
             ).mapEachRow(albumsProjection, mapAlbum)
         }
