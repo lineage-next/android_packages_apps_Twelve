@@ -18,6 +18,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
@@ -25,6 +26,7 @@ import androidx.media3.session.SessionError
 import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.guava.future
 import org.lineageos.twelve.MainActivity
+import org.lineageos.twelve.R
 
 class PlaybackService : MediaLibraryService(), LifecycleOwner {
     private val dispatcher = ServiceLifecycleDispatcher(this)
@@ -100,6 +102,7 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
         }
     }
 
+    @OptIn(UnstableApi::class)
     override fun onCreate() {
         dispatcher.onServicePreSuperOnCreate()
         super.onCreate()
@@ -119,6 +122,14 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
         )
             .setSessionActivity(getSingleTopActivity())
             .build()
+
+        setMediaNotificationProvider(
+            DefaultMediaNotificationProvider.Builder(this)
+                .build()
+                .apply {
+                    setSmallIcon(R.drawable.ic_notification_small_icon)
+                }
+        )
     }
 
     override fun onBind(intent: Intent?): IBinder? {
