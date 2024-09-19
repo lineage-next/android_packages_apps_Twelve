@@ -302,7 +302,7 @@ class LocalDataSource(context: Context) : MediaDataSource {
                         MediaStore.Audio.AudioColumns._ID `in` List(albumIds.size) {
                             Query.ARG
                         },
-                    ).join(Query::and)?.build(),
+                    ).join(Query::and).build(),
                     ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                         ContentUris.parseId(artistUri).toString(),
                         *albumIds

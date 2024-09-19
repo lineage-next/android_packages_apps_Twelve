@@ -48,4 +48,8 @@ infix fun <T> Column.like(other: T) = Query(Literal(this)) like Query(Literal(ot
 
 fun Iterable<Query>.join(
     func: Query.(other: Query) -> Query,
+) = reduce(func)
+
+fun Iterable<Query>.joinNullable(
+    func: Query.(other: Query) -> Query,
 ) = reduceOrNull(func)
