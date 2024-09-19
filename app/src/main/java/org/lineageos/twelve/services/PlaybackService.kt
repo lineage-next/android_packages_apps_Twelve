@@ -28,6 +28,7 @@ import kotlinx.coroutines.guava.future
 import org.lineageos.twelve.MainActivity
 import org.lineageos.twelve.R
 
+@OptIn(UnstableApi::class)
 class PlaybackService : MediaLibraryService(), LifecycleOwner {
     private val dispatcher = ServiceLifecycleDispatcher(this)
     override val lifecycle: Lifecycle
@@ -36,7 +37,6 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
     private var mediaLibrarySession: MediaLibrarySession? = null
 
     private val mediaLibrarySessionCallback = object : MediaLibrarySession.Callback {
-        @OptIn(UnstableApi::class)
         override fun onConnect(
             session: MediaSession,
             controller: MediaSession.ControllerInfo
@@ -60,7 +60,6 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session).build()
         }
 
-        @OptIn(UnstableApi::class)
         override fun onPlaybackResumption(
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo
@@ -68,7 +67,6 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
             throw UnsupportedOperationException()
         }
 
-        @OptIn(UnstableApi::class)
         override fun onGetLibraryRoot(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
@@ -77,7 +75,6 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
             LibraryResult.ofError<MediaItem>(SessionError.ERROR_NOT_SUPPORTED)
         }
 
-        @OptIn(UnstableApi::class)
         override fun onGetChildren(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
@@ -89,7 +86,6 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
             LibraryResult.ofError<ImmutableList<MediaItem>>(SessionError.ERROR_NOT_SUPPORTED)
         }
 
-        @OptIn(UnstableApi::class)
         override fun onGetSearchResult(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
@@ -102,7 +98,6 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
         }
     }
 
-    @OptIn(UnstableApi::class)
     override fun onCreate() {
         dispatcher.onServicePreSuperOnCreate()
         super.onCreate()
@@ -143,7 +138,6 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
         super.onStart(intent, startId)
     }
 
-    @OptIn(UnstableApi::class)
     override fun onTaskRemoved(rootIntent: Intent?) {
         pauseAllPlayersAndStopSelf()
     }
