@@ -6,7 +6,6 @@
 package org.lineageos.twelve.ui.views
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Icon
@@ -39,12 +38,6 @@ class ListItem @JvmOverloads constructor(
             leadingIconImageView.setImageAndUpdateVisibility(value)
         }
 
-    var leadingIconTint: ColorStateList? = null
-        set(value) {
-            field = value
-            leadingIconImageView.updateTint(value)
-        }
-
     var headlineText: CharSequence?
         get() = headlineTextView.text
         set(value) {
@@ -63,12 +56,6 @@ class ListItem @JvmOverloads constructor(
             trailingIconImageView.setImageAndUpdateVisibility(value)
         }
 
-    var trailingIconTint: ColorStateList? = null
-        set(value) {
-            field = value
-            trailingIconImageView.updateTint(value)
-        }
-
     var trailingSupportingText: CharSequence?
         get() = trailingSupportingTextView.text
         set(value) {
@@ -80,16 +67,10 @@ class ListItem @JvmOverloads constructor(
 
         context.obtainStyledAttributes(attrs, R.styleable.ListItem, 0, 0).apply {
             try {
-                leadingIconTint = getColorStateList(R.styleable.ListItem_leadingIconTint)
                 leadingIconImage = getDrawable(R.styleable.ListItem_leadingIconImage)
-
                 headlineText = getString(R.styleable.ListItem_headlineText)
-
                 supportingText = getString(R.styleable.ListItem_supportingText)
-
-                trailingIconTint = getColorStateList(R.styleable.ListItem_trailingIconTint)
                 trailingIconImage = getDrawable(R.styleable.ListItem_trailingIconImage)
-
                 trailingSupportingText = getString(R.styleable.ListItem_trailingSupportingText)
             } finally {
                 recycle()
@@ -104,7 +85,7 @@ class ListItem @JvmOverloads constructor(
     fun setLeadingIconImage(bm: Bitmap) = leadingIconImageView.setImageAndUpdateVisibility(bm)
     fun setLeadingIconImage(icon: Icon) = leadingIconImageView.setImageAndUpdateVisibility(icon)
     fun setLeadingIconImage(@DrawableRes resId: Int) =
-        leadingIconImageView.setImageAndUpdateVisibility(resId, leadingIconTint)
+        leadingIconImageView.setImageAndUpdateVisibility(resId)
 
     fun setLeadingIconImage(uri: Uri) = leadingIconImageView.setImageAndUpdateVisibility(uri)
 
@@ -117,7 +98,7 @@ class ListItem @JvmOverloads constructor(
     fun setTrailingIconImage(bm: Bitmap) = trailingIconImageView.setImageAndUpdateVisibility(bm)
     fun setTrailingIconImage(icon: Icon) = trailingIconImageView.setImageAndUpdateVisibility(icon)
     fun setTrailingIconImage(@DrawableRes resId: Int) =
-        trailingIconImageView.setImageAndUpdateVisibility(resId, trailingIconTint)
+        trailingIconImageView.setImageAndUpdateVisibility(resId)
 
     fun setTrailingIconImage(uri: Uri) = trailingIconImageView.setImageAndUpdateVisibility(uri)
 
@@ -131,39 +112,27 @@ class ListItem @JvmOverloads constructor(
 
     private fun ImageView.setImageAndUpdateVisibility(bm: Bitmap) {
         setImageBitmap(bm)
-        updateTint(null)
         isVisible = true
     }
 
     private fun ImageView.setImageAndUpdateVisibility(drawable: Drawable?) {
         setImageDrawable(drawable)
-        updateTint(null)
         isVisible = drawable != null
     }
 
     private fun ImageView.setImageAndUpdateVisibility(icon: Icon) {
         setImageIcon(icon)
-        updateTint(null)
         isVisible = true
     }
 
-    private fun ImageView.setImageAndUpdateVisibility(
-        @DrawableRes resId: Int,
-        tint: ColorStateList?,
-    ) {
+    private fun ImageView.setImageAndUpdateVisibility(@DrawableRes resId: Int) {
         setImageResource(resId)
-        updateTint(tint)
         isVisible = true
     }
 
     private fun ImageView.setImageAndUpdateVisibility(uri: Uri) {
         setImageURI(uri)
-        updateTint(null)
         isVisible = true
-    }
-
-    private fun ImageView.updateTint(tint: ColorStateList?) {
-        imageTintList = tint
     }
 
     // TextView utils

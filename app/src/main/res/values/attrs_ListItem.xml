@@ -10,7 +10,5 @@
         <attr name="supportingText" format="string" />
         <attr name="trailingIconImage" format="reference" />
         <attr name="trailingSupportingText" format="string" />
-        <attr name="leadingIconTint" format="color" />
-        <attr name="trailingIconTint" format="color" />
     </declare-styleable>
 </resources>
