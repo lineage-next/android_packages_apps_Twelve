@@ -66,6 +66,10 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
                 view.setOnClickListener {
                     item?.let {
                         viewModel.playAudio(currentList, bindingAdapterPosition)
+
+                        findNavController().navigate(
+                            R.id.action_albumFragment_to_fragment_now_playing
+                        )
                     }
                 }
             }

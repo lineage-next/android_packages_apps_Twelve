@@ -83,6 +83,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                                 viewModel.playAudio(
                                     this, indexOf(it)
                                 )
+
+                                findNavController().navigate(
+                                    R.id.action_mainFragment_to_fragment_now_playing
+                                )
                             }
 
                             else -> {}
