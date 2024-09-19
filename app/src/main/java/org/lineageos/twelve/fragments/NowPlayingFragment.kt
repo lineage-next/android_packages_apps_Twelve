@@ -61,6 +61,9 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     private val shuffleImageButton by getViewProperty<ImageButton>(R.id.shuffleImageButton)
     private val shuffleMarkerImageButton by getViewProperty<ImageButton>(R.id.shuffleMarkerImageButton)
 
+    // Progress slider state
+    private var isProgressSliderDragging = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -74,6 +77,18 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
         progressSlider.setLabelFormatter {
             TimestampFormatter.formatTimestampSecs(it)
         }
+        progressSlider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+                override fun onStartTrackingTouch(slider: Slider) {
+                    isProgressSliderDragging = true
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    isProgressSliderDragging = false
+                    viewModel.seekToPosition(slider.value.toLong() * 1000)
+                }
+            }
+        )
 
         previousTrackImageButton.setOnClickListener {
             viewModel.seekToPrevious()
@@ -173,8 +188,14 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                 durationMs / 1000
                             } ?: 0L
 
-                            progressSlider.valueTo = durationSecs.toFloat().takeIf { it > 0 } ?: 1f
-                            progressSlider.value = currentPositionSecs.toFloat()
+                            val newValueTo = durationSecs.toFloat().takeIf { it > 0 } ?: 1f
+                            val valueToChanged = progressSlider.valueTo != newValueTo
+                            if (valueToChanged) {
+                                progressSlider.valueTo = newValueTo
+                            }
+                            if (!isProgressSliderDragging || valueToChanged) {
+                                progressSlider.value = currentPositionSecs.toFloat()
+                            }
 
                             currentTimestampTextView.text = TimestampFormatter.formatTimestampSecs(
                                 currentPositionSecs

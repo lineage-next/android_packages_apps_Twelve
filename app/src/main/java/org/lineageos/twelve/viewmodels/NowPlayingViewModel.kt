@@ -20,6 +20,10 @@ class NowPlayingViewModel(application: Application) : TwelveViewModel(applicatio
         }
     }
 
+    fun seekToPosition(positionMs: Long) {
+        mediaController.value?.seekTo(positionMs)
+    }
+
     fun seekToPrevious() {
         mediaController.value?.let {
             val currentMediaItemIndex = it.currentMediaItemIndex
