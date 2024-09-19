@@ -52,6 +52,7 @@ class AlbumsFragment : Fragment(R.layout.fragment_albums) {
             ListItem::class.java,
         ) {
             override fun ViewHolder.onPrepareView() {
+                view.setLeadingIconImage(R.drawable.ic_album)
                 view.setOnClickListener {
                     item?.let {
                         findNavController().navigate(
@@ -65,11 +66,6 @@ class AlbumsFragment : Fragment(R.layout.fragment_albums) {
             override fun ViewHolder.onBindView(item: Album) {
                 view.headlineText = item.title
                 view.supportingText = item.uri.toString()
-                item.thumbnail?.let {
-                    view.setLeadingIconImage(it)
-                } ?: run {
-                    view.setLeadingIconImage(R.drawable.ic_album)
-                }
             }
         }
     }

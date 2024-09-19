@@ -92,9 +92,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             override fun ViewHolder.onBindView(item: UniqueItem<*>) {
                 when (item) {
                     is Album -> {
-                        item.thumbnail?.also {
-                            view.setTrailingIconImage(it)
-                        } ?: view.setTrailingIconImage(R.drawable.ic_album)
+                        view.setTrailingIconImage(R.drawable.ic_album)
                         view.headlineText = item.title
                         view.supportingText = item.uri.toString()
                     }
