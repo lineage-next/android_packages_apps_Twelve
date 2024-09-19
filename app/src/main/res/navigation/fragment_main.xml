@@ -12,6 +12,7 @@
     <include app:graph="@navigation/fragment_album" />
     <include app:graph="@navigation/fragment_artist" />
     <include app:graph="@navigation/fragment_now_playing" />
+    <include app:graph="@navigation/fragment_playlist" />
 
     <fragment
         android:id="@+id/mainFragment"
@@ -38,6 +39,14 @@
         <action
             android:id="@+id/action_mainFragment_to_fragment_now_playing"
             app:destination="@+id/fragment_now_playing"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
+        <action
+            android:id="@+id/action_mainFragment_to_fragment_playlist"
+            app:destination="@+id/fragment_playlist"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"

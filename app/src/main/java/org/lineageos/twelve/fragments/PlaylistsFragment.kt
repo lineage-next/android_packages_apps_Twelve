@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
@@ -51,7 +52,12 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
         override fun ViewHolder.onPrepareView() {
             view.setLeadingIconImage(R.drawable.ic_playlist_play)
             view.setOnClickListener {
-                // TODO: Open playlist fragment
+                item?.let {
+                    findNavController().navigate(
+                        R.id.action_mainFragment_to_fragment_playlist,
+                        PlaylistFragment.createBundle(it.uri)
+                    )
+                }
             }
         }
 

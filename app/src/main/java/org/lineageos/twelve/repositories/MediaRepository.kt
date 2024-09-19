@@ -59,4 +59,10 @@ class MediaRepository(context: Context) {
      */
     fun artist(artistUri: Uri): Flow<RequestStatus<Pair<Artist, ArtistWorks>>> =
         localDataSource.artist(artistUri)
+
+    /**
+     * @see MediaDataSource.playlist
+     */
+    fun playlist(playlistUri: Uri): Flow<RequestStatus<Pair<Playlist, List<Audio>>>> =
+        localDataSource.playlist(playlistUri)
 }
