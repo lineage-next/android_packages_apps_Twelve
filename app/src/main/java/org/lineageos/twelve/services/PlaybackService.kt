@@ -132,12 +132,9 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
         super.onStart(intent, startId)
     }
 
+    @OptIn(UnstableApi::class)
     override fun onTaskRemoved(rootIntent: Intent?) {
-        val player = mediaLibrarySession?.player ?: return
-        if (player.playWhenReady) {
-            player.pause()
-        }
-        stopSelf()
+        pauseAllPlayersAndStopSelf()
     }
 
     override fun onDestroy() {
