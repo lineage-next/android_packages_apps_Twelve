@@ -30,6 +30,7 @@ import org.lineageos.twelve.ext.getParcelable
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.ext.setProgressCompat
 import org.lineageos.twelve.models.Album
+import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
@@ -49,13 +50,17 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
     private val albumsLinearLayout by getViewProperty<LinearLayout>(R.id.albumsLinearLayout)
     private val albumsRecyclerView by getViewProperty<RecyclerView>(R.id.albumsRecyclerView)
     private val appBarLayout by getViewProperty<AppBarLayout>(R.id.appBarLayout)
+    private val appearsInAlbumLinearLayout by getViewProperty<LinearLayout>(R.id.appearsInAlbumLinearLayout)
+    private val appearsInAlbumRecyclerView by getViewProperty<RecyclerView>(R.id.appearsInAlbumRecyclerView)
+    private val appearsInPlaylistLinearLayout by getViewProperty<LinearLayout>(R.id.appearsInPlaylistLinearLayout)
+    private val appearsInPlaylistRecyclerView by getViewProperty<RecyclerView>(R.id.appearsInPlaylistRecyclerView)
     private val linearProgressIndicator by getViewProperty<LinearProgressIndicator>(R.id.linearProgressIndicator)
     private val noElementsLinearLayout by getViewProperty<LinearLayout>(R.id.noElementsLinearLayout)
     private val thumbnailImageView by getViewProperty<ImageView>(R.id.thumbnailImageView)
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
 
     // Recyclerview
-    private val albumsAdapter by lazy {
+    private val createAlbumAdapter = {
         object : SimpleListAdapter<Album, HorizontalListItem>(
             UniqueItemDiffCallback(),
             HorizontalListItem::class.java,
@@ -81,6 +86,26 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
             }
         }
     }
+    private val albumsAdapter by lazy { createAlbumAdapter() }
+    private val appearsInAlbumAdapter by lazy { createAlbumAdapter() }
+    private val appearsInPlaylistAdapter by lazy {
+        object : SimpleListAdapter<Playlist, HorizontalListItem>(
+            UniqueItemDiffCallback(),
+            HorizontalListItem::class.java,
+        ) {
+            override fun ViewHolder.onPrepareView() {
+                view.setThumbnailImage(R.drawable.ic_playlist_play)
+                view.setOnClickListener {
+                    // TODO
+                }
+            }
+
+            override fun ViewHolder.onBindView(item: Playlist) {
+                view.headlineText = item.name
+                view.supportingText = item.uri.toString()
+            }
+        }
+    }
 
     // Arguments
     private val artistUri: Uri
@@ -99,6 +124,8 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         toolbar.setupWithNavController(findNavController())
 
         albumsRecyclerView.adapter = albumsAdapter
+        appearsInAlbumRecyclerView.adapter = appearsInAlbumAdapter
+        appearsInPlaylistRecyclerView.adapter = appearsInPlaylistAdapter
 
         viewModel.loadAlbum(artistUri)
 
@@ -107,6 +134,8 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
 
     override fun onDestroyView() {
         albumsRecyclerView.adapter = null
+        appearsInAlbumRecyclerView.adapter = null
+        appearsInPlaylistRecyclerView.adapter = null
 
         super.onDestroyView()
     }
@@ -136,15 +165,22 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
                             }
 
                             albumsAdapter.submitList(artistWorks.albums)
+                            appearsInAlbumAdapter.submitList(artistWorks.appearsInAlbum)
+                            appearsInPlaylistAdapter.submitList(artistWorks.appearsInPlaylist)
 
                             val isAlbumsEmpty = artistWorks.albums.isEmpty()
                             albumsLinearLayout.isVisible = !isAlbumsEmpty
 
-                            val isPlaylistsEmpty = artistWorks.playlists.isEmpty()
+                            val isAppearsInAlbumEmpty = artistWorks.appearsInAlbum.isEmpty()
+                            appearsInAlbumLinearLayout.isVisible = !isAppearsInAlbumEmpty
+
+                            val isAppearsInPlaylistEmpty = artistWorks.appearsInPlaylist.isEmpty()
+                            appearsInPlaylistLinearLayout.isVisible = !isAppearsInPlaylistEmpty
 
                             val isEmpty = listOf(
                                 isAlbumsEmpty,
-                                isPlaylistsEmpty,
+                                isAppearsInAlbumEmpty,
+                                isAppearsInPlaylistEmpty,
                             ).all { isEmpty -> isEmpty }
                             noElementsLinearLayout.isVisible = isEmpty
                         }

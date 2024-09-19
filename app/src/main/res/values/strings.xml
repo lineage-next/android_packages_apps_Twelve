@@ -39,5 +39,7 @@
     <string name="genre_unknown">Unknown</string>
 
     <!-- Artist fragment -->
-    <string name="albums_header">Albums</string>
+    <string name="artist_albums_header">Albums</string>
+    <string name="artist_appears_in_album_header">Appears in album</string>
+    <string name="artist_appears_in_playlist_header">Appears in playlist</string>
 </resources>

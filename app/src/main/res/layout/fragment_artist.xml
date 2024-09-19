@@ -5,10 +5,10 @@
 -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -75,29 +75,93 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
-                android:id="@+id/albumsLinearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <TextView
+                <LinearLayout
+                    android:id="@+id/albumsLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="18dp"
-                    android:paddingHorizontal="16dp"
-                    android:text="@string/albums_header"
-                    android:textAppearance="?attr/textAppearanceTitleLarge" />
+                    android:layout_marginBottom="24dp"
+                    android:orientation="vertical"
+                    android:paddingTop="16dp"
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/albumsRecyclerView"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="18dp"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/artist_albums_header"
+                        android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/albumsRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="1" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/appearsInAlbumLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:spanCount="1"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
+                    android:layout_marginBottom="24dp"
+                    android:orientation="vertical"
+                    android:paddingTop="16dp"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="18dp"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/artist_appears_in_album_header"
+                        android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/appearsInAlbumRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="1" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/appearsInPlaylistLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:orientation="vertical"
+                    android:paddingTop="16dp"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="18dp"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/artist_appears_in_playlist_header"
+                        android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/appearsInPlaylistRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="1" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

@@ -265,8 +265,19 @@ class LocalDataSource(context: Context) : MediaDataSource {
             )
         ).mapEachRow(artistsProjection, mapArtist),
         contentResolver.queryFlow(
+            albumsUri,
+            albumsProjection,
+            bundleOf(
+                ContentResolver.QUERY_ARG_SQL_SELECTION to
+                        (MediaStore.Audio.AlbumColumns.ARTIST_ID eq Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
+                    ContentUris.parseId(artistUri).toString(),
+                ),
+            )
+        ).mapEachRow(albumsProjection, mapAlbum),
+        contentResolver.queryFlow(
             audiosUri,
-            albumsOfArtistProjection,
+            audioAlbumIdsProjection,
             bundleOf(
                 ContentResolver.QUERY_ARG_SQL_SELECTION to
                         (MediaStore.Audio.AudioColumns.ARTIST_ID eq Query.ARG).build(),
@@ -275,7 +286,7 @@ class LocalDataSource(context: Context) : MediaDataSource {
                 ),
                 ContentResolver.QUERY_ARG_SQL_GROUP_BY to MediaStore.Audio.AudioColumns.ALBUM_ID,
             )
-        ).mapEachRow(albumsOfArtistProjection) { it, indexCache ->
+        ).mapEachRow(audioAlbumIdsProjection) { it, indexCache ->
             // albumId
             it.getLong(indexCache[0])
         }.flatMapLatest { albumIds ->
@@ -294,10 +305,11 @@ class LocalDataSource(context: Context) : MediaDataSource {
                 )
             ).mapEachRow(albumsProjection, mapAlbum)
         }
-    ) { artists, audios ->
+    ) { artists, albums, appearsInAlbum ->
         artists.firstOrNull()?.let {
             val artistWorks = ArtistWorks(
-                audios,
+                albums,
+                appearsInAlbum,
                 listOf(),
             )
 
@@ -376,7 +388,7 @@ class LocalDataSource(context: Context) : MediaDataSource {
             }
         }.toTypedArray()
 
-        private val albumsOfArtistProjection = arrayOf(
+        private val audioAlbumIdsProjection = arrayOf(
             MediaStore.Audio.AudioColumns.ALBUM_ID,
         )
     }
