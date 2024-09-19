@@ -10,6 +10,7 @@ import android.content.ComponentName
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import kotlinx.coroutines.Dispatchers
@@ -92,5 +93,12 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
     private fun Audio.toMediaItem() = MediaItem.Builder()
         .setUri(uri)
         .setMimeType(mimeType)
+        .setMediaMetadata(
+            MediaMetadata.Builder()
+                .setTitle(title)
+                .setArtist(artistName)
+                .setAlbumTitle(albumTitle)
+                .build()
+        )
         .build()
 }
