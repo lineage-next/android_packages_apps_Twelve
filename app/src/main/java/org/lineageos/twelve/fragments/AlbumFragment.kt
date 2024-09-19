@@ -72,7 +72,7 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
 
             override fun ViewHolder.onBindView(item: Audio) {
                 view.headlineText = item.title
-                view.supportingText = item.artistUri.toString()
+                view.supportingText = item.artistName
                 view.trailingSupportingText = TimestampFormatter.formatTimestampMillis(
                     item.durationMs
                 )

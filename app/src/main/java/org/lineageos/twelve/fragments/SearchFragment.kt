@@ -108,7 +108,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                     is Audio -> {
                         view.setTrailingIconImage(R.drawable.ic_music_note)
                         view.headlineText = item.title
-                        view.supportingText = item.uri.toString()
+                        view.supportingText = item.artistName
                     }
 
                     is Genre -> {
