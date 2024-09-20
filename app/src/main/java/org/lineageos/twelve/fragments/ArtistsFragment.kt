@@ -48,7 +48,7 @@ class ArtistsFragment : Fragment(R.layout.fragment_artists) {
     private val adapter by lazy {
         object : SimpleListAdapter<Artist, ListItem>(
             UniqueItemDiffCallback(),
-            ListItem::class.java,
+            ::ListItem,
         ) {
             override fun ViewHolder.onPrepareView() {
                 view.setLeadingIconImage(R.drawable.ic_person)

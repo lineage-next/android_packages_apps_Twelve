@@ -59,7 +59,7 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
     private val adapter by lazy {
         object : SimpleListAdapter<Audio, ListItem>(
             UniqueItemDiffCallback(),
-            ListItem::class.java,
+            ::ListItem,
         ) {
             override fun ViewHolder.onPrepareView() {
                 view.setLeadingIconImage(R.drawable.ic_music_note)

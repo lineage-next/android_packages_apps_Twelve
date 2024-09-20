@@ -63,7 +63,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
     private val createAlbumAdapter = {
         object : SimpleListAdapter<Album, HorizontalListItem>(
             UniqueItemDiffCallback(),
-            HorizontalListItem::class.java,
+            ::HorizontalListItem,
         ) {
             override fun ViewHolder.onPrepareView() {
                 view.setOnClickListener {
@@ -91,7 +91,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
     private val appearsInPlaylistAdapter by lazy {
         object : SimpleListAdapter<Playlist, HorizontalListItem>(
             UniqueItemDiffCallback(),
-            HorizontalListItem::class.java,
+            ::HorizontalListItem,
         ) {
             override fun ViewHolder.onPrepareView() {
                 view.setThumbnailImage(R.drawable.ic_playlist_play)

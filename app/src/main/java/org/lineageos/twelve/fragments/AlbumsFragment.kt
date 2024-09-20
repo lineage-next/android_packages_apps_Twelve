@@ -48,7 +48,7 @@ class AlbumsFragment : Fragment(R.layout.fragment_albums) {
     private val adapter by lazy {
         object : SimpleListAdapter<Album, ListItem>(
             UniqueItemDiffCallback(),
-            ListItem::class.java,
+            ::ListItem,
         ) {
             override fun ViewHolder.onPrepareView() {
                 view.setLeadingIconImage(R.drawable.ic_album)

@@ -47,7 +47,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     // Recyclerview
     private val adapter = object : SimpleListAdapter<Playlist, ListItem>(
         UniqueItemDiffCallback(),
-        ListItem::class.java,
+        ::ListItem,
     ) {
         override fun ViewHolder.onPrepareView() {
             view.setLeadingIconImage(R.drawable.ic_playlist_play)

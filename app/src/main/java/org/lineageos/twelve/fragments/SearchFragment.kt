@@ -64,7 +64,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     // Recyclerview
     private val adapter by lazy {
-        object : SimpleListAdapter<UniqueItem<*>, ListItem>(diffCallback, ListItem::class.java) {
+        object : SimpleListAdapter<UniqueItem<*>, ListItem>(diffCallback, ::ListItem) {
             override fun ViewHolder.onPrepareView() {
                 view.setOnClickListener {
                     item?.let {
