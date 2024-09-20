@@ -5,6 +5,7 @@
 -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -20,7 +21,6 @@
             style="?attr/collapsingToolbarLayoutLargeStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:expandedTitleMarginBottom="28dp"
             app:expandedTitleTextAppearance="?attr/textAppearanceHeadlineMedium"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:maxLines="3">
@@ -50,6 +50,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:alpha="0.4"
+                    android:background="?attr/colorSurface"
+                    android:fitsSystemWindows="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.appbar.MaterialToolbar
@@ -58,7 +69,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
                 app:layout_collapseMode="pin"
-                app:layout_scrollFlags="scroll|enterAlways|snap" />
+                tools:title="Sweet Revenge" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -74,29 +85,87 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="1" />
+                android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/noElementsLinearLayout"
-                style="@style/Theme.Twelve.NoElements.LinearLayout"
-                android:layout_gravity="center">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
 
-                <ImageView
-                    style="@style/Theme.Twelve.NoElements.ImageView"
-                    android:contentDescription="@string/no_audios"
-                    android:src="@drawable/ic_music_note" />
+                    <TextView
+                        android:id="@+id/artistNameTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="4dp"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="4dp"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        android:textColor="@color/textview_pressed"
+                        app:backgroundTint="@android:color/transparent"
+                        app:drawableStartCompat="@drawable/ic_person"
+                        app:drawableTint="@color/textview_pressed"
+                        tools:text="Ryuichi Sakamoto" />
 
-                <Space style="@style/Theme.Twelve.NoElements.Space" />
+                    <TextView
+                        android:id="@+id/yearTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:visibility="gone"
+                        tools:text="1994"
+                        tools:visibility="visible" />
 
-                <TextView
-                    style="@style/Theme.Twelve.NoElements.TextView"
-                    android:text="@string/no_audios" />
+                    <TextView
+                        android:id="@+id/tracksInfoTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="7 tracks, 51 minutes" />
+
+                </LinearLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="1"
+                        tools:itemCount="7"
+                        tools:visibility="visible" />
+
+                    <LinearLayout
+                        android:id="@+id/noElementsLinearLayout"
+                        style="@style/Theme.Twelve.NoElements.LinearLayout"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            style="@style/Theme.Twelve.NoElements.ImageView"
+                            android:contentDescription="@string/no_audios"
+                            android:src="@drawable/ic_music_note" />
+
+                        <Space style="@style/Theme.Twelve.NoElements.Space" />
+
+                        <TextView
+                            style="@style/Theme.Twelve.NoElements.TextView"
+                            android:text="@string/no_audios" />
+
+                    </LinearLayout>
+
+                </FrameLayout>
 
             </LinearLayout>
 

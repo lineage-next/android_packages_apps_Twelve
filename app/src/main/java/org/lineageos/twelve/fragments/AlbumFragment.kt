@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -49,11 +50,14 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
 
     // Views
     private val appBarLayout by getViewProperty<AppBarLayout>(R.id.appBarLayout)
+    private val artistNameTextView by getViewProperty<TextView>(R.id.artistNameTextView)
     private val linearProgressIndicator by getViewProperty<LinearProgressIndicator>(R.id.linearProgressIndicator)
     private val noElementsLinearLayout by getViewProperty<LinearLayout>(R.id.noElementsLinearLayout)
     private val recyclerView by getViewProperty<RecyclerView>(R.id.recyclerView)
     private val thumbnailImageView by getViewProperty<ImageView>(R.id.thumbnailImageView)
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
+    private val tracksInfoTextView by getViewProperty<TextView>(R.id.tracksInfoTextView)
+    private val yearTextView by getViewProperty<TextView>(R.id.yearTextView)
 
     // Recyclerview
     private val adapter by lazy {
@@ -139,6 +143,31 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
                             launch {
                                 thumbnailImageView.setImageBitmap(album.thumbnail)
                             }
+
+                            artistNameTextView.text = album.artistName
+                            artistNameTextView.setOnClickListener {
+                                findNavController().navigate(
+                                    R.id.action_albumFragment_to_fragment_artist,
+                                    ArtistFragment.createBundle(album.artistUri)
+                                )
+                            }
+
+                            album.year?.also { year ->
+                                yearTextView.isVisible = true
+                                yearTextView.text = year.toString()
+                            } ?: run {
+                                yearTextView.isVisible = false
+                            }
+
+                            val totalDurationMs = audios.sumOf { audio ->
+                                audio.durationMs
+                            }
+                            val totalDurationMinutes = totalDurationMs / 1000 / 60
+
+                            tracksInfoTextView.text = getString(
+                                R.string.album_tracks_info,
+                                audios.size, totalDurationMinutes
+                            )
 
                             adapter.submitList(audios)
 

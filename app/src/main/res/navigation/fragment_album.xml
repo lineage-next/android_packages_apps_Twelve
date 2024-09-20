@@ -15,6 +15,14 @@
         tools:layout="@layout/fragment_album">
 
         <action
+            android:id="@+id/action_albumFragment_to_fragment_artist"
+            app:destination="@+id/fragment_artist"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
+        <action
             android:id="@+id/action_albumFragment_to_fragment_now_playing"
             app:destination="@+id/fragment_now_playing"
             app:enterAnim="@anim/nav_default_enter_anim"

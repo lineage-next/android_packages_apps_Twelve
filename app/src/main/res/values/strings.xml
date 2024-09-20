@@ -38,6 +38,9 @@
     <!-- Genres -->
     <string name="genre_unknown">Unknown</string>
 
+    <!-- Album fragment -->
+    <string name="album_tracks_info">%1$d tracks, %2$d minutes</string>
+
     <!-- Artist fragment -->
     <string name="artist_albums_header">Albums</string>
     <string name="artist_appears_in_album_header">Appears in album</string>
