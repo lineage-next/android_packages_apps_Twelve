@@ -120,6 +120,12 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
     }
 
+    override fun onDestroyView() {
+        viewPager2.adapter = null
+
+        super.onDestroyView()
+    }
+
     companion object {
         // Keep in sync with the BottomNavigationView menu
         private val fragments = arrayOf(
