@@ -10,6 +10,7 @@ import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -56,7 +57,9 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewPager2.adapter = object : FragmentStateAdapter(this) {
+        viewPager2.adapter = object : FragmentStateAdapter(
+            childFragmentManager, viewLifecycleOwner.lifecycle
+        ) {
             override fun getItemCount() = Menus.entries.size
             override fun createFragment(position: Int) = Menus.entries[position].fragment()
         }
