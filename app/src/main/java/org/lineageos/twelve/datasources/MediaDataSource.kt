@@ -44,7 +44,7 @@ interface MediaDataSource {
      * Start a search for the given query.
      * Only the following items can be returned: [Album], [Artist], [Audio], [Genre], [Playlist].
      */
-    fun search(query: String): Flow<RequestStatus<List<UniqueItem<*>>>>
+    fun search(query: String): Flow<RequestStatus<List<UniqueItem>>>
 
     /**
      * Get the album information and all the tracks of the given album.

@@ -18,7 +18,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.search.SearchBar
@@ -36,9 +35,8 @@ import org.lineageos.twelve.models.Genre
 import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.models.UniqueItem
-import org.lineageos.twelve.models.UniqueItem.Companion.areContentsTheSame
-import org.lineageos.twelve.models.UniqueItem.Companion.areItemsTheSame
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
+import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.ListItem
 import org.lineageos.twelve.utils.PermissionsGatedCallback
 import org.lineageos.twelve.utils.PermissionsUtils
@@ -64,7 +62,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     // Recyclerview
     private val adapter by lazy {
-        object : SimpleListAdapter<UniqueItem<*>, ListItem>(diffCallback, ::ListItem) {
+        object : SimpleListAdapter<UniqueItem, ListItem>(UniqueItemDiffCallback(), ::ListItem) {
             override fun ViewHolder.onPrepareView() {
                 view.setOnClickListener {
                     item?.let {
@@ -95,7 +93,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 }
             }
 
-            override fun ViewHolder.onBindView(item: UniqueItem<*>) {
+            override fun ViewHolder.onBindView(item: UniqueItem) {
                 when (item) {
                     is Album -> {
                         view.setTrailingIconImage(R.drawable.ic_album)
@@ -204,29 +202,5 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     companion object {
         private val LOG_TAG = SearchFragment::class.simpleName!!
-
-        private val diffCallback = object : DiffUtil.ItemCallback<UniqueItem<*>>() {
-            override fun areItemsTheSame(
-                oldItem: UniqueItem<*>,
-                newItem: UniqueItem<*>
-            ) = when (oldItem) {
-                is Album -> oldItem.areItemsTheSame(newItem)
-                is Artist -> oldItem.areItemsTheSame(newItem)
-                is Audio -> oldItem.areItemsTheSame(newItem)
-                is Genre -> oldItem.areItemsTheSame(newItem)
-                is Playlist -> oldItem.areItemsTheSame(newItem)
-            }
-
-            override fun areContentsTheSame(
-                oldItem: UniqueItem<*>,
-                newItem: UniqueItem<*>
-            ) = when (oldItem) {
-                is Album -> oldItem.areContentsTheSame(newItem)
-                is Artist -> oldItem.areContentsTheSame(newItem)
-                is Audio -> oldItem.areContentsTheSame(newItem)
-                is Genre -> oldItem.areContentsTheSame(newItem)
-                is Playlist -> oldItem.areContentsTheSame(newItem)
-            }
-        }
     }
 }

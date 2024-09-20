@@ -45,7 +45,7 @@ class MediaRepository(context: Context) {
     /**
      * @see MediaDataSource.search
      */
-    fun search(query: String): Flow<RequestStatus<List<UniqueItem<*>>>> =
+    fun search(query: String): Flow<RequestStatus<List<UniqueItem>>> =
         localDataSource.search(query)
 
     /**

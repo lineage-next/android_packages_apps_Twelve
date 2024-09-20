@@ -36,7 +36,7 @@ data class Audio(
     val albumTrack: Int,
     val genreUri: Uri,
     val year: Int,
-) : UniqueItem<Audio> {
+) : UniqueItem {
     enum class Type {
         /**
          * Music.
@@ -59,20 +59,26 @@ data class Audio(
         RECORDING,
     }
 
-    override fun areItemsTheSame(other: Audio) = this.uri == other.uri
+    override fun areItemsTheSame(other: UniqueItem) =
+        UniqueItem.areItemsTheSame(Audio::class, other) {
+            this.uri == it.uri
+        }
 
-    override fun areContentsTheSame(other: Audio) = compareValuesBy(
-        this, other,
-        Audio::mimeType,
-        Audio::title,
-        Audio::type,
-        Audio::durationMs,
-        Audio::artistUri,
-        Audio::artistName,
-        Audio::albumUri,
-        Audio::albumTitle,
-        Audio::albumTrack,
-        Audio::genreUri,
-        Audio::year,
-    ) == 0
+    override fun areContentsTheSame(other: UniqueItem) =
+        UniqueItem.areContentsTheSame(Audio::class, other) {
+            compareValuesBy(
+                this, it,
+                Audio::mimeType,
+                Audio::title,
+                Audio::type,
+                Audio::durationMs,
+                Audio::artistUri,
+                Audio::artistName,
+                Audio::albumUri,
+                Audio::albumTitle,
+                Audio::albumTrack,
+                Audio::genreUri,
+                Audio::year,
+            ) == 0
+        }
 }

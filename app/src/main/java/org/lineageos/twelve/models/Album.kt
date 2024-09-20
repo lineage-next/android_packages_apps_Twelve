@@ -25,15 +25,22 @@ data class Album(
     val artistName: String,
     val year: Int?,
     val thumbnail: Bitmap?,
-) : UniqueItem<Album> {
-    override fun areItemsTheSame(other: Album) = this.uri == other.uri
+) : UniqueItem {
+    override fun areItemsTheSame(other: UniqueItem) =
+        UniqueItem.areItemsTheSame(Album::class, other)
+        {
+            this.uri == it.uri
+        }
 
-    override fun areContentsTheSame(other: Album) = compareValuesBy(
-        this, other,
-        Album::title,
-        Album::artistUri,
-        Album::artistName,
-        Album::year,
-        { it.thumbnail?.sameAs(other.thumbnail) ?: (other.thumbnail == null) },
-    ) == 0
+    override fun areContentsTheSame(other: UniqueItem) =
+        UniqueItem.areContentsTheSame(Album::class, other) {
+            compareValuesBy(
+                this, it,
+                Album::title,
+                Album::artistUri,
+                Album::artistName,
+                Album::year,
+                { it.thumbnail?.sameAs(it.thumbnail) ?: (it.thumbnail == null) },
+            ) == 0
+        }
 }

@@ -16,12 +16,17 @@ import android.net.Uri
 data class Playlist(
     val uri: Uri,
     val name: String,
-) : UniqueItem<Playlist> {
-    override fun areItemsTheSame(other: Playlist) = uri == other.uri
+) : UniqueItem {
+    override fun areItemsTheSame(other: UniqueItem) =
+        UniqueItem.areItemsTheSame(Playlist::class, other) {
+            uri == it.uri
+        }
 
-    override fun areContentsTheSame(other: Playlist) = compareValuesBy(
-        this,
-        other,
-        Playlist::name,
-    ) == 0
+    override fun areContentsTheSame(other: UniqueItem) =
+        UniqueItem.areContentsTheSame(Playlist::class, other) {
+            compareValuesBy(
+                this, it,
+                Playlist::name,
+            ) == 0
+        }
 }

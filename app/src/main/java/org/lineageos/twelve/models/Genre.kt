@@ -17,12 +17,17 @@ import android.net.Uri
 data class Genre(
     val uri: Uri,
     val name: String?,
-) : UniqueItem<Genre> {
-    override fun areItemsTheSame(other: Genre) = this.uri == other.uri
+) : UniqueItem {
+    override fun areItemsTheSame(other: UniqueItem) =
+        UniqueItem.areItemsTheSame(Genre::class, other) {
+            this.uri == it.uri
+        }
 
-    override fun areContentsTheSame(other: Genre) = compareValuesBy(
-        other,
-        this,
-        Genre::name,
-    ) == 0
+    override fun areContentsTheSame(other: UniqueItem) =
+        UniqueItem.areContentsTheSame(Genre::class, other) {
+            compareValuesBy(
+                this, it,
+                Genre::name,
+            ) == 0
+        }
 }
