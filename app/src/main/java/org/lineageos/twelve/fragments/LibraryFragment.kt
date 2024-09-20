@@ -60,6 +60,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
             override fun getItemCount() = Menus.entries.size
             override fun createFragment(position: Int) = Menus.entries[position].fragment()
         }
+        viewPager2.offscreenPageLimit = Menus.entries.size
 
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             val menu = Menus.entries[position]

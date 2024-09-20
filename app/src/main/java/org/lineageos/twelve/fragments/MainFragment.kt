@@ -60,6 +60,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             override fun getItemCount() = fragments.size
             override fun createFragment(position: Int) = fragments[position]()
         }
+        viewPager2.offscreenPageLimit = fragments.size
         viewPager2.registerOnPageChangeCallback(onPageChangeCallback)
 
         bottomNavigationView.setOnItemSelectedListener { item ->
