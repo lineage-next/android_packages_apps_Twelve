@@ -6,6 +6,7 @@
 package org.lineageos.twelve.fragments
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.audiofx.AudioEffect
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,9 +24,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.slider.Slider
+import com.google.android.material.transition.platform.MaterialContainerTransform
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
+import org.lineageos.twelve.ext.getParcelable
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.RepeatMode
 import org.lineageos.twelve.models.RequestStatus
@@ -64,12 +68,27 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     // Progress slider state
     private var isProgressSliderDragging = false
 
+    // Arguments
+    private val albumBitmap: Bitmap?
+        get() = arguments?.getParcelable(ARG_ALBUM_BITMAP, Bitmap::class)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        sharedElementEnterTransition = MaterialContainerTransform()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Top bar
         hideImageButton.setOnClickListener {
             findNavController().navigateUp()
+        }
+
+        // Album art
+        albumBitmap?.let {
+            albumArtImageView.setImageBitmap(it)
         }
 
         // Media controls
@@ -240,5 +259,19 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val ARG_ALBUM_BITMAP = "album_bitmap"
+
+        /**
+         * Create a [Bundle] to use as the arguments for this fragment.
+         * @param albumBitmap The bitmap of the album to display
+         */
+        fun createBundle(
+            albumBitmap: Bitmap,
+        ) = bundleOf(
+            ARG_ALBUM_BITMAP to albumBitmap,
+        )
     }
 }
