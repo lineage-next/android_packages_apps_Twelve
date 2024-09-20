@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getViewProperty
+import org.lineageos.twelve.ext.lifecycleLazy
 import org.lineageos.twelve.ext.scheduleHideSoftInput
 import org.lineageos.twelve.ext.setProgressCompat
 import org.lineageos.twelve.models.Album
@@ -63,7 +64,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         get() = requireContext().getSystemService(InputMethodManager::class.java)
 
     // Recyclerview
-    private val adapter by lazy {
+    private val adapter by lifecycleLazy {
         object : SimpleListAdapter<UniqueItem<*>, ListItem>(diffCallback, ::ListItem) {
             override fun ViewHolder.onPrepareView() {
                 view.setOnClickListener {
@@ -154,12 +155,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
 
         permissionsGatedCallback.runAfterPermissionsCheck()
-    }
-
-    override fun onDestroyView() {
-        recyclerView.adapter = null
-
-        super.onDestroyView()
     }
 
     private fun loadData() {

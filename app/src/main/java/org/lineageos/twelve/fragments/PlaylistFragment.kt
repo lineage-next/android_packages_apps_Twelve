@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getParcelable
 import org.lineageos.twelve.ext.getViewProperty
+import org.lineageos.twelve.ext.lifecycleLazy
 import org.lineageos.twelve.ext.setProgressCompat
 import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.RequestStatus
@@ -56,7 +57,7 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
 
     // Recyclerview
-    private val adapter by lazy {
+    private val adapter by lifecycleLazy {
         object : SimpleListAdapter<Audio, ListItem>(
             UniqueItemDiffCallback(),
             ::ListItem,
@@ -105,12 +106,6 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
         viewModel.loadPlaylist(playlistUri)
 
         permissionsGatedCallback.runAfterPermissionsCheck()
-    }
-
-    override fun onDestroyView() {
-        recyclerView.adapter = null
-
-        super.onDestroyView()
     }
 
     private fun loadData() {

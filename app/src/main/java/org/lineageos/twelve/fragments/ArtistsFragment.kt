@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getViewProperty
+import org.lineageos.twelve.ext.lifecycleLazy
 import org.lineageos.twelve.ext.setProgressCompat
 import org.lineageos.twelve.models.Artist
 import org.lineageos.twelve.models.RequestStatus
@@ -45,7 +46,7 @@ class ArtistsFragment : Fragment(R.layout.fragment_artists) {
     private val recyclerView by getViewProperty<RecyclerView>(R.id.recyclerView)
 
     // Recyclerview
-    private val adapter by lazy {
+    private val adapter by lifecycleLazy {
         object : SimpleListAdapter<Artist, ListItem>(
             UniqueItemDiffCallback(),
             ::ListItem,
@@ -81,12 +82,6 @@ class ArtistsFragment : Fragment(R.layout.fragment_artists) {
         recyclerView.adapter = adapter
 
         permissionsGatedCallback.runAfterPermissionsCheck()
-    }
-
-    override fun onDestroyView() {
-        recyclerView.adapter = null
-
-        super.onDestroyView()
     }
 
     private fun loadData() {

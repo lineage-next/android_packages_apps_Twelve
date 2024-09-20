@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getParcelable
 import org.lineageos.twelve.ext.getViewProperty
+import org.lineageos.twelve.ext.lifecycleLazy
 import org.lineageos.twelve.ext.setProgressCompat
 import org.lineageos.twelve.models.Album
 import org.lineageos.twelve.models.Playlist
@@ -86,9 +87,9 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
             }
         }
     }
-    private val albumsAdapter by lazy { createAlbumAdapter() }
-    private val appearsInAlbumAdapter by lazy { createAlbumAdapter() }
-    private val appearsInPlaylistAdapter by lazy {
+    private val albumsAdapter by lifecycleLazy { createAlbumAdapter() }
+    private val appearsInAlbumAdapter by lifecycleLazy { createAlbumAdapter() }
+    private val appearsInPlaylistAdapter by lifecycleLazy {
         object : SimpleListAdapter<Playlist, HorizontalListItem>(
             UniqueItemDiffCallback(),
             ::HorizontalListItem,
@@ -129,14 +130,6 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         viewModel.loadAlbum(artistUri)
 
         permissionsGatedCallback.runAfterPermissionsCheck()
-    }
-
-    override fun onDestroyView() {
-        albumsRecyclerView.adapter = null
-        appearsInAlbumRecyclerView.adapter = null
-        appearsInPlaylistRecyclerView.adapter = null
-
-        super.onDestroyView()
     }
 
     private fun loadData() {

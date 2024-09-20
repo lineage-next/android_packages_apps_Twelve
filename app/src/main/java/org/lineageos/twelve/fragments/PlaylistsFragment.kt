@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getViewProperty
+import org.lineageos.twelve.ext.lifecycleLazy
 import org.lineageos.twelve.ext.setProgressCompat
 import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
@@ -45,24 +46,26 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     private val recyclerView by getViewProperty<RecyclerView>(R.id.recyclerView)
 
     // Recyclerview
-    private val adapter = object : SimpleListAdapter<Playlist, ListItem>(
-        UniqueItemDiffCallback(),
-        ::ListItem,
-    ) {
-        override fun ViewHolder.onPrepareView() {
-            view.setLeadingIconImage(R.drawable.ic_playlist_play)
-            view.setOnClickListener {
-                item?.let {
-                    findNavController().navigate(
-                        R.id.action_mainFragment_to_fragment_playlist,
-                        PlaylistFragment.createBundle(it.uri)
-                    )
+    private val adapter by lifecycleLazy {
+        object : SimpleListAdapter<Playlist, ListItem>(
+            UniqueItemDiffCallback(),
+            ::ListItem,
+        ) {
+            override fun ViewHolder.onPrepareView() {
+                view.setLeadingIconImage(R.drawable.ic_playlist_play)
+                view.setOnClickListener {
+                    item?.let {
+                        findNavController().navigate(
+                            R.id.action_mainFragment_to_fragment_playlist,
+                            PlaylistFragment.createBundle(it.uri)
+                        )
+                    }
                 }
             }
-        }
 
-        override fun ViewHolder.onBindView(item: Playlist) {
-            view.headlineText = item.name
+            override fun ViewHolder.onBindView(item: Playlist) {
+                view.headlineText = item.name
+            }
         }
     }
 
@@ -79,12 +82,6 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
         recyclerView.adapter = adapter
 
         permissionsGatedCallback.runAfterPermissionsCheck()
-    }
-
-    override fun onDestroyView() {
-        recyclerView.adapter = null
-
-        super.onDestroyView()
     }
 
     private fun loadData() {
