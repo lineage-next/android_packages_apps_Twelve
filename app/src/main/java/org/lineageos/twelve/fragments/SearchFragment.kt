@@ -36,8 +36,8 @@ import org.lineageos.twelve.models.Genre
 import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.models.UniqueItem
-import org.lineageos.twelve.models.UniqueItem.Companion.areContentsTheSame
-import org.lineageos.twelve.models.UniqueItem.Companion.areItemsTheSame
+import org.lineageos.twelve.models.areContentsTheSame
+import org.lineageos.twelve.models.areItemsTheSame
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.views.ListItem
 import org.lineageos.twelve.utils.PermissionsGatedCallback

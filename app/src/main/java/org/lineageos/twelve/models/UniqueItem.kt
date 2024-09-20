@@ -21,18 +21,16 @@ sealed interface UniqueItem<T> {
      * This is called only when [areItemsTheSame] returns true.
      */
     fun areContentsTheSame(other: T): Boolean
-
-    companion object {
-        /**
-         * @see areItemsTheSame
-         */
-        inline fun <reified T : Any> UniqueItem<T>.areItemsTheSame(other: Any?): Boolean =
-            T::class.safeCast(other)?.let { areItemsTheSame(it) } ?: false
-
-        /**
-         * @see areContentsTheSame
-         */
-        inline fun <reified T : Any> UniqueItem<T>.areContentsTheSame(other: Any?): Boolean =
-            T::class.safeCast(other)?.let { areContentsTheSame(it) } ?: false
-    }
 }
+
+/**
+ * @see UniqueItem.areItemsTheSame
+ */
+inline fun <reified T : Any> UniqueItem<T>.areItemsTheSame(other: Any?): Boolean =
+    T::class.safeCast(other)?.let { areItemsTheSame(it) } ?: false
+
+/**
+ * @see UniqueItem.areContentsTheSame
+ */
+inline fun <reified T : Any> UniqueItem<T>.areContentsTheSame(other: Any?): Boolean =
+    T::class.safeCast(other)?.let { areContentsTheSame(it) } ?: false
