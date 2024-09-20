@@ -90,10 +90,12 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
         get() = requireArguments().getParcelable(ARG_ALBUM_URI, Uri::class)!!
 
     // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
+    private val permissionsGatedCallback by lifecycleLazy {
+        PermissionsGatedCallback(
+            this, PermissionsUtils.mainPermissions
+        ) {
+            loadData()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

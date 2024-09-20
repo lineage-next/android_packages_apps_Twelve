@@ -130,10 +130,12 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
+    private val permissionsGatedCallback by lifecycleLazy {
+        PermissionsGatedCallback(
+            this, PermissionsUtils.mainPermissions
+        ) {
+            loadData()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
