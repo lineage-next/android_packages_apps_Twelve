@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -28,14 +29,14 @@ import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
 import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.PlaylistsViewModel
+import org.lineageos.twelve.viewmodels.SharedPermissionViewModel
 
 /**
  * View all music playlists.
  */
-class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
+class PlaylistsFragment : TwelveFragment(R.layout.fragment_playlists) {
     // View models
     private val viewModel by viewModels<PlaylistsViewModel>()
 
@@ -66,19 +67,12 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
         }
     }
 
-    // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView.adapter = adapter
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        setupPermissions()
     }
 
     override fun onDestroyView() {
@@ -87,7 +81,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
         super.onDestroyView()
     }
 
-    private fun loadData() {
+    override fun loadData() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.playlists.collectLatest {

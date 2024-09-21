@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -36,15 +37,15 @@ import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
 import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.AlbumViewModel
+import org.lineageos.twelve.viewmodels.SharedPermissionViewModel
 
 /**
  * Single music album viewer.
  */
-class AlbumFragment : Fragment(R.layout.fragment_album) {
+class AlbumFragment : TwelveFragment(R.layout.fragment_album) {
     // View models
     private val viewModel by viewModels<AlbumViewModel>()
 
@@ -92,13 +93,6 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
     private val albumUri: Uri
         get() = requireArguments().getParcelable(ARG_ALBUM_URI, Uri::class)!!
 
-    // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -108,7 +102,7 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
 
         viewModel.loadAlbum(albumUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        setupPermissions()
     }
 
     override fun onDestroyView() {
@@ -117,7 +111,7 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
         super.onDestroyView()
     }
 
-    private fun loadData() {
+    override fun loadData() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.album.collectLatest {

@@ -12,7 +12,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -40,14 +39,12 @@ import org.lineageos.twelve.models.areContentsTheSame
 import org.lineageos.twelve.models.areItemsTheSame
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
-import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.SearchViewModel
 
 /**
  * Search across all contents.
  */
-class SearchFragment : Fragment(R.layout.fragment_search) {
+class SearchFragment : TwelveFragment(R.layout.fragment_search) {
     // View models
     private val viewModel by viewModels<SearchViewModel>()
 
@@ -128,13 +125,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
     }
 
-    // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -153,7 +143,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             true
         }
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        setupPermissions()
     }
 
     override fun onDestroyView() {
@@ -162,7 +152,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         super.onDestroyView()
     }
 
-    private fun loadData() {
+    override fun loadData() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchResults.collectLatest {
