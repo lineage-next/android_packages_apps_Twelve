@@ -9,6 +9,7 @@ import org.lineageos.generatebp.models.Module
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kapt)
     alias(libs.plugins.kotlin.android)
 }
 
@@ -36,6 +37,12 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildTypes {
@@ -78,6 +85,10 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.viewpager2)
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.material)

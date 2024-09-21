@@ -30,6 +30,10 @@ android_app {
         "preinstalled-packages-org.lineageos.twelve",
     ],
 
+    plugins: [
+        "androidx.room_room-compiler-plugin",
+    ],
+
     static_libs: [
         // DO NOT EDIT THIS SECTION MANUALLY
         "kotlin-stdlib",
@@ -47,6 +51,8 @@ android_app {
         "androidx.navigation_navigation-fragment-ktx",
         "androidx.navigation_navigation-ui-ktx",
         "androidx.recyclerview_recyclerview",
+        "androidx.room_room-runtime",
+        "androidx.room_room-ktx",
         "androidx.viewpager2_viewpager2",
         "kotlinx_coroutines_guava",
         "Twelve_com.google.android.material_material",
