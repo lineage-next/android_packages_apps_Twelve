@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,70 +19,89 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
+import org.lineageos.twelve.ext.getParcelable
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.ext.setProgressCompat
 import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.dialogs.EditTextMaterialAlertDialogBuilder
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
-import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.ListItem
 import org.lineageos.twelve.utils.PermissionsGatedCallback
 import org.lineageos.twelve.utils.PermissionsUtils
+import org.lineageos.twelve.viewmodels.AddOrRemoveFromPlaylistsViewModel
 import org.lineageos.twelve.viewmodels.PlaylistsViewModel
 
 /**
- * View all music playlists.
+ * Fragment from which you can add or remove a specific audio from a list of playlists.
  */
-class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
+class AddOrRemoveFromPlaylistsFragment : Fragment(R.layout.fragment_add_or_remove_from_playlists) {
     // View models
-    private val viewModel by viewModels<PlaylistsViewModel>()
+    private val playlistsViewModel by viewModels<PlaylistsViewModel>()
+    private val viewModel by viewModels<AddOrRemoveFromPlaylistsViewModel>()
 
     // Views
     private val createNewPlaylistButton by getViewProperty<Button>(R.id.createNewPlaylistButton)
     private val linearProgressIndicator by getViewProperty<LinearProgressIndicator>(R.id.linearProgressIndicator)
     private val noElementsLinearLayout by getViewProperty<LinearLayout>(R.id.noElementsLinearLayout)
     private val recyclerView by getViewProperty<RecyclerView>(R.id.recyclerView)
+    private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
 
     // Recyclerview
-    private val addNewPlaylistItem = Playlist(Uri.EMPTY, "")
-    private val adapter = object : SimpleListAdapter<Playlist, ListItem>(
-        UniqueItemDiffCallback(),
-        ::ListItem,
-    ) {
-        override fun ViewHolder.onPrepareView() {
-            view.setOnClickListener {
-                item?.let {
-                    when (it === addNewPlaylistItem) {
-                        true -> openCreateNewPlaylistDialog()
-                        false -> findNavController().navigate(
-                            R.id.action_mainFragment_to_fragment_playlist,
-                            PlaylistFragment.createBundle(it.uri)
-                        )
+    private val addNewPlaylistItem = Pair(Playlist(Uri.EMPTY, ""), false)
+    private val adapter by lazy {
+        object : SimpleListAdapter<Pair<Playlist, Boolean>, ListItem>(
+            diffCallback,
+            ::ListItem,
+        ) {
+            override fun ViewHolder.onPrepareView() {
+                view.setOnClickListener {
+                    item?.let {
+                        when (it === addNewPlaylistItem) {
+                            true -> openCreateNewPlaylistDialog()
+                            false -> when (it.second) {
+                                true -> viewModel.removeFromPlaylist(it.first.uri)
+                                false -> viewModel.addToPlaylist(it.first.uri)
+                            }
+                        }
                     }
                 }
             }
-        }
 
-        override fun ViewHolder.onBindView(item: Playlist) {
-            when (item === addNewPlaylistItem) {
-                true -> {
-                    view.setLeadingIconImage(R.drawable.ic_playlist_add)
-                    view.setHeadlineText(R.string.create_playlist)
+            override fun ViewHolder.onBindView(item: Pair<Playlist, Boolean>) {
+                when (item === addNewPlaylistItem) {
+                    true -> {
+                        view.setLeadingIconImage(R.drawable.ic_playlist_add)
+                        view.setHeadlineText(R.string.create_playlist)
+                        view.trailingIconImage = null
+                    }
+
+                    false -> {
+                        view.setLeadingIconImage(R.drawable.ic_playlist_play)
+                        view.headlineText = item.first.name
+                        view.setTrailingIconImage(
+                            when (item.second) {
+                                true -> R.drawable.ic_check_circle
+                                false -> R.drawable.ic_circle
+                            }
+                        )
+                    }
                 }
 
-                false -> {
-                    view.setLeadingIconImage(R.drawable.ic_playlist_play)
-                    view.headlineText = item.name
-                }
             }
         }
     }
+
+    // Arguments
+    private val audioUri: Uri
+        get() = requireArguments().getParcelable(ARG_AUDIO_URI, Uri::class)!!
 
     // Permissions
     private val permissionsGatedCallback = PermissionsGatedCallback(
@@ -93,11 +113,15 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        toolbar.setupWithNavController(findNavController())
+
         recyclerView.adapter = adapter
 
         createNewPlaylistButton.setOnClickListener {
             openCreateNewPlaylistDialog()
         }
+
+        viewModel.loadAudio(audioUri)
 
         permissionsGatedCallback.runAfterPermissionsCheck()
     }
@@ -111,7 +135,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     private fun loadData() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.playlists.collectLatest {
+                viewModel.playlistToHasAudio.collect {
                     linearProgressIndicator.setProgressCompat(it, true)
 
                     when (it) {
@@ -137,7 +161,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
                         }
 
                         is RequestStatus.Error -> {
-                            Log.e(LOG_TAG, "Failed to load playlists, error: ${it.type}")
+                            Log.e(LOG_TAG, "Failed to load data, error: ${it.type}")
 
                             adapter.submitList(emptyList())
 
@@ -153,7 +177,7 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     private fun openCreateNewPlaylistDialog() {
         EditTextMaterialAlertDialogBuilder(requireContext())
             .setPositiveButton(R.string.create_playlist_confirm) { text ->
-                viewModel.createPlaylist(text)
+                playlistsViewModel.createPlaylist(text)
             }
             .setTitle(R.string.create_playlist)
             .setNegativeButton(android.R.string.cancel, null)
@@ -161,6 +185,30 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     }
 
     companion object {
-        private val LOG_TAG = PlaylistsFragment::class.simpleName!!
+        private val LOG_TAG = AddOrRemoveFromPlaylistsFragment::class.simpleName!!
+
+        private const val ARG_AUDIO_URI = "audio_uri"
+
+        private val diffCallback = object : DiffUtil.ItemCallback<Pair<Playlist, Boolean>>() {
+            override fun areItemsTheSame(
+                oldItem: Pair<Playlist, Boolean>,
+                newItem: Pair<Playlist, Boolean>
+            ) = oldItem.first.areItemsTheSame(newItem.first)
+
+            override fun areContentsTheSame(
+                oldItem: Pair<Playlist, Boolean>,
+                newItem: Pair<Playlist, Boolean>
+            ) = oldItem.first.areContentsTheSame(newItem.first) && oldItem.second == newItem.second
+        }
+
+        /**
+         * Create a [Bundle] to use as the arguments for this fragment.
+         * @param audioUri The URI of the audio to manage
+         */
+        fun createBundle(
+            audioUri: Uri,
+        ) = bundleOf(
+            ARG_AUDIO_URI to audioUri,
+        )
     }
 }

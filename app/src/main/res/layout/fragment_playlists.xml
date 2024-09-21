@@ -19,7 +19,8 @@
     <LinearLayout
         android:id="@+id/noElementsLinearLayout"
         style="@style/Theme.Twelve.NoElements.LinearLayout"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:visibility="visible">
 
         <ImageView
             style="@style/Theme.Twelve.NoElements.ImageView"
@@ -30,7 +31,13 @@
 
         <TextView
             style="@style/Theme.Twelve.NoElements.TextView"
-            android:text="@string/no_playlists" />
+            android:text="@string/no_playlists_comma" />
+
+        <Button
+            android:id="@+id/createNewPlaylistButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_playlist_suggestion" />
 
     </LinearLayout>
 

@@ -18,13 +18,13 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class PlaylistViewModel(application: Application) : TwelveViewModel(application) {
-    private val playlistUri = MutableStateFlow<Uri?>(null)
+open class AudioViewModel(application: Application) : TwelveViewModel(application) {
+    protected val audioUri = MutableStateFlow<Uri?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val playlist = playlistUri.flatMapLatest {
+    val audio = audioUri.flatMapLatest {
         it?.let {
-            mediaRepository.playlist(it)
+            mediaRepository.audio(it)
         } ?: flowOf(null)
     }
         .flowOn(Dispatchers.IO)
@@ -34,19 +34,19 @@ class PlaylistViewModel(application: Application) : TwelveViewModel(application)
             null
         )
 
-    fun loadPlaylist(playlistUri: Uri) {
-        this.playlistUri.value = playlistUri
+    fun loadAudio(audioUri: Uri) {
+        this.audioUri.value = audioUri
     }
 
-    fun renamePlaylist(name: String) = viewModelScope.launch {
-        playlistUri.value?.let { playlistUri ->
-            mediaRepository.renamePlaylist(playlistUri, name)
+    fun addToPlaylist(playlistUri: Uri) = viewModelScope.launch {
+        audioUri.value?.let {
+            mediaRepository.addAudioToPlaylist(playlistUri, it)
         }
     }
 
-    fun deletePlaylist() = viewModelScope.launch {
-        playlistUri.value?.let { playlistUri ->
-            mediaRepository.deletePlaylist(playlistUri)
+    fun removeFromPlaylist(playlistUri: Uri) = viewModelScope.launch {
+        audioUri.value?.let {
+            mediaRepository.removeAudioFromPlaylist(playlistUri, it)
         }
     }
 }

@@ -76,6 +76,19 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
                         )
                     }
                 }
+                view.setOnLongClickListener {
+                    item?.let {
+                        findNavController().navigate(
+                            R.id.action_albumFragment_to_fragment_audio_bottom_sheet_dialog,
+                            AudioBottomSheetDialogFragment.createBundle(
+                                it.uri,
+                                fromAlbum = true,
+                            )
+                        )
+                    }
+
+                    true
+                }
             }
 
             override fun ViewHolder.onBindView(item: Audio) {

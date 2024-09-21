@@ -23,6 +23,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.ext.setProgressCompat
 import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.RequestStatus
+import org.lineageos.twelve.ui.dialogs.EditTextMaterialAlertDialogBuilder
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.ListItem
@@ -72,6 +74,19 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
                         )
                     }
                 }
+                view.setOnLongClickListener {
+                    item?.let {
+                        findNavController().navigate(
+                            R.id.action_playlistFragment_to_fragment_audio_bottom_sheet_dialog,
+                            AudioBottomSheetDialogFragment.createBundle(
+                                it.uri,
+                                playlistUri = playlistUri,
+                            )
+                        )
+                    }
+
+                    true
+                }
             }
 
             override fun ViewHolder.onBindView(item: Audio) {
@@ -99,6 +114,22 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar.setupWithNavController(findNavController())
+        toolbar.inflateMenu(R.menu.fragment_podcast_toolbar)
+        toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.renamePlaylist -> {
+                    showRenamePlaylistAlertDialog()
+                    true
+                }
+
+                R.id.deletePlaylist -> {
+                    showDeletePlaylistAlertDialog()
+                    true
+                }
+
+                else -> false
+            }
+        }
 
         recyclerView.adapter = adapter
 
@@ -162,6 +193,28 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
                 }
             }
         }
+    }
+
+    private fun showRenamePlaylistAlertDialog() {
+        EditTextMaterialAlertDialogBuilder(requireContext())
+            .setText(toolbar.title.toString())
+            .setPositiveButton(R.string.rename_playlist_positive) { text ->
+                viewModel.renamePlaylist(text)
+            }
+            .setTitle(R.string.rename_playlist)
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun showDeletePlaylistAlertDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.delete_playlist)
+            .setMessage(R.string.delete_playlist_message)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                viewModel.deletePlaylist()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     companion object {

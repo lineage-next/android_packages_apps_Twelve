@@ -9,8 +9,10 @@
     android:id="@+id/fragment_main"
     app:startDestination="@id/mainFragment">
 
+    <include app:graph="@navigation/fragment_add_or_remove_from_playlists" />
     <include app:graph="@navigation/fragment_album" />
     <include app:graph="@navigation/fragment_artist" />
+    <include app:graph="@navigation/fragment_audio_bottom_sheet_dialog" />
     <include app:graph="@navigation/fragment_now_playing" />
     <include app:graph="@navigation/fragment_playlist" />
 
