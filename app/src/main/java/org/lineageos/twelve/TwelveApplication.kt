@@ -7,9 +7,11 @@ package org.lineageos.twelve
 
 import android.app.Application
 import com.google.android.material.color.DynamicColors
+import org.lineageos.twelve.database.TwelveDatabase
 import org.lineageos.twelve.repositories.MediaRepository
 
 class TwelveApplication : Application() {
+    private val database by lazy { TwelveDatabase.getInstance(this) }
     val mediaRepository by lazy { MediaRepository(this) }
 
     override fun onCreate() {
