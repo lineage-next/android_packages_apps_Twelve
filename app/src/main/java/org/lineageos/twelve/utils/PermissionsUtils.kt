@@ -21,7 +21,5 @@ object PermissionsUtils {
         } else {
             add(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
-
-        add(Manifest.permission.ACCESS_MEDIA_LOCATION)
     }.toTypedArray()
 }
