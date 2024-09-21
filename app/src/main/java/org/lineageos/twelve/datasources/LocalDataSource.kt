@@ -20,6 +20,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import org.lineageos.twelve.database.TwelveDatabase
+import org.lineageos.twelve.database.entities.Item
 import org.lineageos.twelve.ext.mapEachRow
 import org.lineageos.twelve.ext.queryFlow
 import org.lineageos.twelve.models.Album
@@ -41,7 +44,7 @@ import org.lineageos.twelve.query.neq
  * [MediaStore.Audio] backed data source.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class LocalDataSource(context: Context) : MediaDataSource {
+class LocalDataSource(context: Context, private val database: TwelveDatabase) : MediaDataSource {
     private val contentResolver = context.contentResolver
 
     private val albumsUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
@@ -186,10 +189,10 @@ class LocalDataSource(context: Context) : MediaDataSource {
         RequestStatus.Success(it)
     }
 
-    // Playlists are deprecated
-    override fun playlists() = flowOf(
-        RequestStatus.Success(listOf<Playlist>())
-    )
+    override fun playlists() = database.getPlaylistDao().getAll()
+        .mapLatest { playlists ->
+            RequestStatus.Success(playlists.map { it.toModel() })
+        }
 
     override fun search(query: String) = combine(
         contentResolver.queryFlow(
@@ -359,10 +362,96 @@ class LocalDataSource(context: Context) : MediaDataSource {
         } ?: RequestStatus.Error(RequestStatus.Error.Type.NOT_FOUND)
     }
 
-    // Playlists are deprecated, we shouldn't reach this point
-    override fun playlist(playlistUri: Uri) = flowOf(
-        RequestStatus.Error<Pair<Playlist, List<Audio>>>(RequestStatus.Error.Type.NOT_FOUND)
+    override fun playlist(playlistUri: Uri) = database.getPlaylistDao().getPlaylistWithItems(
+        ContentUris.parseId(playlistUri)
+    ).flatMapLatest { data ->
+        data?.let { playlistWithItems ->
+            val playlist = playlistWithItems.playlist.toModel()
+
+            audios(playlistWithItems.items.map(Item::audioUri))
+                .mapLatest {
+                    RequestStatus.Success(Pair(playlist, it))
+                }
+        } ?: flowOf(
+            RequestStatus.Error(
+                RequestStatus.Error.Type.NOT_FOUND
+            )
+        )
+    }
+
+    override fun audioPlaylistsStatus(audioUri: Uri) =
+        database.getPlaylistWithItemsDao().getPlaylistsWithItemStatus(
+            audioUri
+        ).mapLatest { data ->
+            RequestStatus.Success(
+                data.map {
+                    it.playlist.toModel() to it.value
+                }
+            )
+        }
+
+    override suspend fun createPlaylist(name: String) = database.getPlaylistDao().create(
+        name
+    ).let {
+        RequestStatus.Success(ContentUris.withAppendedId(playlistsBaseUri, it))
+    }
+
+    override suspend fun renamePlaylist(playlistUri: Uri, name: String) =
+        database.getPlaylistDao().rename(
+            ContentUris.parseId(playlistUri), name
+        ).let {
+            RequestStatus.Success(Unit)
+        }
+
+    override suspend fun deletePlaylist(playlistUri: Uri) = database.getPlaylistDao().delete(
+        ContentUris.parseId(playlistUri)
+    ).let {
+        RequestStatus.Success(Unit)
+    }
+
+    override suspend fun addAudioToPlaylist(
+        playlistUri: Uri,
+        audioUri: Uri,
+    ) = database.getPlaylistWithItemsDao().addItemToPlaylist(
+        ContentUris.parseId(playlistUri),
+        audioUri
+    ).let {
+        RequestStatus.Success(Unit)
+    }
+
+    override suspend fun removeAudioFromPlaylist(
+        playlistUri: Uri,
+        audioUri: Uri,
+    ) = database.getPlaylistWithItemsDao().removeItemFromPlaylist(
+        ContentUris.parseId(playlistUri),
+        audioUri
+    ).let {
+        RequestStatus.Success(Unit)
+    }
+
+    /**
+     * Given a list of audio URIs, return a list of [Audio], where null if the audio hasn't been
+     * found.
+     */
+    private fun audios(audioUris: List<Uri>) = contentResolver.queryFlow(
+        audiosUri,
+        audiosProjection,
+        bundleOf(
+            ContentResolver.QUERY_ARG_SQL_SELECTION to
+                    (MediaStore.Audio.AudioColumns._ID `in` List(audioUris.size) {
+                        Query.ARG
+                    }).build(),
+            ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to audioUris.map {
+                ContentUris.parseId(it).toString()
+            }.toTypedArray(),
+        )
     )
+        .mapEachRow(audiosProjection, mapAudio)
+        .mapLatest { audios ->
+            audioUris.map { audioUri ->
+                audios.firstOrNull { it.uri == audioUri }
+            }
+        }
 
     companion object {
         private val albumsProjection = arrayOf(
@@ -406,6 +495,25 @@ class LocalDataSource(context: Context) : MediaDataSource {
 
         private val audioAlbumIdsProjection = arrayOf(
             MediaStore.Audio.AudioColumns.ALBUM_ID,
+        )
+
+        /**
+         * Dummy internal database scheme.
+         */
+        private const val DATABASE_SCHEME = "twelvedatabase"
+
+        /**
+         * Dummy internal database [Uri].
+         */
+        private val playlistsBaseUri = Uri.fromParts(
+            DATABASE_SCHEME,
+            "playlist",
+            null
+        )
+
+        private fun org.lineageos.twelve.database.entities.Playlist.toModel() = Playlist(
+            ContentUris.withAppendedId(playlistsBaseUri, id),
+            name,
         )
     }
 }

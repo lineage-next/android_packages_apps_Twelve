@@ -63,6 +63,52 @@ interface MediaDataSource {
 
     /**
      * Get the playlist information and all the tracks of the given playlist.
+     * If the playlist contains an audio that is unavailable, it will be mapped to null.
      */
-    fun playlist(playlistUri: Uri): Flow<RequestStatus<Pair<Playlist, List<Audio>>>>
+    fun playlist(playlistUri: Uri): Flow<RequestStatus<Pair<Playlist, List<Audio?>>>>
+
+    /**
+     * Get an audio status within all playlists.
+     * @param audioUri The URI of the audio
+     */
+    fun audioPlaylistsStatus(audioUri: Uri): Flow<RequestStatus<List<Pair<Playlist, Boolean>>>>
+
+    /**
+     * Create a new playlist. Note that the name shouldn't be considered unique if possible, but
+     * this may vary per data source.
+     * @param name The name of the playlist
+     * @return A [RequestStatus] with the [Uri] of the new playlist if succeeded, an error otherwise
+     */
+    suspend fun createPlaylist(name: String): RequestStatus<Uri>
+
+    /**
+     * Rename a playlist.
+     * @param playlistUri The URI of the playlist
+     * @param name The new name of the playlist
+     * @return [RequestStatus.Success] if success, [RequestStatus.Error] with an error otherwise
+     */
+    suspend fun renamePlaylist(playlistUri: Uri, name: String): RequestStatus<Unit>
+
+    /**
+     * Delete a playlist.
+     * @param playlistUri The URI of the playlist
+     * @return [RequestStatus.Success] if success, [RequestStatus.Error] with an error otherwise
+     */
+    suspend fun deletePlaylist(playlistUri: Uri): RequestStatus<Unit>
+
+    /**
+     * Add an audio to a playlist.
+     * @param playlistUri The URI of the playlist
+     * @param audioUri The URI of the audio
+     * @return [RequestStatus.Success] if success, [RequestStatus.Error] with an error otherwise
+     */
+    suspend fun addAudioToPlaylist(playlistUri: Uri, audioUri: Uri): RequestStatus<Unit>
+
+    /**
+     * Remove an audio from a playlist.
+     * @param playlistUri The URI of the playlist
+     * @param audioUri The URI of the audio
+     * @return [RequestStatus.Success] if success, [RequestStatus.Error] with an error otherwise
+     */
+    suspend fun removeAudioFromPlaylist(playlistUri: Uri, audioUri: Uri): RequestStatus<Unit>
 }

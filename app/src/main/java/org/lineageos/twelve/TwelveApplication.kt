@@ -12,7 +12,7 @@ import org.lineageos.twelve.repositories.MediaRepository
 
 class TwelveApplication : Application() {
     private val database by lazy { TwelveDatabase.getInstance(this) }
-    val mediaRepository by lazy { MediaRepository(this) }
+    val mediaRepository by lazy { MediaRepository(this, database) }
 
     override fun onCreate() {
         super.onCreate()

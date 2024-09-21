@@ -33,9 +33,9 @@ sealed class RequestStatus<T : Any> {
     class Error<T : Any>(val type: Type) : RequestStatus<T>() {
         enum class Type {
             /**
-             * The item was not found.
+             * This feature isn't implemented.
              */
-            NOT_FOUND,
+            NOT_IMPLEMENTED,
 
             /**
              * I/O error, can also be network.
@@ -51,6 +51,16 @@ sealed class RequestStatus<T : Any> {
              * Invalid credentials.
              */
             INVALID_CREDENTIALS,
+
+            /**
+             * The item was not found.
+             */
+            NOT_FOUND,
+
+            /**
+             * Value returned on write requests: The value already exists.
+             */
+            ALREADY_EXISTS,
         }
     }
 }

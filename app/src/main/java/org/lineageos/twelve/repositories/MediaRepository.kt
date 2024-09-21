@@ -8,6 +8,7 @@ package org.lineageos.twelve.repositories
 import android.content.Context
 import android.net.Uri
 import kotlinx.coroutines.flow.Flow
+import org.lineageos.twelve.database.TwelveDatabase
 import org.lineageos.twelve.datasources.LocalDataSource
 import org.lineageos.twelve.datasources.MediaDataSource
 import org.lineageos.twelve.models.Album
@@ -19,8 +20,8 @@ import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.models.UniqueItem
 
-class MediaRepository(context: Context) {
-    private val localDataSource = LocalDataSource(context)
+class MediaRepository(context: Context, database: TwelveDatabase) {
+    private val localDataSource = LocalDataSource(context, database)
 
     /**
      * @see MediaDataSource.albums
@@ -63,6 +64,42 @@ class MediaRepository(context: Context) {
     /**
      * @see MediaDataSource.playlist
      */
-    fun playlist(playlistUri: Uri): Flow<RequestStatus<Pair<Playlist, List<Audio>>>> =
+    fun playlist(playlistUri: Uri): Flow<RequestStatus<Pair<Playlist, List<Audio?>>>> =
         localDataSource.playlist(playlistUri)
+
+    /**
+     * @see MediaDataSource.createPlaylist
+     */
+    suspend fun createPlaylist(name: String): RequestStatus<Uri> =
+        localDataSource.createPlaylist(name)
+
+    /**
+     * @see MediaDataSource.renamePlaylist
+     */
+    suspend fun renamePlaylist(playlistUri: Uri, name: String): RequestStatus<Unit> =
+        localDataSource.renamePlaylist(playlistUri, name)
+
+    /**
+     * @see MediaDataSource.deletePlaylist
+     */
+    suspend fun deletePlaylist(playlistUri: Uri): RequestStatus<Unit> =
+        localDataSource.deletePlaylist(playlistUri)
+
+    /**
+     * @see MediaDataSource.addAudioToPlaylist
+     */
+    suspend fun addAudioToPlaylist(playlistUri: Uri, audioUri: Uri): RequestStatus<Unit> =
+        localDataSource.addAudioToPlaylist(playlistUri, audioUri)
+
+    /**
+     * @see MediaDataSource.removeAudioFromPlaylist
+     */
+    suspend fun removeAudioFromPlaylist(playlistUri: Uri, audioUri: Uri): RequestStatus<Unit> =
+        localDataSource.removeAudioFromPlaylist(playlistUri, audioUri)
+
+    /**
+     * @see MediaDataSource.audioPlaylistsStatus
+     */
+    fun audioPlaylistsStatus(audioUri: Uri): Flow<RequestStatus<List<Pair<Playlist, Boolean>>>> =
+        localDataSource.audioPlaylistsStatus(audioUri)
 }
