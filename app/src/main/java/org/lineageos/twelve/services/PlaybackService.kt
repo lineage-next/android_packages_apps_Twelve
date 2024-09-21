@@ -132,6 +132,7 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
         return super.onBind(intent)
     }
 
+    @Suppress("Deprecation")
     @Deprecated("Deprecated in Java")
     override fun onStart(intent: Intent?, startId: Int) {
         dispatcher.onServicePreSuperOnStart()
