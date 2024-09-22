@@ -47,6 +47,11 @@ interface MediaDataSource {
     fun search(query: String): Flow<RequestStatus<List<UniqueItem<*>>>>
 
     /**
+     * Get the audio information of the given audio.
+     */
+    fun audio(audioUri: Uri): Flow<RequestStatus<Audio>>
+
+    /**
      * Get the album information and all the tracks of the given album.
      */
     fun album(albumUri: Uri): Flow<RequestStatus<Pair<Album, List<Audio>>>>

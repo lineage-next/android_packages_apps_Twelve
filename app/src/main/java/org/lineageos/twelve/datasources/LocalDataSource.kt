@@ -235,6 +235,22 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
         albums + artists + audios + genres
     }.map { RequestStatus.Success(it) }
 
+    override fun audio(audioUri: Uri) = contentResolver.queryFlow(
+        audiosUri,
+        audiosProjection,
+        bundleOf(
+            ContentResolver.QUERY_ARG_SQL_SELECTION to
+                    (MediaStore.Audio.AudioColumns._ID eq Query.ARG).build(),
+            ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
+                ContentUris.parseId(audioUri).toString(),
+            ),
+        )
+    ).mapEachRow(audiosProjection, mapAudio).mapLatest { audios ->
+        audios.firstOrNull()?.let {
+            RequestStatus.Success(it)
+        } ?: RequestStatus.Error(RequestStatus.Error.Type.NOT_FOUND)
+    }
+
     override fun album(albumUri: Uri) = combine(
         contentResolver.queryFlow(
             albumsUri,

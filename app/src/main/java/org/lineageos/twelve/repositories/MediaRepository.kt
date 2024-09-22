@@ -50,6 +50,11 @@ class MediaRepository(context: Context, database: TwelveDatabase) {
         localDataSource.search(query)
 
     /**
+     * @see MediaDataSource.audio
+     */
+    fun audio(audioUri: Uri): Flow<RequestStatus<Audio>> = localDataSource.audio(audioUri)
+
+    /**
      * @see MediaDataSource.album
      */
     fun album(albumUri: Uri): Flow<RequestStatus<Pair<Album, List<Audio>>>> =
