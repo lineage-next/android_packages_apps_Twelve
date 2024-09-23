@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -56,6 +57,7 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
     private val recyclerView by getViewProperty<RecyclerView>(R.id.recyclerView)
     private val thumbnailImageView by getViewProperty<ImageView>(R.id.thumbnailImageView)
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
+    private val tracksInfoTextView by getViewProperty<TextView>(R.id.tracksInfoTextView)
 
     // Recyclerview
     private val adapter by lazy {
@@ -166,6 +168,26 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
                             val (playlist, audios) = it.data
 
                             toolbar.title = playlist.name
+
+                            val totalDurationMs = audios.sumOf { audio ->
+                                audio?.durationMs ?: 0
+                            }
+                            val totalDurationMinutes = totalDurationMs / 1000 / 60
+
+                            val tracksCount = resources.getQuantityString(
+                                R.plurals.tracks_count,
+                                audios.size,
+                                audios.size
+                            )
+                            val tracksDuration = resources.getQuantityString(
+                                R.plurals.tracks_duration,
+                                totalDurationMinutes,
+                                totalDurationMinutes
+                            )
+                            tracksInfoTextView.text = getString(
+                                R.string.tracks_info,
+                                tracksCount, tracksDuration
+                            )
 
                             adapter.submitList(audios)
 
