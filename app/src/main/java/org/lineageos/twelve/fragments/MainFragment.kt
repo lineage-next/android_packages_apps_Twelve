@@ -24,6 +24,8 @@ import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.views.NowPlayingBar
+import org.lineageos.twelve.utils.PermissionsGatedCallback
+import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
 
 /**
@@ -50,11 +52,22 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
     }
 
+    // Permissions
+    private val permissionsGatedCallback = PermissionsGatedCallback(
+        this, PermissionsUtils.mainPermissions
+    ) {
+        setupUi()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar.setupWithNavController(findNavController())
 
+        permissionsGatedCallback.runAfterPermissionsCheck()
+    }
+
+    private fun setupUi() {
         viewPager2.isUserInputEnabled = false
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount() = fragments.size
