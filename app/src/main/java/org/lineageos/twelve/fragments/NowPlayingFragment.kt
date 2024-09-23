@@ -7,6 +7,7 @@ package org.lineageos.twelve.fragments
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.view.View
@@ -155,7 +156,14 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                         albumArtImageView.setImageBitmap(bitmap)
                                     }
                                 } ?: playbackStatus.mediaMetadata.artworkUri?.also { artworkUri ->
-                                    albumArtImageView.setImageURI(artworkUri)
+                                    ImageDecoder.createSource(
+                                        requireContext().contentResolver,
+                                        artworkUri
+                                    ).let { source ->
+                                        ImageDecoder.decodeBitmap(source)
+                                    }.also { bitmap ->
+                                        albumArtImageView.setImageBitmap(bitmap)
+                                    }
                                 } ?: albumArtImageView.setImageResource(R.drawable.ic_music_note)
 
                                 val audioTitle = playbackStatus.mediaMetadata.displayTitle

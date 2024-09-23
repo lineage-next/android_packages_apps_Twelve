@@ -7,6 +7,7 @@ package org.lineageos.twelve.ui.views
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -52,7 +53,14 @@ class NowPlayingBar @JvmOverloads constructor(
                 thumbnailImageView.setImageBitmap(bitmap)
             }
         } ?: playbackStatus.mediaMetadata.artworkUri?.also { artworkUri ->
-            thumbnailImageView.setImageURI(artworkUri)
+            ImageDecoder.createSource(
+                context.contentResolver,
+                artworkUri
+            ).let { source ->
+                ImageDecoder.decodeBitmap(source)
+            }.also { bitmap ->
+                thumbnailImageView.setImageBitmap(bitmap)
+            }
         } ?: thumbnailImageView.setImageResource(R.drawable.ic_music_note)
 
         playbackStatus.mediaMetadata.title?.also {
