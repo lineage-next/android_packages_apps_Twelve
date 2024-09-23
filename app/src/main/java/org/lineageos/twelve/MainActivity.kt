@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         // Handle now playing
         if (intent.getBooleanExtra(EXTRA_OPEN_NOW_PLAYING, false)) {
+            // If we're playing any media, we must've the required permissions to do so
             navController.navigate(R.id.fragment_now_playing)
         }
     }

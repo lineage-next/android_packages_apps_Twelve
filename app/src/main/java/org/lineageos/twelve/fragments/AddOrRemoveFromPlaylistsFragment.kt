@@ -34,8 +34,6 @@ import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.dialogs.EditTextMaterialAlertDialogBuilder
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
-import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.AddOrRemoveFromPlaylistsViewModel
 import org.lineageos.twelve.viewmodels.PlaylistsViewModel
 
@@ -103,12 +101,6 @@ class AddOrRemoveFromPlaylistsFragment : Fragment(R.layout.fragment_add_or_remov
     private val audioUri: Uri
         get() = requireArguments().getParcelable(ARG_AUDIO_URI, Uri::class)!!
 
-    // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -123,7 +115,7 @@ class AddOrRemoveFromPlaylistsFragment : Fragment(R.layout.fragment_add_or_remov
 
         viewModel.loadAudio(audioUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        loadData()
     }
 
     override fun onDestroyView() {

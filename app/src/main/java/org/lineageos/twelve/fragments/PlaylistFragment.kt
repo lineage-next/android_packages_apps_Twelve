@@ -38,8 +38,6 @@ import org.lineageos.twelve.ui.dialogs.EditTextMaterialAlertDialogBuilder
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
-import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.PlaylistViewModel
 
@@ -105,13 +103,6 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
     private val playlistUri: Uri
         get() = requireArguments().getParcelable(ARG_PLAYLIST_URI, Uri::class)!!
 
-    // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -137,7 +128,7 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
 
         viewModel.loadPlaylist(playlistUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        loadData()
     }
 
     override fun onDestroyView() {

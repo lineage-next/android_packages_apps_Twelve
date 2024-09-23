@@ -40,8 +40,6 @@ import org.lineageos.twelve.models.areContentsTheSame
 import org.lineageos.twelve.models.areItemsTheSame
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
-import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.SearchViewModel
 
 /**
@@ -128,13 +126,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
     }
 
-    // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -153,7 +144,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             true
         }
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        loadData()
     }
 
     override fun onDestroyView() {

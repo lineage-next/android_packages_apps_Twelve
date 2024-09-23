@@ -35,8 +35,6 @@ import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.HorizontalListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
-import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.ArtistViewModel
 
 /**
@@ -110,13 +108,6 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
     private val artistUri: Uri
         get() = requireArguments().getParcelable(ARG_ARTIST_URI, Uri::class)!!
 
-    // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -128,7 +119,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
 
         viewModel.loadAlbum(artistUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        loadData()
     }
 
     override fun onDestroyView() {

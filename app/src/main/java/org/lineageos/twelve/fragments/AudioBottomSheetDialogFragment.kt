@@ -24,8 +24,6 @@ import org.lineageos.twelve.ext.getParcelable
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
-import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.AudioViewModel
 
 /**
@@ -56,13 +54,6 @@ class AudioBottomSheetDialogFragment : BottomSheetDialogFragment(
     private val playlistUri: Uri?
         get() = requireArguments().getParcelable(ARG_PLAYLIST_URI, Uri::class)
 
-    // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
-        this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -88,7 +79,7 @@ class AudioBottomSheetDialogFragment : BottomSheetDialogFragment(
 
         viewModel.loadAudio(audioUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        loadData()
     }
 
     private fun loadData() {
