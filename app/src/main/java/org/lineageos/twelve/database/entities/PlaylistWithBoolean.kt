@@ -11,6 +11,4 @@ import androidx.room.Embedded
 data class PlaylistWithBoolean(
     @Embedded val playlist: Playlist,
     @ColumnInfo(name = "value") val value: Boolean
-) {
-    fun toPair() = playlist to value
-}
+)
