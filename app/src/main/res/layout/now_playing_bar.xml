@@ -4,9 +4,9 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/materialCardView"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/materialCardView"
     style="@style/Theme.Twelve.NowPlayingBar.CardView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

@@ -38,7 +38,9 @@
 
     <!-- Now playing bar -->
     <style name="Theme.Twelve.NowPlayingBar.CardView" parent="@style/Widget.Material3.CardView.Filled">
-        <item name="shapeAppearanceOverlay">@style/Theme.Twelve.NowPlayingBar.CardView.ShapeAppearanceOverlay</item>
+        <item name="shapeAppearanceOverlay">
+            @style/Theme.Twelve.NowPlayingBar.CardView.ShapeAppearanceOverlay
+        </item>
     </style>
 
     <style name="Theme.Twelve.NowPlayingBar.CardView.ShapeAppearanceOverlay" parent="@style/ShapeAppearanceOverlay.Material3.Corner.Top">
