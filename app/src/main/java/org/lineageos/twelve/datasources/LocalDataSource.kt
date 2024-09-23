@@ -130,6 +130,7 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
         val albumId = it.getLong(indexCache[i++])
         val album = it.getString(indexCache[i++])
         val track = it.getInt(indexCache[i++])
+        val genre = it.getStringOrNull(indexCache[i++])
         val genreId = it.getLong(indexCache[i++])
         val year = it.getInt(indexCache[i++])
 
@@ -163,6 +164,7 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             albumUri,
             album,
             track,
+            genre,
             genreUri,
             year,
         )
@@ -501,6 +503,7 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             MediaStore.Audio.AudioColumns.ALBUM_ID,
             MediaStore.Audio.AudioColumns.ALBUM,
             MediaStore.Audio.AudioColumns.TRACK,
+            MediaStore.Audio.AudioColumns.GENRE,
             MediaStore.Audio.AudioColumns.GENRE_ID,
             MediaStore.Audio.AudioColumns.YEAR,
         ).apply {

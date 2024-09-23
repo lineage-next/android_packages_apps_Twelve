@@ -23,10 +23,10 @@ import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionError
-import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.guava.future
 import org.lineageos.twelve.MainActivity
 import org.lineageos.twelve.R
+import org.lineageos.twelve.TwelveApplication
 
 @OptIn(UnstableApi::class)
 class PlaybackService : MediaLibraryService(), LifecycleOwner {
@@ -36,31 +36,86 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
 
     private var mediaLibrarySession: MediaLibrarySession? = null
 
+    private val mediaRepositoryTree by lazy {
+        MediaRepositoryTree(
+            applicationContext,
+            (application as TwelveApplication).mediaRepository,
+        )
+    }
+
     private val mediaLibrarySessionCallback = object : MediaLibrarySession.Callback {
         override fun onPlaybackResumption(
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo
-        ) = lifecycle.coroutineScope.future<MediaSession.MediaItemsWithStartPosition> {
-            throw UnsupportedOperationException()
+        ) = lifecycle.coroutineScope.future {
+            MediaSession.MediaItemsWithStartPosition(
+                mediaRepositoryTree.getResumptionPlaylist(), 0, 0
+            )
         }
 
         override fun onGetLibraryRoot(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
-            params: LibraryParams?
+            params: LibraryParams?,
         ) = lifecycle.coroutineScope.future {
-            LibraryResult.ofError<MediaItem>(SessionError.ERROR_NOT_SUPPORTED)
+            LibraryResult.ofItem(mediaRepositoryTree.getRootMediaItem(), params)
         }
 
+        override fun onGetItem(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            mediaId: String,
+        ) = lifecycle.coroutineScope.future {
+            mediaRepositoryTree.getItem(mediaId)?.let {
+                LibraryResult.ofItem(it, null)
+            } ?: LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)
+        }
+
+        @OptIn(UnstableApi::class)
         override fun onGetChildren(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
             parentId: String,
             page: Int,
             pageSize: Int,
-            params: LibraryParams?
+            params: LibraryParams?,
         ) = lifecycle.coroutineScope.future {
-            LibraryResult.ofError<ImmutableList<MediaItem>>(SessionError.ERROR_NOT_SUPPORTED)
+            LibraryResult.ofItemList(mediaRepositoryTree.getChildren(parentId), params)
+        }
+
+        override fun onAddMediaItems(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            mediaItems: List<MediaItem>,
+        ) = lifecycle.coroutineScope.future {
+            mediaRepositoryTree.resolveMediaItems(mediaItems)
+        }
+
+        @OptIn(UnstableApi::class)
+        override fun onSetMediaItems(
+            mediaSession: MediaSession,
+            browser: MediaSession.ControllerInfo,
+            mediaItems: List<MediaItem>,
+            startIndex: Int,
+            startPositionMs: Long,
+        ) = lifecycle.coroutineScope.future {
+            MediaSession.MediaItemsWithStartPosition(
+                mediaRepositoryTree.resolveMediaItems(mediaItems),
+                startIndex,
+                startPositionMs
+            )
+        }
+
+        override fun onSearch(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            query: String,
+            params: LibraryParams?,
+        ) = lifecycle.coroutineScope.future {
+            session.notifySearchResultChanged(
+                browser, query, mediaRepositoryTree.search(query).size, params
+            )
+            LibraryResult.ofVoid()
         }
 
         override fun onGetSearchResult(
@@ -69,9 +124,9 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
             query: String,
             page: Int,
             pageSize: Int,
-            params: LibraryParams?
+            params: LibraryParams?,
         ) = lifecycle.coroutineScope.future {
-            LibraryResult.ofError<ImmutableList<MediaItem>>(SessionError.ERROR_NOT_SUPPORTED)
+            LibraryResult.ofItemList(mediaRepositoryTree.search(query), params)
         }
     }
 

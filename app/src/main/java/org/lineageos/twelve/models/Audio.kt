@@ -6,6 +6,8 @@
 package org.lineageos.twelve.models
 
 import android.net.Uri
+import org.lineageos.twelve.ext.buildMediaItem
+import org.lineageos.twelve.ext.toMediaMetadataType
 
 /**
  * An audio.
@@ -34,6 +36,7 @@ data class Audio(
     val albumUri: Uri,
     val albumTitle: String,
     val albumTrack: Int,
+    val genre: String?,
     val genreUri: Uri,
     val year: Int,
 ) : UniqueItem<Audio> {
@@ -72,7 +75,24 @@ data class Audio(
         Audio::albumUri,
         Audio::albumTitle,
         Audio::albumTrack,
+        Audio::genre,
         Audio::genreUri,
         Audio::year,
     ) == 0
+
+    override fun toMediaItem() = buildMediaItem(
+        title = title,
+        mediaId = "$AUDIO_MEDIA_ITEM_ID_PREFIX${uri}",
+        isPlayable = true,
+        isBrowsable = false,
+        mediaType = type.toMediaMetadataType(),
+        album = albumTitle,
+        artist = artistName,
+        genre = genre,
+        sourceUri = uri,
+    )
+
+    companion object {
+        const val AUDIO_MEDIA_ITEM_ID_PREFIX = "[audio]"
+    }
 }

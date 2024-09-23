@@ -6,6 +6,8 @@
 package org.lineageos.twelve.models
 
 import android.net.Uri
+import androidx.media3.common.MediaMetadata
+import org.lineageos.twelve.ext.buildMediaItem
 
 /**
  * A music genre.
@@ -25,4 +27,17 @@ data class Genre(
         this,
         Genre::name,
     ) == 0
+
+    override fun toMediaItem() = buildMediaItem(
+        title = name ?: "Unknown",
+        mediaId = "$GENRE_MEDIA_ITEM_ID_PREFIX${uri}",
+        isPlayable = false,
+        isBrowsable = true,
+        mediaType = MediaMetadata.MEDIA_TYPE_GENRE,
+        sourceUri = uri,
+    )
+
+    companion object {
+        const val GENRE_MEDIA_ITEM_ID_PREFIX = "[genre]"
+    }
 }

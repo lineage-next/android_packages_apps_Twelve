@@ -7,6 +7,8 @@ package org.lineageos.twelve.models
 
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.media3.common.MediaMetadata
+import org.lineageos.twelve.ext.buildMediaItem
 
 /**
  * An artist.
@@ -27,4 +29,17 @@ data class Artist(
         Artist::name,
         { it.thumbnail?.sameAs(other.thumbnail) ?: (other.thumbnail == null) },
     ) == 0
+
+    override fun toMediaItem() = buildMediaItem(
+        title = name,
+        mediaId = "$ARTIST_MEDIA_ITEM_ID_PREFIX${uri}",
+        isPlayable = false,
+        isBrowsable = true,
+        mediaType = MediaMetadata.MEDIA_TYPE_ARTIST,
+        sourceUri = uri,
+    )
+
+    companion object {
+        const val ARTIST_MEDIA_ITEM_ID_PREFIX = "[artist]"
+    }
 }

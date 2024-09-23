@@ -7,6 +7,8 @@ package org.lineageos.twelve.models
 
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.media3.common.MediaMetadata
+import org.lineageos.twelve.ext.buildMediaItem
 
 /**
  * An album.
@@ -36,4 +38,17 @@ data class Album(
         Album::year,
         { it.thumbnail?.sameAs(other.thumbnail) ?: (other.thumbnail == null) },
     ) == 0
+
+    override fun toMediaItem() = buildMediaItem(
+        title = title,
+        mediaId = "${ALBUM_MEDIA_ITEM_ID_PREFIX}${uri}",
+        isPlayable = false,
+        isBrowsable = true,
+        mediaType = MediaMetadata.MEDIA_TYPE_ALBUM,
+        sourceUri = uri,
+    )
+
+    companion object {
+        const val ALBUM_MEDIA_ITEM_ID_PREFIX = "[album]"
+    }
 }
