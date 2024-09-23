@@ -45,7 +45,15 @@
     <string name="genre_unknown">Unknown</string>
 
     <!-- Album fragment -->
-    <string name="album_tracks_info">%1$d tracks, %2$d minutes</string>
+    <plurals name="album_tracks_count">
+        <item quantity="one">%d track</item>
+        <item quantity="other">%d tracks</item>
+    </plurals>
+    <plurals name="album_tracks_duration">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <string name="album_tracks_info">%1$s, %2$s</string>
 
     <!-- Artist fragment -->
     <string name="artist_albums_header">Albums</string>

@@ -177,9 +177,19 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
                             }
                             val totalDurationMinutes = totalDurationMs / 1000 / 60
 
+                            val tracksCount = resources.getQuantityString(
+                                R.plurals.album_tracks_count,
+                                audios.size,
+                                audios.size
+                            )
+                            val tracksDuration = resources.getQuantityString(
+                                R.plurals.album_tracks_duration,
+                                totalDurationMinutes,
+                                totalDurationMinutes
+                            )
                             tracksInfoTextView.text = getString(
                                 R.string.album_tracks_info,
-                                audios.size, totalDurationMinutes
+                                tracksCount, tracksDuration
                             )
 
                             adapter.submitList(audios)
