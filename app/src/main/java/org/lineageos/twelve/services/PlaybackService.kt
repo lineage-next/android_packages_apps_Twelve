@@ -37,29 +37,6 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
     private var mediaLibrarySession: MediaLibrarySession? = null
 
     private val mediaLibrarySessionCallback = object : MediaLibrarySession.Callback {
-        override fun onConnect(
-            session: MediaSession,
-            controller: MediaSession.ControllerInfo
-        ): MediaSession.ConnectionResult {
-            val sessionCommands = MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
-                .build()
-            if (session.isMediaNotificationController(controller)) {
-                val playerCommands =
-                    MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
-                        .build()
-                return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
-                    .setAvailablePlayerCommands(playerCommands)
-                    .setAvailableSessionCommands(sessionCommands)
-                    .build()
-            } else if (session.isAutoCompanionController(controller)) {
-                return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
-                    .setAvailableSessionCommands(sessionCommands)
-                    .build()
-            }
-            // Default commands with default custom layout for all other controllers.
-            return MediaSession.ConnectionResult.AcceptedResultBuilder(session).build()
-        }
-
         override fun onPlaybackResumption(
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo
