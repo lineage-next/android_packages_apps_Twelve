@@ -161,6 +161,6 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
         Intent(this, MainActivity::class.java).apply {
             putExtra(MainActivity.EXTRA_OPEN_NOW_PLAYING, true)
         },
-        PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
     )
 }
