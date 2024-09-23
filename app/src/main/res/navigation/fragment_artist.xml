@@ -9,8 +9,6 @@
     android:id="@+id/fragment_artist"
     app:startDestination="@id/artistFragment">
 
-    <include app:graph="@navigation/fragment_album" />
-
     <fragment
         android:id="@+id/artistFragment"
         android:name="org.lineageos.twelve.fragments.ArtistFragment"
