@@ -9,9 +9,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onStart
 
 fun Context.permissionGranted(permission: String) =
     ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
@@ -27,10 +26,9 @@ fun Context.permissionsStatus(permissions: Array<String>) = permissions.partitio
 /**
  * Flow of permissions granted/denied.
  */
-fun Context.permissionsFlow(lifecycle: Lifecycle, permissions: Array<String>) = merge(
-    // We need an event right away
-    flowOf(Unit),
-    lifecycle.eventFlow(Lifecycle.Event.ON_RESUME),
-).map {
-    permissionsStatus(permissions)
-}
+fun Context.permissionsFlow(lifecycle: Lifecycle, permissions: Array<String>) =
+    lifecycle.eventFlow(Lifecycle.Event.ON_RESUME)
+        .onStart { emit(Unit) }
+        .map {
+            permissionsStatus(permissions)
+        }
