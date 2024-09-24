@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -35,7 +36,7 @@ import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.HorizontalListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
+import org.lineageos.twelve.utils.PermissionsChecker
 import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.ArtistViewModel
 
@@ -111,11 +112,9 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         get() = requireArguments().getParcelable(ARG_ARTIST_URI, Uri::class)!!
 
     // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
+    private val permissionsChecker = PermissionsChecker(
         this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -128,7 +127,13 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
 
         viewModel.loadAlbum(artistUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                permissionsChecker.withPermissionsGranted {
+                    loadData()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -139,57 +144,53 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         super.onDestroyView()
     }
 
-    private fun loadData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.artist.collectLatest {
-                    linearProgressIndicator.setProgressCompat(it, true)
+    private suspend fun loadData() {
+        viewModel.artist.collectLatest {
+            linearProgressIndicator.setProgressCompat(it, true)
 
-                    when (it) {
-                        null -> {
-                            // Do nothing
-                        }
+            when (it) {
+                null -> {
+                    // Do nothing
+                }
 
-                        is RequestStatus.Loading -> {
-                            // Do nothing
-                        }
+                is RequestStatus.Loading -> {
+                    // Do nothing
+                }
 
-                        is RequestStatus.Success -> {
-                            val (artist, artistWorks) = it.data
+                is RequestStatus.Success -> {
+                    val (artist, artistWorks) = it.data
 
-                            toolbar.title = artist.name
+                    toolbar.title = artist.name
 
-                            launch {
-                                thumbnailImageView.setImageBitmap(artist.thumbnail)
-                            }
+                    coroutineScope {
+                        thumbnailImageView.setImageBitmap(artist.thumbnail)
+                    }
 
-                            albumsAdapter.submitList(artistWorks.albums)
-                            appearsInAlbumAdapter.submitList(artistWorks.appearsInAlbum)
-                            appearsInPlaylistAdapter.submitList(artistWorks.appearsInPlaylist)
+                    albumsAdapter.submitList(artistWorks.albums)
+                    appearsInAlbumAdapter.submitList(artistWorks.appearsInAlbum)
+                    appearsInPlaylistAdapter.submitList(artistWorks.appearsInPlaylist)
 
-                            val isAlbumsEmpty = artistWorks.albums.isEmpty()
-                            albumsLinearLayout.isVisible = !isAlbumsEmpty
+                    val isAlbumsEmpty = artistWorks.albums.isEmpty()
+                    albumsLinearLayout.isVisible = !isAlbumsEmpty
 
-                            val isAppearsInAlbumEmpty = artistWorks.appearsInAlbum.isEmpty()
-                            appearsInAlbumLinearLayout.isVisible = !isAppearsInAlbumEmpty
+                    val isAppearsInAlbumEmpty = artistWorks.appearsInAlbum.isEmpty()
+                    appearsInAlbumLinearLayout.isVisible = !isAppearsInAlbumEmpty
 
-                            val isAppearsInPlaylistEmpty = artistWorks.appearsInPlaylist.isEmpty()
-                            appearsInPlaylistLinearLayout.isVisible = !isAppearsInPlaylistEmpty
+                    val isAppearsInPlaylistEmpty = artistWorks.appearsInPlaylist.isEmpty()
+                    appearsInPlaylistLinearLayout.isVisible = !isAppearsInPlaylistEmpty
 
-                            val isEmpty = listOf(
-                                isAlbumsEmpty,
-                                isAppearsInAlbumEmpty,
-                                isAppearsInPlaylistEmpty,
-                            ).all { isEmpty -> isEmpty }
-                            noElementsLinearLayout.isVisible = isEmpty
-                        }
+                    val isEmpty = listOf(
+                        isAlbumsEmpty,
+                        isAppearsInAlbumEmpty,
+                        isAppearsInPlaylistEmpty,
+                    ).all { isEmpty -> isEmpty }
+                    noElementsLinearLayout.isVisible = isEmpty
+                }
 
-                        is RequestStatus.Error -> {
-                            if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
-                                // Get out of here
-                                findNavController().navigateUp()
-                            }
-                        }
+                is RequestStatus.Error -> {
+                    if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
+                        // Get out of here
+                        findNavController().navigateUp()
                     }
                 }
             }

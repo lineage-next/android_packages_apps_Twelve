@@ -8,8 +8,12 @@ package org.lineageos.twelve.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
-import org.lineageos.twelve.utils.PermissionsGatedCallback
+import org.lineageos.twelve.utils.PermissionsChecker
 import org.lineageos.twelve.utils.PermissionsUtils
 
 /**
@@ -17,15 +21,19 @@ import org.lineageos.twelve.utils.PermissionsUtils
  */
 class ActivityFragment : Fragment(R.layout.fragment_activity) {
     // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
+    private val permissionsChecker = PermissionsChecker(
         this, PermissionsUtils.mainPermissions
-    ) {
-        // Do nothing
-    }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                permissionsChecker.withPermissionsGranted {
+                    // Do nothing
+                }
+            }
+        }
     }
 }

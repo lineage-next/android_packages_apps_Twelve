@@ -38,7 +38,7 @@ import org.lineageos.twelve.ui.dialogs.EditTextMaterialAlertDialogBuilder
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
+import org.lineageos.twelve.utils.PermissionsChecker
 import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.PlaylistViewModel
@@ -106,11 +106,9 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
         get() = requireArguments().getParcelable(ARG_PLAYLIST_URI, Uri::class)!!
 
     // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
+    private val permissionsChecker = PermissionsChecker(
         this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -137,7 +135,13 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
 
         viewModel.loadPlaylist(playlistUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                permissionsChecker.withPermissionsGranted {
+                    loadData()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -146,71 +150,67 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
         super.onDestroyView()
     }
 
-    private fun loadData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.playlist.collectLatest {
-                    linearProgressIndicator.setProgressCompat(it, true)
+    private suspend fun loadData() {
+        viewModel.playlist.collectLatest {
+            linearProgressIndicator.setProgressCompat(it, true)
 
-                    when (it) {
-                        null -> {
-                            adapter.submitList(listOf())
+            when (it) {
+                null -> {
+                    adapter.submitList(listOf())
 
-                            recyclerView.isVisible = false
-                            noElementsLinearLayout.isVisible = false
-                        }
+                    recyclerView.isVisible = false
+                    noElementsLinearLayout.isVisible = false
+                }
 
-                        is RequestStatus.Loading -> {
-                            // Do nothing
-                        }
+                is RequestStatus.Loading -> {
+                    // Do nothing
+                }
 
-                        is RequestStatus.Success -> {
-                            val (playlist, audios) = it.data
+                is RequestStatus.Success -> {
+                    val (playlist, audios) = it.data
 
-                            toolbar.title = playlist.name
+                    toolbar.title = playlist.name
 
-                            val totalDurationMs = audios.sumOf { audio ->
-                                audio?.durationMs ?: 0
-                            }
-                            val totalDurationMinutes = totalDurationMs / 1000 / 60
+                    val totalDurationMs = audios.sumOf { audio ->
+                        audio?.durationMs ?: 0
+                    }
+                    val totalDurationMinutes = totalDurationMs / 1000 / 60
 
-                            val tracksCount = resources.getQuantityString(
-                                R.plurals.tracks_count,
-                                audios.size,
-                                audios.size
-                            )
-                            val tracksDuration = resources.getQuantityString(
-                                R.plurals.tracks_duration,
-                                totalDurationMinutes,
-                                totalDurationMinutes
-                            )
-                            tracksInfoTextView.text = getString(
-                                R.string.tracks_info,
-                                tracksCount, tracksDuration
-                            )
+                    val tracksCount = resources.getQuantityString(
+                        R.plurals.tracks_count,
+                        audios.size,
+                        audios.size
+                    )
+                    val tracksDuration = resources.getQuantityString(
+                        R.plurals.tracks_duration,
+                        totalDurationMinutes,
+                        totalDurationMinutes
+                    )
+                    tracksInfoTextView.text = getString(
+                        R.string.tracks_info,
+                        tracksCount, tracksDuration
+                    )
 
-                            adapter.submitList(audios)
+                    adapter.submitList(audios)
 
-                            val isEmpty = audios.isEmpty()
-                            recyclerView.isVisible = !isEmpty
-                            noElementsLinearLayout.isVisible = isEmpty
-                        }
+                    val isEmpty = audios.isEmpty()
+                    recyclerView.isVisible = !isEmpty
+                    noElementsLinearLayout.isVisible = isEmpty
+                }
 
-                        is RequestStatus.Error -> {
-                            Log.e(LOG_TAG, "Error loading playlist, error: ${it.type}")
+                is RequestStatus.Error -> {
+                    Log.e(LOG_TAG, "Error loading playlist, error: ${it.type}")
 
-                            toolbar.title = ""
+                    toolbar.title = ""
 
-                            adapter.submitList(listOf())
+                    adapter.submitList(listOf())
 
-                            recyclerView.isVisible = false
-                            noElementsLinearLayout.isVisible = true
+                    recyclerView.isVisible = false
+                    noElementsLinearLayout.isVisible = true
 
-                            if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
-                                // Get out of here
-                                findNavController().navigateUp()
-                            }
-                        }
+                    if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
+                        // Get out of here
+                        findNavController().navigateUp()
                     }
                 }
             }

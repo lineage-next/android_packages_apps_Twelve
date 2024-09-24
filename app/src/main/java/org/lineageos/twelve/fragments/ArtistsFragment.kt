@@ -28,7 +28,7 @@ import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
+import org.lineageos.twelve.utils.PermissionsChecker
 import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.ArtistsViewModel
 
@@ -69,18 +69,22 @@ class ArtistsFragment : Fragment(R.layout.fragment_artists) {
     }
 
     // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
+    private val permissionsChecker = PermissionsChecker(
         this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView.adapter = adapter
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                permissionsChecker.withPermissionsGranted {
+                    loadData()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -89,34 +93,30 @@ class ArtistsFragment : Fragment(R.layout.fragment_artists) {
         super.onDestroyView()
     }
 
-    private fun loadData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.artists.collectLatest {
-                    linearProgressIndicator.setProgressCompat(it, true)
+    private suspend fun loadData() {
+        viewModel.artists.collectLatest {
+            linearProgressIndicator.setProgressCompat(it, true)
 
-                    when (it) {
-                        is RequestStatus.Loading -> {
-                            // Do nothing
-                        }
+            when (it) {
+                is RequestStatus.Loading -> {
+                    // Do nothing
+                }
 
-                        is RequestStatus.Success -> {
-                            adapter.submitList(it.data)
+                is RequestStatus.Success -> {
+                    adapter.submitList(it.data)
 
-                            val isEmpty = it.data.isEmpty()
-                            recyclerView.isVisible = !isEmpty
-                            noElementsLinearLayout.isVisible = isEmpty
-                        }
+                    val isEmpty = it.data.isEmpty()
+                    recyclerView.isVisible = !isEmpty
+                    noElementsLinearLayout.isVisible = isEmpty
+                }
 
-                        is RequestStatus.Error -> {
-                            Log.e(LOG_TAG, "Failed to load artists, error: ${it.type}")
+                is RequestStatus.Error -> {
+                    Log.e(LOG_TAG, "Failed to load artists, error: ${it.type}")
 
-                            adapter.submitList(emptyList())
+                    adapter.submitList(emptyList())
 
-                            recyclerView.isVisible = false
-                            noElementsLinearLayout.isVisible = true
-                        }
-                    }
+                    recyclerView.isVisible = false
+                    noElementsLinearLayout.isVisible = true
                 }
             }
         }

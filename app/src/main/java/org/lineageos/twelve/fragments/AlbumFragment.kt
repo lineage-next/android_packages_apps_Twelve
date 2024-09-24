@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -36,7 +37,7 @@ import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.recyclerview.UniqueItemDiffCallback
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
+import org.lineageos.twelve.utils.PermissionsChecker
 import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.AlbumViewModel
@@ -106,11 +107,9 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
         get() = requireArguments().getParcelable(ARG_ALBUM_URI, Uri::class)!!
 
     // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
+    private val permissionsChecker = PermissionsChecker(
         this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -121,7 +120,13 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
 
         viewModel.loadAlbum(albumUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                permissionsChecker.withPermissionsGranted {
+                    loadData()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -130,90 +135,86 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
         super.onDestroyView()
     }
 
-    private fun loadData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.album.collectLatest {
-                    linearProgressIndicator.setProgressCompat(it, true)
+    private suspend fun loadData() {
+        viewModel.album.collectLatest {
+            linearProgressIndicator.setProgressCompat(it, true)
 
-                    when (it) {
-                        null -> {
-                            adapter.submitList(listOf())
+            when (it) {
+                null -> {
+                    adapter.submitList(listOf())
 
-                            recyclerView.isVisible = false
-                            noElementsLinearLayout.isVisible = false
-                        }
+                    recyclerView.isVisible = false
+                    noElementsLinearLayout.isVisible = false
+                }
 
-                        is RequestStatus.Loading -> {
-                            // Do nothing
-                        }
+                is RequestStatus.Loading -> {
+                    // Do nothing
+                }
 
-                        is RequestStatus.Success -> {
-                            val (album, audios) = it.data
+                is RequestStatus.Success -> {
+                    val (album, audios) = it.data
 
-                            toolbar.title = album.title
+                    toolbar.title = album.title
 
-                            launch {
-                                thumbnailImageView.setImageBitmap(album.thumbnail)
-                            }
+                    coroutineScope {
+                        thumbnailImageView.setImageBitmap(album.thumbnail)
+                    }
 
-                            artistNameTextView.text = album.artistName
-                            artistNameTextView.setOnClickListener {
-                                findNavController().navigate(
-                                    R.id.action_albumFragment_to_fragment_artist,
-                                    ArtistFragment.createBundle(album.artistUri)
-                                )
-                            }
+                    artistNameTextView.text = album.artistName
+                    artistNameTextView.setOnClickListener {
+                        findNavController().navigate(
+                            R.id.action_albumFragment_to_fragment_artist,
+                            ArtistFragment.createBundle(album.artistUri)
+                        )
+                    }
 
-                            album.year?.also { year ->
-                                yearTextView.isVisible = true
-                                yearTextView.text = year.toString()
-                            } ?: run {
-                                yearTextView.isVisible = false
-                            }
+                    album.year?.also { year ->
+                        yearTextView.isVisible = true
+                        yearTextView.text = year.toString()
+                    } ?: run {
+                        yearTextView.isVisible = false
+                    }
 
-                            val totalDurationMs = audios.sumOf { audio ->
-                                audio.durationMs
-                            }
-                            val totalDurationMinutes = totalDurationMs / 1000 / 60
+                    val totalDurationMs = audios.sumOf { audio ->
+                        audio.durationMs
+                    }
+                    val totalDurationMinutes = totalDurationMs / 1000 / 60
 
-                            val tracksCount = resources.getQuantityString(
-                                R.plurals.tracks_count,
-                                audios.size,
-                                audios.size
-                            )
-                            val tracksDuration = resources.getQuantityString(
-                                R.plurals.tracks_duration,
-                                totalDurationMinutes,
-                                totalDurationMinutes
-                            )
-                            tracksInfoTextView.text = getString(
-                                R.string.tracks_info,
-                                tracksCount, tracksDuration
-                            )
+                    val tracksCount = resources.getQuantityString(
+                        R.plurals.tracks_count,
+                        audios.size,
+                        audios.size
+                    )
+                    val tracksDuration = resources.getQuantityString(
+                        R.plurals.tracks_duration,
+                        totalDurationMinutes,
+                        totalDurationMinutes
+                    )
+                    tracksInfoTextView.text = getString(
+                        R.string.tracks_info,
+                        tracksCount, tracksDuration
+                    )
 
-                            adapter.submitList(audios)
+                    adapter.submitList(audios)
 
-                            val isEmpty = audios.isEmpty()
-                            recyclerView.isVisible = !isEmpty
-                            noElementsLinearLayout.isVisible = isEmpty
-                        }
+                    val isEmpty = audios.isEmpty()
+                    recyclerView.isVisible = !isEmpty
+                    noElementsLinearLayout.isVisible = isEmpty
+                }
 
-                        is RequestStatus.Error -> {
-                            Log.e(LOG_TAG, "Error loading album, error: ${it.type}")
+                is RequestStatus.Error -> {
+                    Log.e(LOG_TAG, "Error loading album, error: ${it.type}")
 
-                            toolbar.title = ""
+                    toolbar.title = ""
 
-                            adapter.submitList(listOf())
+                    adapter.submitList(listOf())
 
-                            recyclerView.isVisible = false
-                            noElementsLinearLayout.isVisible = true
+                    recyclerView.isVisible = false
+                    noElementsLinearLayout.isVisible = true
 
-                            if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
-                                // Get out of here
-                                findNavController().navigateUp()
-                            }
-                        }
+                    if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
+                        // Get out of here
+                        findNavController().navigateUp()
                     }
                 }
             }

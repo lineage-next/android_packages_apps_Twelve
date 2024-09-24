@@ -34,7 +34,7 @@ import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.dialogs.EditTextMaterialAlertDialogBuilder
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
+import org.lineageos.twelve.utils.PermissionsChecker
 import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.AddOrRemoveFromPlaylistsViewModel
 import org.lineageos.twelve.viewmodels.PlaylistsViewModel
@@ -104,11 +104,9 @@ class AddOrRemoveFromPlaylistsFragment : Fragment(R.layout.fragment_add_or_remov
         get() = requireArguments().getParcelable(ARG_AUDIO_URI, Uri::class)!!
 
     // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
+    private val permissionsChecker = PermissionsChecker(
         this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -123,7 +121,13 @@ class AddOrRemoveFromPlaylistsFragment : Fragment(R.layout.fragment_add_or_remov
 
         viewModel.loadAudio(audioUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                permissionsChecker.withPermissionsGranted {
+                    loadData()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -132,43 +136,39 @@ class AddOrRemoveFromPlaylistsFragment : Fragment(R.layout.fragment_add_or_remov
         super.onDestroyView()
     }
 
-    private fun loadData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.playlistToHasAudio.collect {
-                    linearProgressIndicator.setProgressCompat(it, true)
+    private suspend fun loadData() {
+        viewModel.playlistToHasAudio.collect {
+            linearProgressIndicator.setProgressCompat(it, true)
 
-                    when (it) {
-                        is RequestStatus.Loading -> {
-                            // Do nothing
-                        }
+            when (it) {
+                is RequestStatus.Loading -> {
+                    // Do nothing
+                }
 
-                        is RequestStatus.Success -> {
-                            val isEmpty = it.data.isEmpty()
+                is RequestStatus.Success -> {
+                    val isEmpty = it.data.isEmpty()
 
-                            adapter.submitList(
-                                when (isEmpty) {
-                                    true -> emptyList()
-                                    false -> listOf(
-                                        addNewPlaylistItem,
-                                        *it.data.toTypedArray(),
-                                    )
-                                }
+                    adapter.submitList(
+                        when (isEmpty) {
+                            true -> emptyList()
+                            false -> listOf(
+                                addNewPlaylistItem,
+                                *it.data.toTypedArray(),
                             )
-
-                            recyclerView.isVisible = !isEmpty
-                            noElementsLinearLayout.isVisible = isEmpty
                         }
+                    )
 
-                        is RequestStatus.Error -> {
-                            Log.e(LOG_TAG, "Failed to load data, error: ${it.type}")
+                    recyclerView.isVisible = !isEmpty
+                    noElementsLinearLayout.isVisible = isEmpty
+                }
 
-                            adapter.submitList(emptyList())
+                is RequestStatus.Error -> {
+                    Log.e(LOG_TAG, "Failed to load data, error: ${it.type}")
 
-                            recyclerView.isVisible = false
-                            noElementsLinearLayout.isVisible = true
-                        }
-                    }
+                    adapter.submitList(emptyList())
+
+                    recyclerView.isVisible = false
+                    noElementsLinearLayout.isVisible = true
                 }
             }
         }

@@ -24,7 +24,7 @@ import org.lineageos.twelve.ext.getParcelable
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.views.ListItem
-import org.lineageos.twelve.utils.PermissionsGatedCallback
+import org.lineageos.twelve.utils.PermissionsChecker
 import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.AudioViewModel
 
@@ -57,11 +57,9 @@ class AudioBottomSheetDialogFragment : BottomSheetDialogFragment(
         get() = requireArguments().getParcelable(ARG_PLAYLIST_URI, Uri::class)
 
     // Permissions
-    private val permissionsGatedCallback = PermissionsGatedCallback(
+    private val permissionsChecker = PermissionsChecker(
         this, PermissionsUtils.mainPermissions
-    ) {
-        loadData()
-    }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -88,52 +86,54 @@ class AudioBottomSheetDialogFragment : BottomSheetDialogFragment(
 
         viewModel.loadAudio(audioUri)
 
-        permissionsGatedCallback.runAfterPermissionsCheck()
-    }
-
-    private fun loadData() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.audio.collect {
-                    when (it) {
-                        null -> {
-                            // Do nothing
-                        }
+                permissionsChecker.withPermissionsGranted {
+                    loadData()
+                }
+            }
+        }
+    }
 
-                        is RequestStatus.Loading -> {
-                            // Do nothing
-                        }
+    private suspend fun loadData() {
+        viewModel.audio.collect {
+            when (it) {
+                null -> {
+                    // Do nothing
+                }
 
-                        is RequestStatus.Success -> {
-                            val audio = it.data
+                is RequestStatus.Loading -> {
+                    // Do nothing
+                }
 
-                            titleTextView.text = audio.title
-                            artistNameTextView.text = audio.artistName
-                            albumTitleTextView.text = audio.albumTitle
+                is RequestStatus.Success -> {
+                    val audio = it.data
 
-                            openAlbumListItem.setOnClickListener {
-                                findNavController().navigate(
-                                    R.id.action_audioBottomSheetDialogFragment_to_fragment_album,
-                                    AlbumFragment.createBundle(audio.albumUri)
-                                )
-                            }
+                    titleTextView.text = audio.title
+                    artistNameTextView.text = audio.artistName
+                    albumTitleTextView.text = audio.albumTitle
 
-                            openArtistListItem.setOnClickListener {
-                                findNavController().navigate(
-                                    R.id.action_audioBottomSheetDialogFragment_to_fragment_artist,
-                                    ArtistFragment.createBundle(audio.artistUri)
-                                )
-                            }
-                        }
+                    openAlbumListItem.setOnClickListener {
+                        findNavController().navigate(
+                            R.id.action_audioBottomSheetDialogFragment_to_fragment_album,
+                            AlbumFragment.createBundle(audio.albumUri)
+                        )
+                    }
 
-                        is RequestStatus.Error -> {
-                            Log.e(LOG_TAG, "Failed to load audio, error: ${it.type}")
+                    openArtistListItem.setOnClickListener {
+                        findNavController().navigate(
+                            R.id.action_audioBottomSheetDialogFragment_to_fragment_artist,
+                            ArtistFragment.createBundle(audio.artistUri)
+                        )
+                    }
+                }
 
-                            if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
-                                // Get out of here
-                                findNavController().navigateUp()
-                            }
-                        }
+                is RequestStatus.Error -> {
+                    Log.e(LOG_TAG, "Failed to load audio, error: ${it.type}")
+
+                    if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
+                        // Get out of here
+                        findNavController().navigateUp()
                     }
                 }
             }

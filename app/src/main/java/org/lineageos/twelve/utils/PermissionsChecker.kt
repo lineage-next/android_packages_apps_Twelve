@@ -12,42 +12,47 @@ import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import org.lineageos.twelve.R
+import org.lineageos.twelve.ext.permissionsFlow
 import org.lineageos.twelve.ext.permissionsGranted
 
 /**
- * A class that checks main app permissions before starting the callback.
+ * A coroutine-based class that checks main app permissions.
  */
-class PermissionsGatedCallback private constructor(
+class PermissionsChecker private constructor(
     caller: ActivityResultCaller,
     private val getContext: () -> Context,
     private val getActivity: () -> Activity,
+    private val getLifecycle: () -> Lifecycle,
     private val permissions: Array<String>,
-    private val callback: () -> Unit,
 ) {
     constructor(
         fragment: Fragment,
         permissions: Array<String>,
-        callback: () -> Unit,
     ) : this(
         fragment,
-        { fragment.requireContext() },
-        { fragment.requireActivity() },
+        fragment::requireContext,
+        fragment::requireActivity,
+        fragment::lifecycle,
         permissions,
-        callback,
     )
 
     constructor(
         activity: AppCompatActivity,
         permissions: Array<String>,
-        callback: () -> Unit,
     ) : this(
         activity,
         { activity },
         { activity },
+        activity::lifecycle,
         permissions,
-        callback,
     )
+
+    private val channel = Channel<Unit>(1)
 
     private val activityResultLauncher = caller.registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -63,12 +68,26 @@ class PermissionsGatedCallback private constructor(
                 ).show()
                 getActivity().finish()
             } else {
-                callback()
+                channel.trySend(Unit)
             }
         }
     }
 
-    fun runAfterPermissionsCheck() {
+    suspend fun withPermissionsGranted(unit: suspend () -> Unit) = getContext().permissionsFlow(
+        getLifecycle(), permissions
+    ).distinctUntilChanged().collectLatest {
+        val (_, denied) = it
+
+        if (denied.isNotEmpty()) {
+            checkPermissions()
+        } else {
+            unit()
+        }
+    }
+
+    private suspend fun checkPermissions() {
         activityResultLauncher.launch(permissions)
+
+        return channel.receive()
     }
 }
