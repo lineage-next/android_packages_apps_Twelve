@@ -3,7 +3,7 @@
      SPDX-FileCopyrightText: 2024 The LineageOS Project
      SPDX-License-Identifier: Apache-2.0
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -15,36 +15,23 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
 
-        <LinearLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="20dp">
-
-            <ImageButton
-                android:id="@+id/hideImageButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_keyboard_arrow_down"
-                app:tint="?attr/colorOnSurface" />
-
-            <TextView
-                android:id="@+id/playlistNameTextView"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="16dp"
-                android:layout_weight="1"
-                android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                tools:text="Eyes shut, mouth still" />
+            android:layout_height="wrap_content"
+            app:navigationIcon="@drawable/ic_keyboard_arrow_down"
+            app:navigationIconTint="?attr/colorOnSurface"
+            app:titleCentered="true"
+            app:titleTextAppearance="?attr/textAppearanceTitleMedium"
+            tools:title="Eyes shut, mouth still">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/fileTypeMaterialCardView"
                 style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginHorizontal="16dp"
                 android:visibility="gone"
                 app:cardBackgroundColor="?attr/colorPrimaryContainer"
                 app:cardCornerRadius="4dp"
@@ -65,28 +52,35 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="40dp"
-            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/albumArtMaterialCardView"
                 style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="40dp"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp">
+                app:cardCornerRadius="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/labelsLinearLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -106,15 +100,27 @@
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
+                android:id="@+id/labelsLinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="40dp"
                 android:layout_marginBottom="20dp"
-                android:orientation="vertical">
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/progressSliderLinearLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/albumArtMaterialCardView"
+                app:layout_constraintVertical_bias="0.5">
 
                 <TextView
                     android:id="@+id/audioTitleTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:textAppearance="?attr/textAppearanceHeadlineSmall"
                     android:textColor="?attr/colorOnSurface"
                     tools:text="Tokyo Story" />
@@ -123,6 +129,10 @@
                     android:id="@+id/artistNameTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:textAppearance="?attr/textAppearanceLabelLarge"
                     android:textColor="?attr/colorOnSurface"
                     tools:text="Ryuichi Sakamoto" />
@@ -131,186 +141,193 @@
                     android:id="@+id/albumTitleTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:textAppearance="?attr/textAppearanceLabelLarge"
                     android:textColor="?attr/colorOnSurface"
                     tools:text="Sweet Revenge" />
 
             </LinearLayout>
 
-            <com.google.android.material.slider.Slider
-                android:id="@+id/progressSlider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp" />
-
             <LinearLayout
+                android:id="@+id/progressSliderLinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/mediaControlsLinearLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/labelsLinearLayout"
+                app:layout_constraintVertical_bias="0.5">
 
-                <TextView
-                    android:id="@+id/currentTimestampTextView"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/progressSlider"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceLabelMedium"
-                    android:textColor="?attr/colorOnSurface"
-                    tools:text="0:13" />
+                    android:layout_marginHorizontal="24dp"
+                    android:valueFrom="0.0" />
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/durationTimestampTextView"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceLabelMedium"
-                    android:textColor="?attr/colorOnSurface"
-                    tools:text="1:16" />
+                    android:layout_marginHorizontal="40dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/currentTimestampTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        tools:text="0:13" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/durationTimestampTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        tools:text="1:16" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mediaControlsLinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="40dp"
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/bottomBarMaterialCardView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/progressSliderLinearLayout"
+                app:layout_constraintVertical_bias="0.5">
 
-                <ImageButton
-                    android:id="@+id/previousTrackImageButton"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="16dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_skip_previous"
-                    app:tint="?attr/colorOnSurface" />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <ImageButton
-                    android:id="@+id/playPauseImageButton"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="16dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_play_arrow"
-                    app:tint="?attr/colorOnSurface" />
+                    <ImageView
+                        android:id="@+id/shuffleMarkerImageView"
+                        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary.Marker"
+                        android:importantForAccessibility="no" />
 
-                <ImageButton
-                    android:id="@+id/nextTrackImageButton"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="16dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_skip_next"
-                    app:tint="?attr/colorOnSurface" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/shuffleMaterialButton"
+                        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary"
+                        app:icon="@drawable/ic_shuffle" />
 
-            </LinearLayout>
+                </FrameLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/previousTrackMaterialButton"
+                    style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Secondary"
+                    app:icon="@drawable/ic_skip_previous"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/playPauseMaterialButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/playPauseMaterialButton"
+                    style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Primary"
+                    app:icon="@drawable/ic_play_arrow"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/nextTrackMaterialButton"
+                    style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Secondary"
+                    app:icon="@drawable/ic_skip_next"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/playPauseMaterialButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/repeatMarkerImageView"
+                        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary.Marker"
+                        android:importantForAccessibility="no" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/repeatMaterialButton"
+                        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary"
+                        app:icon="@drawable/ic_repeat" />
+
+                </FrameLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/bottomBarMaterialCardView"
                 style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="24dp"
                 app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                app:cardCornerRadius="12dp">
+                app:cardCornerRadius="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <FrameLayout
-                        android:layout_width="48dp"
-                        android:layout_height="48dp">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/playbackSpeedMaterialButton"
+                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
+                        tools:text="1×" />
 
-                        <ImageButton
-                            android:id="@+id/shuffleMarkerImageButton"
-                            android:layout_width="8dp"
-                            android:layout_height="4dp"
-                            android:layout_gravity="bottom|center_horizontal"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/now_playing_marker"
-                            android:visibility="gone"
-                            app:tint="?attr/colorOnSecondaryContainer" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/addOrRemoveFromPlaylistsMaterialButton"
+                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
+                        app:icon="@drawable/ic_playlist_add" />
 
-                        <ImageButton
-                            android:id="@+id/shuffleImageButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:padding="12dp"
-                            android:scaleType="fitCenter"
-                            android:src="@drawable/ic_shuffle"
-                            app:tint="?attr/colorOnSecondaryContainer" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/equalizerMaterialButton"
+                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
+                        app:icon="@drawable/ic_graphic_eq" />
 
-                    </FrameLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/castMaterialButton"
+                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
+                        app:icon="@drawable/ic_cast" />
 
-                    <FrameLayout
-                        android:layout_width="48dp"
-                        android:layout_height="48dp">
-
-                        <ImageButton
-                            android:id="@+id/repeatMarkerImageButton"
-                            android:layout_width="8dp"
-                            android:layout_height="4dp"
-                            android:layout_gravity="bottom|center_horizontal"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/now_playing_marker"
-                            android:visibility="gone"
-                            app:tint="?attr/colorOnSecondaryContainer" />
-
-                        <ImageButton
-                            android:id="@+id/repeatImageButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:padding="12dp"
-                            android:scaleType="fitCenter"
-                            android:src="@drawable/ic_repeat"
-                            app:tint="?attr/colorOnSecondaryContainer" />
-
-                    </FrameLayout>
-
-                    <ImageButton
-                        android:id="@+id/equalizerImageButton"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="12dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_graphic_eq"
-                        app:tint="?attr/colorOnSecondaryContainer" />
-
-                    <ImageButton
-                        android:id="@+id/castImageButton"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="12dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_cast"
-                        app:tint="?attr/colorOnSecondaryContainer" />
-
-                    <ImageButton
-                        android:id="@+id/moreImageButton"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="12dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_more_vert"
-                        app:tint="?attr/colorOnSecondaryContainer" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/moreMaterialButton"
+                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
+                        app:icon="@drawable/ic_more_vert" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

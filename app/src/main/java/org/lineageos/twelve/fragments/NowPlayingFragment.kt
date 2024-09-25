@@ -9,22 +9,29 @@ import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.icu.text.DecimalFormat
+import android.icu.text.DecimalFormatSymbols
 import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.view.View
 import android.view.animation.LinearInterpolator
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.collectLatest
@@ -35,6 +42,7 @@ import org.lineageos.twelve.models.RepeatMode
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
+import java.util.Locale
 import kotlin.math.roundToLong
 
 /**
@@ -45,27 +53,29 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     private val viewModel by viewModels<NowPlayingViewModel>()
 
     // Views
+    private val addOrRemoveFromPlaylistsMaterialButton by getViewProperty<MaterialButton>(R.id.addOrRemoveFromPlaylistsMaterialButton)
     private val albumArtImageView by getViewProperty<ImageView>(R.id.albumArtImageView)
     private val albumTitleTextView by getViewProperty<TextView>(R.id.albumTitleTextView)
     private val audioTitleTextView by getViewProperty<TextView>(R.id.audioTitleTextView)
     private val artistNameTextView by getViewProperty<TextView>(R.id.artistNameTextView)
-    private val castImageButton by getViewProperty<ImageButton>(R.id.castImageButton)
+    private val castMaterialButton by getViewProperty<MaterialButton>(R.id.castMaterialButton)
     private val currentTimestampTextView by getViewProperty<TextView>(R.id.currentTimestampTextView)
     private val durationTimestampTextView by getViewProperty<TextView>(R.id.durationTimestampTextView)
-    private val equalizerImageButton by getViewProperty<ImageButton>(R.id.equalizerImageButton)
+    private val equalizerMaterialButton by getViewProperty<MaterialButton>(R.id.equalizerMaterialButton)
     private val fileTypeMaterialCardView by getViewProperty<MaterialCardView>(R.id.fileTypeMaterialCardView)
     private val fileTypeTextView by getViewProperty<TextView>(R.id.fileTypeTextView)
-    private val hideImageButton by getViewProperty<ImageButton>(R.id.hideImageButton)
-    private val moreImageButton by getViewProperty<ImageButton>(R.id.moreImageButton)
-    private val nextTrackImageButton by getViewProperty<ImageButton>(R.id.nextTrackImageButton)
-    private val playPauseImageButton by getViewProperty<ImageButton>(R.id.playPauseImageButton)
-    private val playlistNameTextView by getViewProperty<TextView>(R.id.playlistNameTextView)
-    private val previousTrackImageButton by getViewProperty<ImageButton>(R.id.previousTrackImageButton)
+    private val moreMaterialButton by getViewProperty<MaterialButton>(R.id.moreMaterialButton)
+    private val nestedScrollView by getViewProperty<NestedScrollView>(R.id.nestedScrollView)
+    private val nextTrackMaterialButton by getViewProperty<MaterialButton>(R.id.nextTrackMaterialButton)
+    private val playPauseMaterialButton by getViewProperty<MaterialButton>(R.id.playPauseMaterialButton)
+    private val playbackSpeedMaterialButton by getViewProperty<MaterialButton>(R.id.playbackSpeedMaterialButton)
+    private val previousTrackMaterialButton by getViewProperty<MaterialButton>(R.id.previousTrackMaterialButton)
     private val progressSlider by getViewProperty<Slider>(R.id.progressSlider)
-    private val repeatImageButton by getViewProperty<ImageButton>(R.id.repeatImageButton)
-    private val repeatMarkerImageButton by getViewProperty<ImageButton>(R.id.repeatMarkerImageButton)
-    private val shuffleImageButton by getViewProperty<ImageButton>(R.id.shuffleImageButton)
-    private val shuffleMarkerImageButton by getViewProperty<ImageButton>(R.id.shuffleMarkerImageButton)
+    private val repeatMarkerImageView by getViewProperty<ImageView>(R.id.repeatMarkerImageView)
+    private val repeatMaterialButton by getViewProperty<MaterialButton>(R.id.repeatMaterialButton)
+    private val shuffleMarkerImageView by getViewProperty<ImageView>(R.id.shuffleMarkerImageView)
+    private val shuffleMaterialButton by getViewProperty<MaterialButton>(R.id.shuffleMaterialButton)
+    private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
 
     // Progress slider state
     private var isProgressSliderDragging = false
@@ -74,13 +84,28 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Insets
+        ViewCompat.setOnApplyWindowInsetsListener(nestedScrollView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            v.updatePadding(
+                bottom = insets.bottom,
+            )
+
+            windowInsets
+        }
+
         // Top bar
-        hideImageButton.setOnClickListener {
+        toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
 
+        // Audio informations
+        audioTitleTextView.isSelected = true
+        artistNameTextView.isSelected = true
+        albumTitleTextView.isSelected = true
+
         // Media controls
-        progressSlider.valueFrom = 0f
         progressSlider.setLabelFormatter {
             TimestampFormatter.formatTimestampMillis(it)
         }
@@ -98,28 +123,32 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
             }
         )
 
-        previousTrackImageButton.setOnClickListener {
-            viewModel.seekToPrevious()
-        }
-
-        playPauseImageButton.setOnClickListener {
-            viewModel.togglePlayPause()
-        }
-
-        nextTrackImageButton.setOnClickListener {
-            viewModel.seekToNext()
-        }
-
-        // Bottom bar buttons
-        shuffleImageButton.setOnClickListener {
+        shuffleMaterialButton.setOnClickListener {
             viewModel.toggleShuffleMode()
         }
 
-        repeatImageButton.setOnClickListener {
+        previousTrackMaterialButton.setOnClickListener {
+            viewModel.seekToPrevious()
+        }
+
+        playPauseMaterialButton.setOnClickListener {
+            viewModel.togglePlayPause()
+        }
+
+        nextTrackMaterialButton.setOnClickListener {
+            viewModel.seekToNext()
+        }
+
+        repeatMaterialButton.setOnClickListener {
             viewModel.toggleRepeatMode()
         }
 
-        equalizerImageButton.setOnClickListener {
+        // Bottom bar buttons
+        playbackSpeedMaterialButton.setOnClickListener {
+            viewModel.shufflePlaybackSpeed()
+        }
+
+        equalizerMaterialButton.setOnClickListener {
             val activity = requireActivity()
 
             // Open system equalizer
@@ -149,8 +178,8 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                 playbackStatus.mediaItem?.localConfiguration?.mimeType
                                     ?.takeIf { mimeType -> mimeType.contains('/') }
                                     ?.substringAfterLast('/')
-                                    ?.also {
-                                        fileTypeTextView.text = it
+                                    ?.also { fileType ->
+                                        fileTypeTextView.text = fileType
                                         fileTypeMaterialCardView.isVisible = true
                                     } ?: run {
                                     fileTypeMaterialCardView.isVisible = false
@@ -176,37 +205,42 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                 val audioTitle = playbackStatus.mediaMetadata.displayTitle
                                     ?: playbackStatus.mediaMetadata.title
                                 audioTitle?.let { title ->
-                                    audioTitleTextView.text = title
+                                    if (audioTitleTextView.text != title) {
+                                        audioTitleTextView.text = title
+                                    }
                                     audioTitleTextView.isVisible = true
                                 } ?: run {
                                     audioTitleTextView.isVisible = false
                                 }
 
                                 playbackStatus.mediaMetadata.artist?.let { artist ->
-                                    artistNameTextView.text = artist
+                                    if (artistNameTextView.text != artist) {
+                                        artistNameTextView.text = artist
+                                    }
                                     artistNameTextView.isVisible = true
                                 } ?: run {
                                     artistNameTextView.isVisible = false
                                 }
 
                                 playbackStatus.mediaMetadata.albumTitle?.let { albumTitle ->
-                                    albumTitleTextView.text = albumTitle
+                                    if (albumTitleTextView.text != albumTitle) {
+                                        albumTitleTextView.text = albumTitle
+                                    }
                                     albumTitleTextView.isVisible = true
                                 } ?: run {
                                     albumTitleTextView.isVisible = false
                                 }
 
-                                playPauseImageButton.setImageResource(
+                                shuffleMarkerImageView.isVisible = playbackStatus.shuffleModeEnabled
+
+                                playPauseMaterialButton.setIconResource(
                                     when (playbackStatus.isPlaying) {
                                         true -> R.drawable.ic_pause
                                         false -> R.drawable.ic_play_arrow
                                     }
                                 )
 
-                                shuffleMarkerImageButton.isVisible =
-                                    playbackStatus.shuffleModeEnabled
-
-                                repeatImageButton.setImageResource(
+                                repeatMaterialButton.setIconResource(
                                     when (playbackStatus.repeatMode) {
                                         RepeatMode.NONE,
                                         RepeatMode.ALL -> R.drawable.ic_repeat
@@ -214,8 +248,22 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                         RepeatMode.ONE -> R.drawable.ic_repeat_one
                                     }
                                 )
-                                repeatMarkerImageButton.isVisible =
+                                repeatMarkerImageView.isVisible =
                                     playbackStatus.repeatMode != RepeatMode.NONE
+
+                                playbackSpeedMaterialButton.text = getString(
+                                    R.string.playback_speed_format,
+                                    playbackSpeedFormatter.format(playbackStatus.playbackSpeed),
+                                )
+
+                                addOrRemoveFromPlaylistsMaterialButton.setOnClickListener {
+                                    playbackStatus.mediaItem?.localConfiguration?.uri?.let { uri ->
+                                        findNavController().navigate(
+                                            R.id.action_nowPlayingFragment_to_fragment_add_or_remove_from_playlists,
+                                            AddOrRemoveFromPlaylistsFragment.createBundle(uri)
+                                        )
+                                    }
+                                }
                             }
 
                             is RequestStatus.Error -> throw Exception(
@@ -322,5 +370,11 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
         animator = null
 
         super.onDestroyView()
+    }
+
+    companion object {
+        private val decimalFormatSymbols = DecimalFormatSymbols(Locale.ROOT)
+
+        private val playbackSpeedFormatter = DecimalFormat("0.#", decimalFormatSymbols)
     }
 }

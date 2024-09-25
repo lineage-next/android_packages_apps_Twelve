@@ -17,4 +17,5 @@ data class PlaybackStatus(
     val isPlaying: Boolean,
     val shuffleModeEnabled: Boolean,
     val repeatMode: RepeatMode,
+    val playbackSpeed: Float,
 )
