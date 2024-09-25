@@ -7,11 +7,13 @@ package org.lineageos.twelve.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -55,6 +57,9 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
         toolbar.setupWithNavController(findNavController())
 
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+
         viewPager2.isUserInputEnabled = false
         viewPager2.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount() = fragments.size
@@ -89,7 +94,12 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
 
         nowPlayingBar.setOnNowPlayingClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_fragment_now_playing)
+            findNavController().navigate(
+                R.id.action_mainFragment_to_fragment_now_playing,
+                NowPlayingFragment.createBundle(nowPlayingBar.getAlbumBitmap()),
+                null,
+                FragmentNavigatorExtras(nowPlayingBar to nowPlayingBar.transitionName)
+            )
         }
 
         viewLifecycleOwner.lifecycleScope.launch {

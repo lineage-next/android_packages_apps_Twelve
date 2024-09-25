@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
@@ -43,6 +44,8 @@ class NowPlayingBar @JvmOverloads constructor(
     fun setOnNowPlayingClickListener(l: OnClickListener?) {
         materialCardView.setOnClickListener(l)
     }
+
+    fun getAlbumBitmap() = thumbnailImageView.drawable.toBitmap()
 
     fun updatePlaybackStatus(playbackStatus: PlaybackStatus) {
         playbackStatus.mediaMetadata.artworkData?.also { artworkData ->
