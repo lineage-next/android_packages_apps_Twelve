@@ -19,10 +19,6 @@ object TimestampFormatter {
     ) = formatTimestampSecs(timestampSecs.toLong())
 
     fun formatTimestampMillis(
-        timestampMillis: Long
-    ) = formatTimestampSecs(timestampMillis / 1000)
-
-    fun formatTimestampMillis(
         timestampMillis: Number
-    ) = formatTimestampMillis(timestampMillis.toLong())
+    ) = formatTimestampSecs(timestampMillis.toLong() / 1000)
 }
