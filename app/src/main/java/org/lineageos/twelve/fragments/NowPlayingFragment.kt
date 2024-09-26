@@ -314,4 +314,11 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
             }
         }
     }
+
+    override fun onDestroyView() {
+        animator?.cancel()
+        animator = null
+
+        super.onDestroyView()
+    }
 }
