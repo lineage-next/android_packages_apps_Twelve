@@ -5,15 +5,19 @@
 
 package org.lineageos.twelve.fragments
 
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -64,6 +68,7 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
 
     // Progress slider state
     private var isProgressSliderDragging = false
+    private var animator: ValueAnimator? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,17 +81,18 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
         // Media controls
         progressSlider.valueFrom = 0f
         progressSlider.setLabelFormatter {
-            TimestampFormatter.formatTimestampSecs(it)
+            TimestampFormatter.formatTimestampMillis(it)
         }
         progressSlider.addOnSliderTouchListener(
             object : Slider.OnSliderTouchListener {
                 override fun onStartTrackingTouch(slider: Slider) {
                     isProgressSliderDragging = true
+                    animator?.cancel()
                 }
 
                 override fun onStopTrackingTouch(slider: Slider) {
                     isProgressSliderDragging = false
-                    viewModel.seekToPosition(slider.value.toLong() * 1000)
+                    viewModel.seekToPosition(slider.value.toLong())
                 }
             }
         )
@@ -219,30 +225,89 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                 }
 
                 launch {
+                    // Restart animation based on this value being changed
+                    var oldValue = 0f
+
                     viewModel.durationCurrentPositionMs.collectLatest { durationCurrentPositionMs ->
-                        val (durationMs, currentPositionMs) = durationCurrentPositionMs
+                        val (durationMs, currentPositionMs, playbackSpeed) =
+                            durationCurrentPositionMs.let {
+                                Triple(
+                                    it.first ?: 0L,
+                                    it.second ?: 0L,
+                                    it.third
+                                )
+                            }
 
-                        val currentPositionSecs = currentPositionMs?.let {
-                            it / 1000
-                        } ?: 0L
-                        val durationSecs = durationMs?.let {
-                            it / 1000
-                        } ?: 0L
+                        // We want to lose ms precision with the slider
+                        val durationSecs = durationMs / 1000
+                        val currentPositionSecs = currentPositionMs / 1000
 
-                        val newValueTo = durationSecs.toFloat().takeIf { it > 0 } ?: 1f
+                        val newValueTo = (durationSecs * 1000).toFloat().takeIf { it > 0 } ?: 1f
+                        val newValue = (currentPositionSecs * 1000).toFloat()
+
                         val valueToChanged = progressSlider.valueTo != newValueTo
-                        if (valueToChanged) {
-                            progressSlider.valueTo = newValueTo
-                        }
-                        if (!isProgressSliderDragging || valueToChanged) {
-                            progressSlider.value = currentPositionSecs.toFloat()
+
+                        // Only +1s should be animated
+                        val shouldBeAnimated = (newValue - oldValue) == 1000f
+
+                        val newAnimator = ValueAnimator.ofFloat(
+                            progressSlider.value, newValue
+                        ).apply {
+                            interpolator = LinearInterpolator()
+                            duration = 1000 / playbackSpeed.toLong()
+                            doOnStart {
+                                // Update valueTo at the start of the animation
+                                if (progressSlider.valueTo != newValueTo) {
+                                    progressSlider.valueTo = newValueTo
+                                }
+                            }
+                            addUpdateListener {
+                                // Clamp the new value up to valueTo
+                                progressSlider.value = (it.animatedValue as Float).coerceAtMost(
+                                    progressSlider.valueTo
+                                )
+                            }
                         }
 
-                        currentTimestampTextView.text = TimestampFormatter.formatTimestampSecs(
-                            currentPositionSecs
+                        if (!isProgressSliderDragging || valueToChanged) {
+                            animator?.also { oldAnimator ->
+                                // We want to start a new animation only if the current duration
+                                // changed
+                                if (oldValue != newValue) {
+                                    oldValue = newValue
+
+                                    // Start the new animation right after old one finishes
+                                    oldAnimator.doOnEnd {
+                                        if (shouldBeAnimated) {
+                                            animator = newAnimator
+                                            newAnimator.start()
+                                        } else {
+                                            animator = null
+                                            // Clamp the new value up to valueTo
+                                            progressSlider.value = newValue.coerceAtMost(
+                                                progressSlider.valueTo
+                                            )
+                                        }
+                                    }
+
+                                    if (oldAnimator.isRunning) {
+                                        oldAnimator.cancel()
+                                    } else {
+                                        oldAnimator.end()
+                                    }
+                                }
+                            } ?: run {
+                                // This is the first animation
+                                animator = newAnimator
+                                newAnimator.start()
+                            }
+                        }
+
+                        currentTimestampTextView.text = TimestampFormatter.formatTimestampMillis(
+                            currentPositionMs
                         )
-                        durationTimestampTextView.text = TimestampFormatter.formatTimestampSecs(
-                            durationSecs
+                        durationTimestampTextView.text = TimestampFormatter.formatTimestampMillis(
+                            durationMs
                         )
                     }
                 }

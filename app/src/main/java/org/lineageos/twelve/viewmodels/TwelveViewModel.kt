@@ -93,9 +93,10 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
                 while (true) {
                     val duration = mediaController.duration.takeIf { it != C.TIME_UNSET }
                     emit(
-                        Pair(
+                        Triple(
                             duration,
                             duration?.let { mediaController.currentPosition },
+                            mediaController.playbackParameters.speed,
                         )
                     )
                     delay(200)
@@ -106,7 +107,7 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = Pair(null, null)
+            initialValue = Triple(null, null, 1f)
         )
 
     fun playAudio(audio: List<Audio>, position: Int) {
