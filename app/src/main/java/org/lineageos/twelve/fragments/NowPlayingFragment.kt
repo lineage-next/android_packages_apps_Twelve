@@ -246,6 +246,7 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                         val newValue = (currentPositionSecs * 1000).toFloat()
 
                         val valueToChanged = progressSlider.valueTo != newValueTo
+                        val valueChanged = oldValue != newValue
 
                         // Only +1s should be animated
                         val shouldBeAnimated = (newValue - oldValue) == 1000f
@@ -262,44 +263,44 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                 }
                             }
                             addUpdateListener {
-                                // Clamp the new value up to valueTo
-                                progressSlider.value = (it.animatedValue as Float).coerceAtMost(
-                                    progressSlider.valueTo
-                                )
+                                progressSlider.value = (it.animatedValue as Float)
                             }
                         }
 
-                        if (!isProgressSliderDragging || valueToChanged) {
+                        oldValue = newValue
+
+                        /**
+                         * Update only if:
+                         * - The value changed and the user isn't dragging the slider
+                         * - valueTo changed
+                         */
+                        if ((!isProgressSliderDragging && valueChanged) || valueToChanged) {
+                            val afterOldAnimatorEnded = {
+                                if (shouldBeAnimated) {
+                                    animator = newAnimator
+                                    newAnimator.start()
+                                } else {
+                                    animator = null
+                                    // Update both valueTo and value
+                                    progressSlider.valueTo = newValueTo
+                                    progressSlider.value = newValue
+                                }
+                            }
+
                             animator?.also { oldAnimator ->
-                                // We want to start a new animation only if the current duration
-                                // changed
-                                if (oldValue != newValue) {
-                                    oldValue = newValue
+                                // Start the new animation right after old one finishes
+                                oldAnimator.doOnEnd {
+                                    afterOldAnimatorEnded()
+                                }
 
-                                    // Start the new animation right after old one finishes
-                                    oldAnimator.doOnEnd {
-                                        if (shouldBeAnimated) {
-                                            animator = newAnimator
-                                            newAnimator.start()
-                                        } else {
-                                            animator = null
-                                            // Clamp the new value up to valueTo
-                                            progressSlider.value = newValue.coerceAtMost(
-                                                progressSlider.valueTo
-                                            )
-                                        }
-                                    }
-
-                                    if (oldAnimator.isRunning) {
-                                        oldAnimator.cancel()
-                                    } else {
-                                        oldAnimator.end()
-                                    }
+                                if (oldAnimator.isRunning) {
+                                    oldAnimator.cancel()
+                                } else {
+                                    oldAnimator.end()
                                 }
                             } ?: run {
                                 // This is the first animation
-                                animator = newAnimator
-                                newAnimator.start()
+                                afterOldAnimatorEnded()
                             }
                         }
 
