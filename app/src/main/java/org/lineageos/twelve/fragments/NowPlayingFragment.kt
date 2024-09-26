@@ -35,6 +35,7 @@ import org.lineageos.twelve.models.RepeatMode
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
+import kotlin.math.roundToLong
 
 /**
  * Now playing fragment.
@@ -92,7 +93,7 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
 
                 override fun onStopTrackingTouch(slider: Slider) {
                     isProgressSliderDragging = false
-                    viewModel.seekToPosition(slider.value.toLong())
+                    viewModel.seekToPosition(slider.value.roundToLong())
                 }
             }
         )
@@ -255,7 +256,7 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                             progressSlider.value, newValue
                         ).apply {
                             interpolator = LinearInterpolator()
-                            duration = 1000 / playbackSpeed.toLong()
+                            duration = 1000 / playbackSpeed.roundToLong()
                             doOnStart {
                                 // Update valueTo at the start of the animation
                                 if (progressSlider.valueTo != newValueTo) {
