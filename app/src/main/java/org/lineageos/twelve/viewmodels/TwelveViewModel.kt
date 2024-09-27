@@ -10,6 +10,7 @@ import android.content.ComponentName
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
+import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import kotlinx.coroutines.Dispatchers
@@ -22,16 +23,19 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.guava.await
 import org.lineageos.twelve.TwelveApplication
 import org.lineageos.twelve.ext.applicationContext
-import org.lineageos.twelve.ext.playbackStatusFlow
+import org.lineageos.twelve.ext.isPlayingFlow
+import org.lineageos.twelve.ext.mediaItemFlow
+import org.lineageos.twelve.ext.mediaMetadataFlow
+import org.lineageos.twelve.ext.playbackParametersFlow
+import org.lineageos.twelve.ext.repeatModeFlow
+import org.lineageos.twelve.ext.shuffleModeFlow
 import org.lineageos.twelve.ext.typedRepeatMode
 import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.RepeatMode
-import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.services.PlaybackService
 
 /**
@@ -72,16 +76,63 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val playbackStatus = mediaController.filterNotNull()
-        .flatMapLatest { it.playbackStatusFlow() }
-        .mapLatest {
-            RequestStatus.Success(it)
-        }
+    val mediaMetadata = mediaController.filterNotNull()
+        .flatMapLatest { it.mediaMetadataFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = RequestStatus.Loading()
+            initialValue = MediaMetadata.EMPTY
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val mediaItem = mediaController.filterNotNull()
+        .flatMapLatest { it.mediaItemFlow() }
+        .flowOn(Dispatchers.Main)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val isPlaying = mediaController.filterNotNull()
+        .flatMapLatest { it.isPlayingFlow() }
+        .flowOn(Dispatchers.Main)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = false
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val shuffleMode = mediaController.filterNotNull()
+        .flatMapLatest { it.shuffleModeFlow() }
+        .flowOn(Dispatchers.Main)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = false
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val repeatMode = mediaController.filterNotNull()
+        .flatMapLatest { it.repeatModeFlow() }
+        .flowOn(Dispatchers.Main)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = RepeatMode.NONE
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val playbackParameters = mediaController.filterNotNull()
+        .flatMapLatest { it.playbackParametersFlow() }
+        .flowOn(Dispatchers.Main)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -14,12 +14,13 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.slideDown
 import org.lineageos.twelve.ext.slideUp
-import org.lineageos.twelve.models.PlaybackStatus
 
 class NowPlayingBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -45,14 +46,31 @@ class NowPlayingBar @JvmOverloads constructor(
         materialCardView.setOnClickListener(l)
     }
 
-    fun updatePlaybackStatus(playbackStatus: PlaybackStatus) {
-        playbackStatus.mediaMetadata.artworkData?.also { artworkData ->
+    fun updateIsPlaying(isPlaying: Boolean) {
+        playPauseImageButton.setImageResource(
+            when (isPlaying) {
+                true -> R.drawable.ic_pause
+                false -> R.drawable.ic_play_arrow
+            }
+        )
+    }
+
+    fun updateMediaItem(mediaItem: MediaItem?) {
+        if (mediaItem != null) {
+            slideUp()
+        } else {
+            slideDown()
+        }
+    }
+
+    fun updateMediaMetadata(mediaMetadata: MediaMetadata) {
+        mediaMetadata.artworkData?.also { artworkData ->
             BitmapFactory.decodeByteArray(
                 artworkData, 0, artworkData.size
             )?.let { bitmap ->
                 thumbnailImageView.setImageBitmap(bitmap)
             }
-        } ?: playbackStatus.mediaMetadata.artworkUri?.also { artworkUri ->
+        } ?: mediaMetadata.artworkUri?.also { artworkUri ->
             ImageDecoder.createSource(
                 context.contentResolver,
                 artworkUri
@@ -63,38 +81,25 @@ class NowPlayingBar @JvmOverloads constructor(
             }
         } ?: thumbnailImageView.setImageResource(R.drawable.ic_music_note)
 
-        playbackStatus.mediaMetadata.title?.also {
+        mediaMetadata.title?.also {
             titleTextView.text = it
             titleTextView.isVisible = true
         } ?: run {
             titleTextView.isVisible = false
         }
 
-        playbackStatus.mediaMetadata.artist?.also {
+        mediaMetadata.artist?.also {
             artistNameTextView.text = it
             artistNameTextView.isVisible = true
         } ?: run {
             artistNameTextView.isVisible = false
         }
 
-        playbackStatus.mediaMetadata.albumTitle?.also {
+        mediaMetadata.albumTitle?.also {
             albumTitleTextView.text = it
             albumTitleTextView.isVisible = true
         } ?: run {
             albumTitleTextView.isVisible = false
-        }
-
-        playPauseImageButton.setImageResource(
-            when (playbackStatus.isPlaying) {
-                true -> R.drawable.ic_pause
-                false -> R.drawable.ic_play_arrow
-            }
-        )
-
-        if (playbackStatus.mediaItem != null) {
-            slideUp()
-        } else {
-            slideDown()
         }
     }
 

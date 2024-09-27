@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getViewProperty
-import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.views.NowPlayingBar
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
 
@@ -101,20 +100,20 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 }
 
                 launch {
-                    viewModel.playbackStatus.collectLatest {
-                        when (it) {
-                            is RequestStatus.Loading -> {
-                                // Do nothing
-                            }
+                    viewModel.isPlaying.collectLatest {
+                        nowPlayingBar.updateIsPlaying(it)
+                    }
+                }
 
-                            is RequestStatus.Success -> {
-                                nowPlayingBar.updatePlaybackStatus(it.data)
-                            }
+                launch {
+                    viewModel.mediaItem.collectLatest {
+                        nowPlayingBar.updateMediaItem(it)
+                    }
+                }
 
-                            is RequestStatus.Error -> throw Exception(
-                                "Error while getting playback status"
-                            )
-                        }
+                launch {
+                    viewModel.mediaMetadata.collectLatest {
+                        nowPlayingBar.updateMediaMetadata(it)
                     }
                 }
             }

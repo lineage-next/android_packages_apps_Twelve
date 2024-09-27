@@ -39,7 +39,6 @@ import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.RepeatMode
-import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
 import java.util.Locale
@@ -166,110 +165,117 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.playbackStatus.collectLatest {
-                        when (it) {
-                            is RequestStatus.Loading -> {
-                                // Do nothing
+                    viewModel.isPlaying.collectLatest { isPlaying ->
+                        playPauseMaterialButton.setIconResource(
+                            when (isPlaying) {
+                                true -> R.drawable.ic_pause
+                                false -> R.drawable.ic_play_arrow
                             }
+                        )
+                    }
+                }
 
-                            is RequestStatus.Success -> {
-                                val playbackStatus = it.data
+                launch {
+                    viewModel.mediaItem.collectLatest { mediaItem ->
+                        mediaItem?.localConfiguration?.mimeType
+                            ?.takeIf { mimeType -> mimeType.contains('/') }
+                            ?.substringAfterLast('/')
+                            ?.also { fileType ->
+                                fileTypeTextView.text = fileType
+                                fileTypeMaterialCardView.isVisible = true
+                            } ?: run {
+                            fileTypeMaterialCardView.isVisible = false
+                        }
 
-                                playbackStatus.mediaItem?.localConfiguration?.mimeType
-                                    ?.takeIf { mimeType -> mimeType.contains('/') }
-                                    ?.substringAfterLast('/')
-                                    ?.also { fileType ->
-                                        fileTypeTextView.text = fileType
-                                        fileTypeMaterialCardView.isVisible = true
-                                    } ?: run {
-                                    fileTypeMaterialCardView.isVisible = false
-                                }
-
-                                playbackStatus.mediaMetadata.artworkData?.also { artworkData ->
-                                    BitmapFactory.decodeByteArray(
-                                        artworkData, 0, artworkData.size
-                                    )?.let { bitmap ->
-                                        albumArtImageView.setImageBitmap(bitmap)
-                                    }
-                                } ?: playbackStatus.mediaMetadata.artworkUri?.also { artworkUri ->
-                                    ImageDecoder.createSource(
-                                        requireContext().contentResolver,
-                                        artworkUri
-                                    ).let { source ->
-                                        ImageDecoder.decodeBitmap(source)
-                                    }.also { bitmap ->
-                                        albumArtImageView.setImageBitmap(bitmap)
-                                    }
-                                } ?: albumArtImageView.setImageResource(R.drawable.ic_music_note)
-
-                                val audioTitle = playbackStatus.mediaMetadata.displayTitle
-                                    ?: playbackStatus.mediaMetadata.title
-                                audioTitle?.let { title ->
-                                    if (audioTitleTextView.text != title) {
-                                        audioTitleTextView.text = title
-                                    }
-                                    audioTitleTextView.isVisible = true
-                                } ?: run {
-                                    audioTitleTextView.isVisible = false
-                                }
-
-                                playbackStatus.mediaMetadata.artist?.let { artist ->
-                                    if (artistNameTextView.text != artist) {
-                                        artistNameTextView.text = artist
-                                    }
-                                    artistNameTextView.isVisible = true
-                                } ?: run {
-                                    artistNameTextView.isVisible = false
-                                }
-
-                                playbackStatus.mediaMetadata.albumTitle?.let { albumTitle ->
-                                    if (albumTitleTextView.text != albumTitle) {
-                                        albumTitleTextView.text = albumTitle
-                                    }
-                                    albumTitleTextView.isVisible = true
-                                } ?: run {
-                                    albumTitleTextView.isVisible = false
-                                }
-
-                                shuffleMarkerImageView.isVisible = playbackStatus.shuffleModeEnabled
-
-                                playPauseMaterialButton.setIconResource(
-                                    when (playbackStatus.isPlaying) {
-                                        true -> R.drawable.ic_pause
-                                        false -> R.drawable.ic_play_arrow
-                                    }
+                        addOrRemoveFromPlaylistsMaterialButton.setOnClickListener {
+                            mediaItem?.localConfiguration?.uri?.let { uri ->
+                                findNavController().navigate(
+                                    R.id.action_nowPlayingFragment_to_fragment_add_or_remove_from_playlists,
+                                    AddOrRemoveFromPlaylistsFragment.createBundle(uri)
                                 )
-
-                                repeatMaterialButton.setIconResource(
-                                    when (playbackStatus.repeatMode) {
-                                        RepeatMode.NONE,
-                                        RepeatMode.ALL -> R.drawable.ic_repeat
-
-                                        RepeatMode.ONE -> R.drawable.ic_repeat_one
-                                    }
-                                )
-                                repeatMarkerImageView.isVisible =
-                                    playbackStatus.repeatMode != RepeatMode.NONE
-
-                                playbackSpeedMaterialButton.text = getString(
-                                    R.string.playback_speed_format,
-                                    playbackSpeedFormatter.format(playbackStatus.playbackSpeed),
-                                )
-
-                                addOrRemoveFromPlaylistsMaterialButton.setOnClickListener {
-                                    playbackStatus.mediaItem?.localConfiguration?.uri?.let { uri ->
-                                        findNavController().navigate(
-                                            R.id.action_nowPlayingFragment_to_fragment_add_or_remove_from_playlists,
-                                            AddOrRemoveFromPlaylistsFragment.createBundle(uri)
-                                        )
-                                    }
-                                }
                             }
+                        }
+                    }
+                }
 
-                            is RequestStatus.Error -> throw Exception(
-                                "Error while getting playback status"
+                launch {
+                    viewModel.mediaMetadata.collectLatest { mediaMetadata ->
+                        mediaMetadata.artworkData?.also { artworkData ->
+                            BitmapFactory.decodeByteArray(
+                                artworkData, 0, artworkData.size
+                            )?.let { bitmap ->
+                                albumArtImageView.setImageBitmap(bitmap)
+                            }
+                        } ?: mediaMetadata.artworkUri?.also { artworkUri ->
+                            ImageDecoder.createSource(
+                                requireContext().contentResolver,
+                                artworkUri
+                            ).let { source ->
+                                ImageDecoder.decodeBitmap(source)
+                            }.also { bitmap ->
+                                albumArtImageView.setImageBitmap(bitmap)
+                            }
+                        } ?: albumArtImageView.setImageResource(R.drawable.ic_music_note)
+
+                        val audioTitle = mediaMetadata.displayTitle
+                            ?: mediaMetadata.title
+                        audioTitle?.let { title ->
+                            if (audioTitleTextView.text != title) {
+                                audioTitleTextView.text = title
+                            }
+                            audioTitleTextView.isVisible = true
+                        } ?: run {
+                            audioTitleTextView.isVisible = false
+                        }
+
+                        mediaMetadata.artist?.let { artist ->
+                            if (artistNameTextView.text != artist) {
+                                artistNameTextView.text = artist
+                            }
+                            artistNameTextView.isVisible = true
+                        } ?: run {
+                            artistNameTextView.isVisible = false
+                        }
+
+                        mediaMetadata.albumTitle?.let { albumTitle ->
+                            if (albumTitleTextView.text != albumTitle) {
+                                albumTitleTextView.text = albumTitle
+                            }
+                            albumTitleTextView.isVisible = true
+                        } ?: run {
+                            albumTitleTextView.isVisible = false
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.playbackParameters.collectLatest {
+                        it?.also {
+                            playbackSpeedMaterialButton.text = getString(
+                                R.string.playback_speed_format,
+                                playbackSpeedFormatter.format(it.speed),
                             )
                         }
+                    }
+                }
+
+                launch {
+                    viewModel.repeatMode.collectLatest {
+                        repeatMaterialButton.setIconResource(
+                            when (it) {
+                                RepeatMode.NONE,
+                                RepeatMode.ALL -> R.drawable.ic_repeat
+
+                                RepeatMode.ONE -> R.drawable.ic_repeat_one
+                            }
+                        )
+                        repeatMarkerImageView.isVisible = it != RepeatMode.NONE
+                    }
+                }
+
+                launch {
+                    viewModel.shuffleMode.collectLatest { shuffleModeEnabled ->
+                        shuffleMarkerImageView.isVisible = shuffleModeEnabled
                     }
                 }
 
