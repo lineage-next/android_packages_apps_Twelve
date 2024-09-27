@@ -76,4 +76,31 @@
 
     <!-- Now playing fragment -->
     <string name="playback_speed_format">%1$s×</string>
+
+    <!-- Now playing stats dialog fragment -->
+    <string name="audio_source">Source</string>
+    <string name="audio_transcoding">Transcoding</string>
+    <string name="audio_output">Output</string>
+    <string name="audio_output_not_available_in_current_configuration">Output information are not available in current configuration</string>
+    <string name="audio_file_type">File type</string>
+    <string name="audio_file_type_unknown">Unknown</string>
+    <string name="audio_sample_rate">Sample rate</string>
+    <string name="audio_sample_rate_format">%1$s kHz</string>
+    <string name="audio_sample_rate_unknown">Unknown</string>
+    <string name="audio_channel_count">Channel count</string>
+    <string name="audio_channel_count_unknown">Unknown</string>
+    <string name="audio_encoding">Encoding</string>
+    <string name="audio_encoding_unknown">Unknown</string>
+    <string name="audio_float_mode_enabled">PCM float mode enabled</string>
+    <string name="audio_float_mode_enabled_unknown">Unknown</string>
+    <string name="audio_float_mode_enabled_true">True</string>
+    <string name="audio_float_mode_enabled_false">False</string>
+    <string name="audio_output_mode">Output mode</string>
+    <string name="audio_output_mode_unknown">Unknown</string>
+    <string name="audio_output_mode_pcm">PCM</string>
+    <string name="audio_output_mode_offload">Offload</string>
+    <string name="audio_output_mode_passthrough">Passthrough</string>
+    <string name="audio_bitrate">Bitrate</string>
+    <string name="audio_bitrate_unknown">Unknown</string>
+    <string name="audio_bitrate_format">%1$s kbps</string>
 </resources>

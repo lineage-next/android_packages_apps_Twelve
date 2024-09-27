@@ -100,6 +100,12 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
             findNavController().navigateUp()
         }
 
+        fileTypeMaterialCardView.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_nowPlayingFragment_to_fragment_now_playing_stats_dialog
+            )
+        }
+
         // Audio informations
         audioTitleTextView.isSelected = true
         artistNameTextView.isSelected = true
@@ -178,16 +184,6 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
 
                 launch {
                     viewModel.mediaItem.collectLatest { mediaItem ->
-                        mediaItem?.localConfiguration?.mimeType
-                            ?.takeIf { mimeType -> mimeType.contains('/') }
-                            ?.substringAfterLast('/')
-                            ?.also { fileType ->
-                                fileTypeTextView.text = fileType
-                                fileTypeMaterialCardView.isVisible = true
-                            } ?: run {
-                            fileTypeMaterialCardView.isVisible = false
-                        }
-
                         addOrRemoveFromPlaylistsMaterialButton.setOnClickListener {
                             mediaItem?.localConfiguration?.uri?.let { uri ->
                                 findNavController().navigate(
@@ -256,6 +252,17 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                 R.string.playback_speed_format,
                                 playbackSpeedFormatter.format(it.speed),
                             )
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.displayFileType.collectLatest {
+                        it?.let { displayFileType ->
+                            fileTypeTextView.text = displayFileType
+                            fileTypeMaterialCardView.isVisible = true
+                        } ?: run {
+                            fileTypeMaterialCardView.isVisible = false
                         }
                     }
                 }

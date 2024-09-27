@@ -14,6 +14,7 @@
     <include app:graph="@navigation/fragment_artist" />
     <include app:graph="@navigation/fragment_audio_bottom_sheet_dialog" />
     <include app:graph="@navigation/fragment_now_playing" />
+    <include app:graph="@navigation/fragment_now_playing_stats_dialog" />
     <include app:graph="@navigation/fragment_playlist" />
 
     <fragment
