@@ -163,6 +163,9 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
             activity.startActivity(intent)
         }
 
+        // Reset album art
+        albumArtImageView.setImageResource(R.drawable.ic_music_note)
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -200,7 +203,7 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                     }.also { bitmap ->
                                         albumArtImageView.setImageBitmap(bitmap)
                                     }
-                                } ?: albumArtImageView.setImageResource(R.drawable.ic_music_note)
+                                }
 
                                 val audioTitle = playbackStatus.mediaMetadata.displayTitle
                                     ?: playbackStatus.mediaMetadata.title
