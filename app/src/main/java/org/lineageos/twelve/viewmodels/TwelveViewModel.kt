@@ -11,6 +11,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import kotlinx.coroutines.Dispatchers
@@ -19,10 +21,12 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.guava.await
 import org.lineageos.twelve.TwelveApplication
@@ -33,6 +37,7 @@ import org.lineageos.twelve.ext.mediaMetadataFlow
 import org.lineageos.twelve.ext.playbackParametersFlow
 import org.lineageos.twelve.ext.repeatModeFlow
 import org.lineageos.twelve.ext.shuffleModeFlow
+import org.lineageos.twelve.ext.tracksFlow
 import org.lineageos.twelve.ext.typedRepeatMode
 import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.RepeatMode
@@ -129,6 +134,66 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
     val playbackParameters = mediaController.filterNotNull()
         .flatMapLatest { it.playbackParametersFlow() }
         .flowOn(Dispatchers.Main)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
+
+    @androidx.annotation.OptIn(UnstableApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val currentTrackFormat = mediaController.filterNotNull()
+        .flatMapLatest { it.tracksFlow() }
+        .flowOn(Dispatchers.Main)
+        .mapLatest { tracks ->
+            val groups = tracks.groups.filter { group ->
+                group.type == C.TRACK_TYPE_AUDIO && group.isSelected
+            }
+
+            require(groups.size <= 1) { "More than one audio track selected" }
+
+            groups.firstOrNull()?.let { group ->
+                (0..group.length).firstNotNullOfOrNull { i ->
+                    when (group.isTrackSelected(i)) {
+                        true -> group.getTrackFormat(i)
+                        false -> null
+                    }
+                }
+            }
+        }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
+
+    val mimeType =
+        combine(currentTrackFormat, mediaItem) { format, mediaItem ->
+            format?.sampleMimeType
+                ?: format?.containerMimeType
+                ?: mediaItem?.localConfiguration?.mimeType
+        }
+            .flowOn(Dispatchers.IO)
+            .stateIn(
+                viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = null
+            )
+
+    @androidx.annotation.OptIn(UnstableApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val displayFileType = mimeType
+        .mapLatest { mimeType ->
+            mimeType?.let {
+                MimeTypes.normalizeMimeType(it)
+            }?.let {
+                it.takeIf { it.contains('/') }
+                    ?.substringAfterLast('/')
+                    ?.uppercase()
+            }
+        }
+        .flowOn(Dispatchers.IO)
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),

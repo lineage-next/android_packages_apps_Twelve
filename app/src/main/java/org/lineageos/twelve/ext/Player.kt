@@ -10,6 +10,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import kotlinx.coroutines.channels.awaitClose
 import org.lineageos.twelve.models.RepeatMode
@@ -99,6 +100,21 @@ fun Player.playbackParametersFlow() = conflatedCallbackFlow {
 
     addListener(listener)
     trySend(playbackParameters)
+
+    awaitClose {
+        removeListener(listener)
+    }
+}
+
+fun Player.tracksFlow() = conflatedCallbackFlow {
+    val listener = object : Player.Listener {
+        override fun onTracksChanged(tracks: Tracks) {
+            trySend(tracks)
+        }
+    }
+
+    addListener(listener)
+    trySend(currentTracks)
 
     awaitClose {
         removeListener(listener)

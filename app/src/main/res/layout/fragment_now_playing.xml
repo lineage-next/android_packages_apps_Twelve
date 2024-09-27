@@ -45,10 +45,9 @@
                     android:layout_height="24dp"
                     android:gravity="center"
                     android:textAlignment="gravity"
-                    android:textAllCaps="true"
                     android:textAppearance="?attr/textAppearanceLabelMedium"
                     android:textColor="?attr/colorOnPrimaryContainer"
-                    tools:text="flac" />
+                    tools:text="FLAC" />
 
             </com.google.android.material.card.MaterialCardView>
 
