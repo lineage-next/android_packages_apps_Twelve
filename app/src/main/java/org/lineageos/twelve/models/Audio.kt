@@ -36,8 +36,8 @@ data class Audio(
     val albumUri: Uri,
     val albumTitle: String,
     val albumTrack: Int,
-    val genre: String?,
     val genreUri: Uri,
+    val genre: String?,
     val year: Int,
 ) : UniqueItem<Audio> {
     enum class Type {
@@ -75,8 +75,8 @@ data class Audio(
         Audio::albumUri,
         Audio::albumTitle,
         Audio::albumTrack,
-        Audio::genre,
         Audio::genreUri,
+        Audio::genre,
         Audio::year,
     ) == 0
 
