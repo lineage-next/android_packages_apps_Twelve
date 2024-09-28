@@ -6,8 +6,8 @@
 package org.lineageos.twelve.models
 
 import android.net.Uri
+import androidx.media3.common.MediaMetadata
 import org.lineageos.twelve.ext.buildMediaItem
-import org.lineageos.twelve.ext.toMediaMetadataType
 
 /**
  * An audio.
@@ -40,26 +40,28 @@ data class Audio(
     val genre: String?,
     val year: Int,
 ) : MediaItem<Audio> {
-    enum class Type {
+    enum class Type(
+        val media3MediaType: @MediaMetadata.MediaType Int,
+    ) {
         /**
          * Music.
          */
-        MUSIC,
+        MUSIC(MediaMetadata.MEDIA_TYPE_MUSIC),
 
         /**
          * Podcast.
          */
-        PODCAST,
+        PODCAST(MediaMetadata.MEDIA_TYPE_PODCAST),
 
         /**
          * Audiobook.
          */
-        AUDIOBOOK,
+        AUDIOBOOK(MediaMetadata.MEDIA_TYPE_AUDIO_BOOK),
 
         /**
          * Recording.
          */
-        RECORDING,
+        RECORDING(MediaMetadata.MEDIA_TYPE_MUSIC),
     }
 
     override fun areItemsTheSame(other: Audio) = this.uri == other.uri
@@ -85,7 +87,7 @@ data class Audio(
         mediaId = "$AUDIO_MEDIA_ITEM_ID_PREFIX${uri}",
         isPlayable = true,
         isBrowsable = false,
-        mediaType = type.toMediaMetadataType(),
+        mediaType = type.media3MediaType,
         album = albumTitle,
         artist = artistName,
         genre = genre,
