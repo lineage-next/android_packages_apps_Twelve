@@ -92,6 +92,7 @@ data class Audio(
         artist = artistName,
         genre = genre,
         sourceUri = uri,
+        mimeType = mimeType,
     )
 
     companion object {

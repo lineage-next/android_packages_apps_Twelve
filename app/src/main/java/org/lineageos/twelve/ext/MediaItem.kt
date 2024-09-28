@@ -19,6 +19,7 @@ fun buildMediaItem(
     artist: String? = null,
     genre: String? = null,
     sourceUri: Uri? = null,
+    mimeType: String? = null,
     imageUri: Uri? = null
 ): MediaItem {
     val metadata =
@@ -37,5 +38,6 @@ fun buildMediaItem(
         .setMediaId(mediaId)
         .setMediaMetadata(metadata)
         .setUri(sourceUri)
+        .setMimeType(mimeType)
         .build()
 }
