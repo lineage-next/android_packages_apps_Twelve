@@ -26,7 +26,7 @@ import org.lineageos.twelve.ext.toMediaMetadataType
  * @param year The year of release of the audio
  */
 data class Audio(
-    val uri: Uri,
+    override val uri: Uri,
     val mimeType: String,
     val title: String,
     val type: Type,
@@ -39,7 +39,7 @@ data class Audio(
     val genreUri: Uri,
     val genre: String?,
     val year: Int,
-) : UniqueItem<Audio> {
+) : MediaItem<Audio> {
     enum class Type {
         /**
          * Music.
@@ -80,7 +80,7 @@ data class Audio(
         Audio::year,
     ) == 0
 
-    override fun toMediaItem() = buildMediaItem(
+    override fun toMedia3MediaItem() = buildMediaItem(
         title = title,
         mediaId = "$AUDIO_MEDIA_ITEM_ID_PREFIX${uri}",
         isPlayable = true,

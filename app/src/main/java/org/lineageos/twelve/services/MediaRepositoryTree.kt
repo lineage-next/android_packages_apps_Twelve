@@ -56,7 +56,7 @@ class MediaRepositoryTree(
 
         PLAYLISTS_MEDIA_ITEM_ID -> playlistsMediaItem
 
-        else -> mediaIdToUniqueItem(mediaId)?.toMediaItem()
+        else -> mediaIdToUniqueItem(mediaId)?.toMedia3MediaItem()
     }
 
     /**
@@ -78,19 +78,27 @@ class MediaRepositoryTree(
 
         NO_PERMISSIONS_DESCRIPTION_MEDIA_ITEM_ID -> listOf()
 
-        ALBUMS_MEDIA_ITEM_ID -> repository.albums().toOneShotResult().map { it.toMediaItem() }
+        ALBUMS_MEDIA_ITEM_ID -> repository.albums().toOneShotResult().map {
+            it.toMedia3MediaItem()
+        }
 
-        ARTISTS_MEDIA_ITEM_ID -> repository.artists().toOneShotResult().map { it.toMediaItem() }
+        ARTISTS_MEDIA_ITEM_ID -> repository.artists().toOneShotResult().map {
+            it.toMedia3MediaItem()
+        }
 
-        GENRES_MEDIA_ITEM_ID -> repository.genres().toOneShotResult().map { it.toMediaItem() }
+        GENRES_MEDIA_ITEM_ID -> repository.genres().toOneShotResult().map {
+            it.toMedia3MediaItem()
+        }
 
-        PLAYLISTS_MEDIA_ITEM_ID -> repository.playlists().toOneShotResult().map { it.toMediaItem() }
+        PLAYLISTS_MEDIA_ITEM_ID -> repository.playlists().toOneShotResult().map {
+            it.toMedia3MediaItem()
+        }
 
         else -> when (val it = mediaIdToUniqueItem(mediaId)) {
             null -> listOf()
 
             is Album -> repository.album(it.uri).toOneShotResult().second.map { albumAudios ->
-                albumAudios.toMediaItem()
+                albumAudios.toMedia3MediaItem()
             }
 
             is Artist -> repository.artist(it.uri).toOneShotResult().second.let { artistWorks ->
@@ -98,7 +106,7 @@ class MediaRepositoryTree(
                     artistWorks.albums,
                     artistWorks.appearsInAlbum,
                 ).flatten().map { allRelatedAlbums ->
-                    allRelatedAlbums.toMediaItem()
+                    allRelatedAlbums.toMedia3MediaItem()
                 }
             }
 
@@ -109,7 +117,7 @@ class MediaRepositoryTree(
             is Playlist -> repository.playlist(
                 it.uri
             ).toOneShotResult().second.filterNotNull().map { playlistAudio ->
-                playlistAudio.toMediaItem()
+                playlistAudio.toMedia3MediaItem()
             }
         }
     }
@@ -127,7 +135,7 @@ class MediaRepositoryTree(
      * Given a query, search for media items.
      */
     suspend fun search(query: String) = repository.search("%${query}%").toOneShotResult().map {
-        it.toMediaItem()
+        it.toMedia3MediaItem()
     }
 
     /**

@@ -16,9 +16,9 @@ import org.lineageos.twelve.ext.buildMediaItem
  * @param name The name of the playlist
  */
 data class Playlist(
-    val uri: Uri,
+    override val uri: Uri,
     val name: String,
-) : UniqueItem<Playlist> {
+) : MediaItem<Playlist> {
     override fun areItemsTheSame(other: Playlist) = uri == other.uri
 
     override fun areContentsTheSame(other: Playlist) = compareValuesBy(
@@ -27,7 +27,7 @@ data class Playlist(
         Playlist::name,
     ) == 0
 
-    override fun toMediaItem() = buildMediaItem(
+    override fun toMedia3MediaItem() = buildMediaItem(
         title = name,
         mediaId = "$PLAYLIST_MEDIA_ITEM_ID_PREFIX${uri}",
         isPlayable = false,

@@ -5,13 +5,12 @@
 
 package org.lineageos.twelve.models
 
-import androidx.media3.common.MediaItem
 import kotlin.reflect.safeCast
 
 /**
  * An item that can be uniquely identified.
  */
-sealed interface UniqueItem<T> {
+interface UniqueItem<T> {
     /**
      * Return whether this item is the same as the other.
      */
@@ -22,11 +21,6 @@ sealed interface UniqueItem<T> {
      * This is called only when [areItemsTheSame] returns true.
      */
     fun areContentsTheSame(other: T): Boolean
-
-    /**
-     * Convert this item to a media item.
-     */
-    fun toMediaItem(): MediaItem
 }
 
 /**

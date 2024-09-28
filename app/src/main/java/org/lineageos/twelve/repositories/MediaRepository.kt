@@ -16,9 +16,9 @@ import org.lineageos.twelve.models.Artist
 import org.lineageos.twelve.models.ArtistWorks
 import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.Genre
+import org.lineageos.twelve.models.MediaItem
 import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
-import org.lineageos.twelve.models.UniqueItem
 
 class MediaRepository(context: Context, database: TwelveDatabase) {
     private val localDataSource = LocalDataSource(context, database)
@@ -46,7 +46,7 @@ class MediaRepository(context: Context, database: TwelveDatabase) {
     /**
      * @see MediaDataSource.search
      */
-    fun search(query: String): Flow<RequestStatus<List<UniqueItem<*>>>> =
+    fun search(query: String): Flow<RequestStatus<List<MediaItem<*>>>> =
         localDataSource.search(query)
 
     /**

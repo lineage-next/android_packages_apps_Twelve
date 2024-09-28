@@ -33,9 +33,9 @@ import org.lineageos.twelve.models.Album
 import org.lineageos.twelve.models.Artist
 import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.Genre
+import org.lineageos.twelve.models.MediaItem
 import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
-import org.lineageos.twelve.models.UniqueItem
 import org.lineageos.twelve.models.areContentsTheSame
 import org.lineageos.twelve.models.areItemsTheSame
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
@@ -64,7 +64,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     // Recyclerview
     private val adapter by lazy {
-        object : SimpleListAdapter<UniqueItem<*>, ListItem>(diffCallback, ::ListItem) {
+        object : SimpleListAdapter<MediaItem<*>, ListItem>(diffCallback, ::ListItem) {
             override fun ViewHolder.onPrepareView() {
                 view.setOnClickListener {
                     item?.let {
@@ -95,7 +95,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 }
             }
 
-            override fun ViewHolder.onBindView(item: UniqueItem<*>) {
+            override fun ViewHolder.onBindView(item: MediaItem<*>) {
                 when (item) {
                     is Album -> {
                         view.setTrailingIconImage(R.drawable.ic_album)
@@ -205,10 +205,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     companion object {
         private val LOG_TAG = SearchFragment::class.simpleName!!
 
-        private val diffCallback = object : DiffUtil.ItemCallback<UniqueItem<*>>() {
+        private val diffCallback = object : DiffUtil.ItemCallback<MediaItem<*>>() {
             override fun areItemsTheSame(
-                oldItem: UniqueItem<*>,
-                newItem: UniqueItem<*>
+                oldItem: MediaItem<*>,
+                newItem: MediaItem<*>
             ) = when (oldItem) {
                 is Album -> oldItem.areItemsTheSame(newItem)
                 is Artist -> oldItem.areItemsTheSame(newItem)
@@ -218,8 +218,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             }
 
             override fun areContentsTheSame(
-                oldItem: UniqueItem<*>,
-                newItem: UniqueItem<*>
+                oldItem: MediaItem<*>,
+                newItem: MediaItem<*>
             ) = when (oldItem) {
                 is Album -> oldItem.areContentsTheSame(newItem)
                 is Artist -> oldItem.areContentsTheSame(newItem)

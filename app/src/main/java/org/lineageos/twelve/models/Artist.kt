@@ -18,10 +18,10 @@ import org.lineageos.twelve.ext.buildMediaItem
  * @param thumbnail The artist's thumbnail
  */
 data class Artist(
-    val uri: Uri,
+    override val uri: Uri,
     val name: String,
     val thumbnail: Bitmap?,
-) : UniqueItem<Artist> {
+) : MediaItem<Artist> {
     override fun areItemsTheSame(other: Artist) = this.uri == other.uri
 
     override fun areContentsTheSame(other: Artist) = compareValuesBy(
@@ -30,7 +30,7 @@ data class Artist(
         { it.thumbnail?.sameAs(other.thumbnail) ?: (other.thumbnail == null) },
     ) == 0
 
-    override fun toMediaItem() = buildMediaItem(
+    override fun toMedia3MediaItem() = buildMediaItem(
         title = name,
         mediaId = "$ARTIST_MEDIA_ITEM_ID_PREFIX${uri}",
         isPlayable = false,

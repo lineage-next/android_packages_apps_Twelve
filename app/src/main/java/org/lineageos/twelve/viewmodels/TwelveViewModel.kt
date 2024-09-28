@@ -114,7 +114,7 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
             shuffleModeEnabled = false
             typedRepeatMode = RepeatMode.NONE
 
-            setMediaItems(audio.map { it.toMediaItem() }, true)
+            setMediaItems(audio.map { it.toMedia3MediaItem() }, true)
             prepare()
             seekToDefaultPosition(position)
             play()

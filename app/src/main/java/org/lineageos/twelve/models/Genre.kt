@@ -17,9 +17,9 @@ import org.lineageos.twelve.ext.buildMediaItem
  * @param name The name of the genre. Can be null
  */
 data class Genre(
-    val uri: Uri,
+    override val uri: Uri,
     val name: String?,
-) : UniqueItem<Genre> {
+) : MediaItem<Genre> {
     override fun areItemsTheSame(other: Genre) = this.uri == other.uri
 
     override fun areContentsTheSame(other: Genre) = compareValuesBy(
@@ -28,7 +28,7 @@ data class Genre(
         Genre::name,
     ) == 0
 
-    override fun toMediaItem() = buildMediaItem(
+    override fun toMedia3MediaItem() = buildMediaItem(
         title = name ?: "Unknown",
         mediaId = "$GENRE_MEDIA_ITEM_ID_PREFIX${uri}",
         isPlayable = false,

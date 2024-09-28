@@ -12,9 +12,9 @@ import org.lineageos.twelve.models.Artist
 import org.lineageos.twelve.models.ArtistWorks
 import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.Genre
+import org.lineageos.twelve.models.MediaItem
 import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
-import org.lineageos.twelve.models.UniqueItem
 
 /**
  * A data source for media.
@@ -44,7 +44,7 @@ interface MediaDataSource {
      * Start a search for the given query.
      * Only the following items can be returned: [Album], [Artist], [Audio], [Genre], [Playlist].
      */
-    fun search(query: String): Flow<RequestStatus<List<UniqueItem<*>>>>
+    fun search(query: String): Flow<RequestStatus<List<MediaItem<*>>>>
 
     /**
      * Get the audio information of the given audio.
