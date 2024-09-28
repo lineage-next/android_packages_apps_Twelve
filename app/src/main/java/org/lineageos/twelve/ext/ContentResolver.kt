@@ -15,8 +15,6 @@ import android.os.Looper
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -25,7 +23,7 @@ fun ContentResolver.queryFlow(
     uri: Uri,
     projection: Array<String>? = null,
     queryArgs: Bundle? = Bundle(),
-) = callbackFlow {
+) = conflatedCallbackFlow {
     // Each query will have its own cancellationSignal.
     // Before running any new query the old cancellationSignal must be cancelled
     // to ensure the currently running query gets interrupted so that we don't
@@ -68,4 +66,4 @@ fun ContentResolver.queryFlow(
         // Cancel any possibly running query.
         cancellationSignal.cancel()
     }
-}.conflate()
+}

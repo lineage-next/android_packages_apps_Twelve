@@ -9,12 +9,11 @@ import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
 import org.lineageos.twelve.models.PlaybackStatus
 import org.lineageos.twelve.models.RepeatMode
 
 @OptIn(UnstableApi::class)
-fun Player.playbackStatusFlow() = callbackFlow {
+fun Player.playbackStatusFlow() = conflatedCallbackFlow {
     val updatePlaybackStatus = {
         trySend(
             PlaybackStatus(
