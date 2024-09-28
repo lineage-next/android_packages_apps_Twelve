@@ -120,7 +120,7 @@ class MediaRepositoryTree(
      * TODO: [MediaItem.requestMetadata] support.
      */
     suspend fun resolveMediaItems(mediaItems: List<MediaItem>) = mediaItems.mapNotNull {
-        getItem(it.mediaId)
+        it.takeIf { it.localConfiguration?.uri != null } ?: getItem(it.mediaId)
     }
 
     /**
