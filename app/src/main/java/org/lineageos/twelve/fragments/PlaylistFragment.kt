@@ -9,11 +9,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -22,7 +21,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -51,11 +49,10 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
     private val viewModel by viewModels<PlaylistViewModel>()
 
     // Views
-    private val appBarLayout by getViewProperty<AppBarLayout>(R.id.appBarLayout)
     private val linearProgressIndicator by getViewProperty<LinearProgressIndicator>(R.id.linearProgressIndicator)
-    private val noElementsLinearLayout by getViewProperty<LinearLayout>(R.id.noElementsLinearLayout)
+    private val noElementsNestedScrollView by getViewProperty<NestedScrollView>(R.id.noElementsNestedScrollView)
+    private val playlistNameTextView by getViewProperty<TextView>(R.id.playlistNameTextView)
     private val recyclerView by getViewProperty<RecyclerView>(R.id.recyclerView)
-    private val thumbnailImageView by getViewProperty<ImageView>(R.id.thumbnailImageView)
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
     private val tracksInfoTextView by getViewProperty<TextView>(R.id.tracksInfoTextView)
 
@@ -159,7 +156,7 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
                     adapter.submitList(listOf())
 
                     recyclerView.isVisible = false
-                    noElementsLinearLayout.isVisible = false
+                    noElementsNestedScrollView.isVisible = false
                 }
 
                 is RequestStatus.Loading -> {
@@ -170,6 +167,7 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
                     val (playlist, audios) = it.data
 
                     toolbar.title = playlist.name
+                    playlistNameTextView.text = playlist.name
 
                     val totalDurationMs = audios.sumOf { audio ->
                         audio?.durationMs ?: 0
@@ -195,18 +193,19 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
 
                     val isEmpty = audios.isEmpty()
                     recyclerView.isVisible = !isEmpty
-                    noElementsLinearLayout.isVisible = isEmpty
+                    noElementsNestedScrollView.isVisible = isEmpty
                 }
 
                 is RequestStatus.Error -> {
                     Log.e(LOG_TAG, "Error loading playlist, error: ${it.type}")
 
                     toolbar.title = ""
+                    playlistNameTextView.text = ""
 
                     adapter.submitList(listOf())
 
                     recyclerView.isVisible = false
-                    noElementsLinearLayout.isVisible = true
+                    noElementsNestedScrollView.isVisible = true
 
                     if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
                         // Get out of here

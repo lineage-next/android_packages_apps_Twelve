@@ -19,7 +19,8 @@
     <LinearLayout
         android:id="@+id/noElementsLinearLayout"
         style="@style/Theme.Twelve.NoElements.LinearLayout"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:visibility="gone">
 
         <ImageView
             style="@style/Theme.Twelve.NoElements.ImageView"

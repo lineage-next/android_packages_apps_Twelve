@@ -10,10 +10,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -22,7 +22,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.coroutineScope
@@ -50,10 +49,10 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
     private val viewModel by viewModels<AlbumViewModel>()
 
     // Views
-    private val appBarLayout by getViewProperty<AppBarLayout>(R.id.appBarLayout)
+    private val albumTitleTextView by getViewProperty<TextView>(R.id.albumTitleTextView)
     private val artistNameTextView by getViewProperty<TextView>(R.id.artistNameTextView)
     private val linearProgressIndicator by getViewProperty<LinearProgressIndicator>(R.id.linearProgressIndicator)
-    private val noElementsLinearLayout by getViewProperty<LinearLayout>(R.id.noElementsLinearLayout)
+    private val noElementsNestedScrollView by getViewProperty<NestedScrollView>(R.id.noElementsNestedScrollView)
     private val recyclerView by getViewProperty<RecyclerView>(R.id.recyclerView)
     private val thumbnailImageView by getViewProperty<ImageView>(R.id.thumbnailImageView)
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
@@ -144,7 +143,7 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
                     adapter.submitList(listOf())
 
                     recyclerView.isVisible = false
-                    noElementsLinearLayout.isVisible = false
+                    noElementsNestedScrollView.isVisible = false
                 }
 
                 is RequestStatus.Loading -> {
@@ -155,6 +154,7 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
                     val (album, audios) = it.data
 
                     toolbar.title = album.title
+                    albumTitleTextView.text = album.title
 
                     coroutineScope {
                         thumbnailImageView.setImageBitmap(album.thumbnail)
@@ -199,18 +199,19 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
 
                     val isEmpty = audios.isEmpty()
                     recyclerView.isVisible = !isEmpty
-                    noElementsLinearLayout.isVisible = isEmpty
+                    noElementsNestedScrollView.isVisible = isEmpty
                 }
 
                 is RequestStatus.Error -> {
                     Log.e(LOG_TAG, "Error loading album, error: ${it.type}")
 
                     toolbar.title = ""
+                    albumTitleTextView.text = ""
 
                     adapter.submitList(listOf())
 
                     recyclerView.isVisible = false
-                    noElementsLinearLayout.isVisible = true
+                    noElementsNestedScrollView.isVisible = true
 
                     if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
                         // Get out of here

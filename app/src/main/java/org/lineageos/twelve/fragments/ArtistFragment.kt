@@ -7,11 +7,13 @@ package org.lineageos.twelve.fragments
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -20,7 +22,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.coroutineScope
@@ -50,13 +51,13 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
     // Views
     private val albumsLinearLayout by getViewProperty<LinearLayout>(R.id.albumsLinearLayout)
     private val albumsRecyclerView by getViewProperty<RecyclerView>(R.id.albumsRecyclerView)
-    private val appBarLayout by getViewProperty<AppBarLayout>(R.id.appBarLayout)
     private val appearsInAlbumLinearLayout by getViewProperty<LinearLayout>(R.id.appearsInAlbumLinearLayout)
     private val appearsInAlbumRecyclerView by getViewProperty<RecyclerView>(R.id.appearsInAlbumRecyclerView)
     private val appearsInPlaylistLinearLayout by getViewProperty<LinearLayout>(R.id.appearsInPlaylistLinearLayout)
     private val appearsInPlaylistRecyclerView by getViewProperty<RecyclerView>(R.id.appearsInPlaylistRecyclerView)
     private val linearProgressIndicator by getViewProperty<LinearProgressIndicator>(R.id.linearProgressIndicator)
-    private val noElementsLinearLayout by getViewProperty<LinearLayout>(R.id.noElementsLinearLayout)
+    private val nestedScrollView by getViewProperty<NestedScrollView>(R.id.nestedScrollView)
+    private val noElementsNestedScrollView by getViewProperty<NestedScrollView>(R.id.noElementsNestedScrollView)
     private val thumbnailImageView by getViewProperty<ImageView>(R.id.thumbnailImageView)
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
 
@@ -184,10 +185,22 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
                         isAppearsInAlbumEmpty,
                         isAppearsInPlaylistEmpty,
                     ).all { isEmpty -> isEmpty }
-                    noElementsLinearLayout.isVisible = isEmpty
+                    nestedScrollView.isVisible = !isEmpty
+                    noElementsNestedScrollView.isVisible = isEmpty
                 }
 
                 is RequestStatus.Error -> {
+                    Log.e(LOG_TAG, "Error loading artist, error: ${it.type}")
+
+                    toolbar.title = ""
+
+                    albumsAdapter.submitList(listOf())
+                    appearsInAlbumAdapter.submitList(listOf())
+                    appearsInPlaylistAdapter.submitList(listOf())
+
+                    nestedScrollView.isVisible = false
+                    noElementsNestedScrollView.isVisible = true
+
                     if (it.type == RequestStatus.Error.Type.NOT_FOUND) {
                         // Get out of here
                         findNavController().navigateUp()
@@ -198,6 +211,8 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
     }
 
     companion object {
+        private val LOG_TAG = ArtistFragment::class.simpleName!!
+
         private const val ARG_ARTIST_URI = "artist_uri"
 
         /**
