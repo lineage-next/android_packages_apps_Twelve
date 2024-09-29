@@ -16,6 +16,7 @@ import androidx.lifecycle.coroutineScope
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.TrackSelectionParameters.AudioOffloadPreferences
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.DefaultMediaNotificationProvider
@@ -144,6 +145,15 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
             .setHandleAudioBecomingNoisy(true)
             .setRenderersFactory(TurntableRenderersFactory(this))
             .build()
+
+        exoPlayer.trackSelectionParameters = exoPlayer.trackSelectionParameters
+            .buildUpon()
+            .setAudioOffloadPreferences(
+                AudioOffloadPreferences
+                    .Builder()
+                    .setAudioOffloadMode(AudioOffloadPreferences.AUDIO_OFFLOAD_MODE_ENABLED)
+                    .build()
+            ).build()
 
         mediaLibrarySession = MediaLibrarySession.Builder(
             this, exoPlayer, mediaLibrarySessionCallback
