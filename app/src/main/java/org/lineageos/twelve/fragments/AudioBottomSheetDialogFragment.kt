@@ -98,10 +98,6 @@ class AudioBottomSheetDialogFragment : BottomSheetDialogFragment(
     private suspend fun loadData() {
         viewModel.audio.collect {
             when (it) {
-                null -> {
-                    // Do nothing
-                }
-
                 is RequestStatus.Loading -> {
                     // Do nothing
                 }

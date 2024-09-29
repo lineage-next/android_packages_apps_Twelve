@@ -152,13 +152,6 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
             linearProgressIndicator.setProgressCompat(it, true)
 
             when (it) {
-                null -> {
-                    adapter.submitList(listOf())
-
-                    recyclerView.isVisible = false
-                    noElementsNestedScrollView.isVisible = false
-                }
-
                 is RequestStatus.Loading -> {
                     // Do nothing
                 }

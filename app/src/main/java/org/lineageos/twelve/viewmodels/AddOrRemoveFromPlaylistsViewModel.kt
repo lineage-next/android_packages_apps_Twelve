@@ -18,9 +18,11 @@ import org.lineageos.twelve.models.RequestStatus
 
 class AddOrRemoveFromPlaylistsViewModel(application: Application) : AudioViewModel(application) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    val playlistToHasAudio = audioUri.filterNotNull().flatMapLatest {
-        mediaRepository.audioPlaylistsStatus(it)
-    }
+    val playlistToHasAudio = audioUri
+        .filterNotNull()
+        .flatMapLatest {
+            mediaRepository.audioPlaylistsStatus(it)
+        }
         .flowOn(Dispatchers.IO)
         .stateIn(
             viewModelScope,

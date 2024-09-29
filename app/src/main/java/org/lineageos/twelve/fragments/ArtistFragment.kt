@@ -150,10 +150,6 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
             linearProgressIndicator.setProgressCompat(it, true)
 
             when (it) {
-                null -> {
-                    // Do nothing
-                }
-
                 is RequestStatus.Loading -> {
                     // Do nothing
                 }

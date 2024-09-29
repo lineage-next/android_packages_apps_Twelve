@@ -82,7 +82,8 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val mediaMetadata = mediaController.filterNotNull()
+    val mediaMetadata = mediaController
+        .filterNotNull()
         .flatMapLatest { it.mediaMetadataFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
@@ -92,7 +93,8 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val mediaItem = mediaController.filterNotNull()
+    val mediaItem = mediaController
+        .filterNotNull()
         .flatMapLatest { it.mediaItemFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
@@ -102,7 +104,8 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val isPlaying = mediaController.filterNotNull()
+    val isPlaying = mediaController
+        .filterNotNull()
         .flatMapLatest { it.isPlayingFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
@@ -112,7 +115,8 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val shuffleMode = mediaController.filterNotNull()
+    val shuffleMode = mediaController
+        .filterNotNull()
         .flatMapLatest { it.shuffleModeFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
@@ -122,7 +126,8 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val repeatMode = mediaController.filterNotNull()
+    val repeatMode = mediaController
+        .filterNotNull()
         .flatMapLatest { it.repeatModeFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
@@ -132,7 +137,8 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val playbackParameters = mediaController.filterNotNull()
+    val playbackParameters = mediaController
+        .filterNotNull()
         .flatMapLatest { it.playbackParametersFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
@@ -143,7 +149,8 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
 
     @androidx.annotation.OptIn(UnstableApi::class)
     @OptIn(ExperimentalCoroutinesApi::class)
-    val currentTrackFormat = mediaController.filterNotNull()
+    val currentTrackFormat = mediaController
+        .filterNotNull()
         .flatMapLatest { it.tracksFlow() }
         .flowOn(Dispatchers.Main)
         .mapLatest { tracks ->
@@ -169,18 +176,17 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
             initialValue = null
         )
 
-    val mimeType =
-        combine(currentTrackFormat, mediaItem) { format, mediaItem ->
-            format?.sampleMimeType
-                ?: format?.containerMimeType
-                ?: mediaItem?.localConfiguration?.mimeType
-        }
-            .flowOn(Dispatchers.IO)
-            .stateIn(
-                viewModelScope,
-                started = SharingStarted.WhileSubscribed(),
-                initialValue = null
-            )
+    val mimeType = combine(currentTrackFormat, mediaItem) { format, mediaItem ->
+        format?.sampleMimeType
+            ?: format?.containerMimeType
+            ?: mediaItem?.localConfiguration?.mimeType
+    }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
 
     @androidx.annotation.OptIn(UnstableApi::class)
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -202,7 +208,8 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun availableCommands() = mediaController.filterNotNull()
+    fun availableCommands() = mediaController
+        .filterNotNull()
         .flatMapLatest { it.availableCommandsFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
@@ -212,7 +219,8 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val durationCurrentPositionMs = mediaController.filterNotNull()
+    val durationCurrentPositionMs = mediaController
+        .filterNotNull()
         .flatMapLatest { mediaController ->
             flow {
                 while (true) {

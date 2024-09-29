@@ -12,26 +12,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.lineageos.twelve.models.RequestStatus
 
 open class AudioViewModel(application: Application) : TwelveViewModel(application) {
     protected val audioUri = MutableStateFlow<Uri?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val audio = audioUri.flatMapLatest {
-        it?.let {
+    val audio = audioUri
+        .filterNotNull()
+        .flatMapLatest {
             mediaRepository.audio(it)
-        } ?: flowOf(null)
-    }
+        }
         .flowOn(Dispatchers.IO)
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
-            null
+            RequestStatus.Loading()
         )
 
     fun loadAudio(audioUri: Uri) {

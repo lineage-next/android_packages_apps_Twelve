@@ -12,25 +12,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import org.lineageos.twelve.models.RequestStatus
 
 class ArtistViewModel(application: Application) : TwelveViewModel(application) {
     private val artistUri = MutableStateFlow<Uri?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val artist = artistUri.flatMapLatest {
-        it?.let {
+    val artist = artistUri
+        .filterNotNull()
+        .flatMapLatest {
             mediaRepository.artist(it)
-        } ?: flowOf(null)
-    }
+        }
         .flowOn(Dispatchers.IO)
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
-            null
+            RequestStatus.Loading()
         )
 
     fun loadAlbum(artistUri: Uri) {

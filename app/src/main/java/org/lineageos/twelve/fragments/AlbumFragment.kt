@@ -139,13 +139,6 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
             linearProgressIndicator.setProgressCompat(it, true)
 
             when (it) {
-                null -> {
-                    adapter.submitList(listOf())
-
-                    recyclerView.isVisible = false
-                    noElementsNestedScrollView.isVisible = false
-                }
-
                 is RequestStatus.Loading -> {
                     // Do nothing
                 }

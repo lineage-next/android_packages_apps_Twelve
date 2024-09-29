@@ -171,13 +171,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             linearProgressIndicator.setProgressCompat(it, true)
 
             when (it) {
-                null -> {
-                    adapter.submitList(listOf())
-
-                    recyclerView.isVisible = false
-                    noElementsLinearLayout.isVisible = false
-                }
-
                 is RequestStatus.Loading -> {
                     // Do nothing
                 }

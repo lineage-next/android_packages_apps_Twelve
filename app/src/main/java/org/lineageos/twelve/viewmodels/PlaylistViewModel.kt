@@ -12,26 +12,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.lineageos.twelve.models.RequestStatus
 
 class PlaylistViewModel(application: Application) : TwelveViewModel(application) {
     private val playlistUri = MutableStateFlow<Uri?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val playlist = playlistUri.flatMapLatest {
-        it?.let {
+    val playlist = playlistUri
+        .filterNotNull()
+        .flatMapLatest {
             mediaRepository.playlist(it)
-        } ?: flowOf(null)
-    }
+        }
         .flowOn(Dispatchers.IO)
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
-            null
+            RequestStatus.Loading()
         )
 
     fun loadPlaylist(playlistUri: Uri) {

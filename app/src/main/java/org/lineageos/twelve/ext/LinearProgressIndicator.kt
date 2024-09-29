@@ -12,18 +12,9 @@ import org.lineageos.twelve.models.RequestStatus
  * @see LinearProgressIndicator.setProgressCompat
  */
 fun <T : Any> LinearProgressIndicator.setProgressCompat(
-    status: RequestStatus<T>?, animated: Boolean
+    status: RequestStatus<T>, animated: Boolean
 ) {
     when (status) {
-        null -> {
-            if (!isIndeterminate) {
-                hide()
-                isIndeterminate = true
-            }
-
-            show()
-        }
-
         is RequestStatus.Loading -> {
             status.progress?.also {
                 setProgressCompat(it, animated)

@@ -6,15 +6,21 @@
 package org.lineageos.twelve.viewmodels
 
 import android.app.Application
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
+import org.lineageos.twelve.models.RequestStatus
 
 class SearchViewModel(application: Application) : TwelveViewModel(application) {
-    private val searchQuery = MutableStateFlow<String?>(null)
+    private val searchQuery = MutableStateFlow("")
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val searchResults = searchQuery
@@ -23,12 +29,18 @@ class SearchViewModel(application: Application) : TwelveViewModel(application) {
             it
         }
         .flatMapLatest { query ->
-            query?.trim()?.takeIf { it.isNotEmpty() }?.let {
+            query.trim().takeIf { it.isNotEmpty() }?.let {
                 mediaRepository.search("%${it}%")
-            } ?: flowOf(null)
+            } ?: flowOf(RequestStatus.Success(listOf()))
         }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            RequestStatus.Loading()
+        )
 
-    fun setSearchQuery(query: String?) {
+    fun setSearchQuery(query: String) {
         searchQuery.value = query
     }
 }
