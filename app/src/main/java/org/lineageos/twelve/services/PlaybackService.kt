@@ -142,6 +142,7 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
         val exoPlayer = ExoPlayer.Builder(this)
             .setAudioAttributes(audioAttributes, true)
             .setHandleAudioBecomingNoisy(true)
+            .setRenderersFactory(TurntableRenderersFactory(this))
             .build()
 
         mediaLibrarySession = MediaLibrarySession.Builder(
