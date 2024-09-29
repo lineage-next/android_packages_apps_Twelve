@@ -39,6 +39,7 @@ import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
+import org.lineageos.twelve.TwelveApplication
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.RepeatMode
 import org.lineageos.twelve.utils.TimestampFormatter
@@ -168,6 +169,10 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
             audioEffectsStartForResult.launch(
                 Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
                     putExtra(AudioEffect.EXTRA_PACKAGE_NAME, activity.packageName)
+                    putExtra(
+                        AudioEffect.EXTRA_AUDIO_SESSION,
+                        (activity.application as TwelveApplication).audioSessionId
+                    )
                     putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
                 },
                 null
