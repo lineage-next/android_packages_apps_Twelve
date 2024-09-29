@@ -12,7 +12,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -119,6 +122,31 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Insets
+        ViewCompat.setOnApplyWindowInsetsListener(nestedScrollView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            v.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                bottom = insets.bottom,
+            )
+
+            windowInsets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(noElementsNestedScrollView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            v.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                bottom = insets.bottom,
+            )
+
+            windowInsets
+        }
 
         toolbar.setupWithNavController(findNavController())
 

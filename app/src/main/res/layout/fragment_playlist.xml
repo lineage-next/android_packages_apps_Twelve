@@ -106,6 +106,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -115,6 +116,7 @@
         android:id="@+id/noElementsNestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
