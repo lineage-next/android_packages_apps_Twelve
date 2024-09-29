@@ -22,5 +22,7 @@ class TurntableRenderersFactory(context: Context) : DefaultRenderersFactory(cont
         .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
         .setAudioProcessors(arrayOf(ProxyAudioProcessor()))
         .setAudioTrackBufferSizeProvider(ProxyDefaultAudioTrackBufferSizeProvider)
+        .setEnableFloatOutput(true)
+        .setEnableAudioTrackPlaybackParams(true)
         .build()
 }
