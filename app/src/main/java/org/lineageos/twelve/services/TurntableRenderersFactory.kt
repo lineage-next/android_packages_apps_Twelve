@@ -16,6 +16,7 @@ class TurntableRenderersFactory(context: Context) : DefaultRenderersFactory(cont
     init {
         setEnableAudioFloatOutput(true)
         setEnableAudioTrackPlaybackParams(true)
+        setEnableDecoderFallback(true)
     }
 
     override fun buildAudioSink(
