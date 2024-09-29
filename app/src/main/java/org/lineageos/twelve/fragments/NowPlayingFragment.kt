@@ -29,6 +29,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.media3.common.Player
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
@@ -365,6 +366,15 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                         durationTimestampTextView.text = TimestampFormatter.formatTimestampMillis(
                             durationMs
                         )
+                    }
+                }
+
+                launch {
+                    viewModel.availableCommands().collectLatest {
+                        it?.let {
+                            playbackSpeedMaterialButton.isVisible =
+                                it.contains(Player.COMMAND_SET_SPEED_AND_PITCH)
+                        }
                     }
                 }
             }

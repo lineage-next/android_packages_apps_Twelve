@@ -105,6 +105,21 @@ fun Player.playbackParametersFlow() = conflatedCallbackFlow {
     }
 }
 
+fun Player.availableCommandsFlow() = conflatedCallbackFlow {
+    val listener = object : Player.Listener {
+        override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
+            trySend(availableCommands)
+        }
+    }
+
+    addListener(listener)
+    trySend(availableCommands)
+
+    awaitClose {
+        removeListener(listener)
+    }
+}
+
 var Player.typedRepeatMode: RepeatMode
     get() = when (repeatMode) {
         Player.REPEAT_MODE_OFF -> RepeatMode.NONE
