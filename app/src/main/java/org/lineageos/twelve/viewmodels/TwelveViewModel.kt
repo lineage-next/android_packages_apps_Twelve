@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.guava.await
 import org.lineageos.twelve.TwelveApplication
 import org.lineageos.twelve.ext.applicationContext
+import org.lineageos.twelve.ext.availableCommandsFlow
 import org.lineageos.twelve.ext.isPlayingFlow
 import org.lineageos.twelve.ext.mediaItemFlow
 import org.lineageos.twelve.ext.mediaMetadataFlow
@@ -128,6 +129,16 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
     @OptIn(ExperimentalCoroutinesApi::class)
     val playbackParameters = mediaController.filterNotNull()
         .flatMapLatest { it.playbackParametersFlow() }
+        .flowOn(Dispatchers.Main)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun availableCommands() = mediaController.filterNotNull()
+        .flatMapLatest { it.availableCommandsFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
             viewModelScope,
