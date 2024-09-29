@@ -22,8 +22,6 @@ data class Artist(
     val name: String,
     val thumbnail: Bitmap?,
 ) : MediaItem<Artist> {
-    override fun areItemsTheSame(other: Artist) = this.uri == other.uri
-
     override fun areContentsTheSame(other: Artist) = compareValuesBy(
         this, other,
         Artist::name,

@@ -28,8 +28,6 @@ data class Album(
     val year: Int?,
     val thumbnail: Bitmap?,
 ) : MediaItem<Album> {
-    override fun areItemsTheSame(other: Album) = this.uri == other.uri
-
     override fun areContentsTheSame(other: Album) = compareValuesBy(
         this, other,
         Album::title,

@@ -6,19 +6,20 @@
 package org.lineageos.twelve.models
 
 import android.net.Uri
-import androidx.media3.common.MediaItem
 
 /**
  * A media item.
  */
-sealed interface MediaItem<T> : UniqueItem<T> {
+sealed interface MediaItem<T : MediaItem<T>> : UniqueItem<T> {
     /**
      * A [Uri] identifying this media item.
      */
     val uri: Uri
 
+    override fun areItemsTheSame(other: T) = this.uri == other.uri
+
     /**
      * Convert this item to a media item.
      */
-    fun toMedia3MediaItem(): MediaItem
+    fun toMedia3MediaItem(): androidx.media3.common.MediaItem
 }

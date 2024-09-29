@@ -64,8 +64,6 @@ data class Audio(
         RECORDING(MediaMetadata.MEDIA_TYPE_MUSIC),
     }
 
-    override fun areItemsTheSame(other: Audio) = this.uri == other.uri
-
     override fun areContentsTheSame(other: Audio) = compareValuesBy(
         this, other,
         Audio::mimeType,
