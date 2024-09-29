@@ -7,6 +7,7 @@ package org.lineageos.twelve.services
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.media.audiofx.AudioEffect
 import android.os.IBinder
 import androidx.annotation.OptIn
 import androidx.lifecycle.Lifecycle
@@ -16,8 +17,10 @@ import androidx.lifecycle.coroutineScope
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionParameters.AudioOffloadPreferences
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.LibraryResult
@@ -30,7 +33,7 @@ import org.lineageos.twelve.R
 import org.lineageos.twelve.TwelveApplication
 
 @OptIn(UnstableApi::class)
-class PlaybackService : MediaLibraryService(), LifecycleOwner {
+class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
     private val dispatcher = ServiceLifecycleDispatcher(this)
     override val lifecycle: Lifecycle
         get() = dispatcher.lifecycle
@@ -146,6 +149,8 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
             .setRenderersFactory(TurntableRenderersFactory(this))
             .build()
 
+        exoPlayer.addListener(this)
+
         exoPlayer.trackSelectionParameters = exoPlayer.trackSelectionParameters
             .buildUpon()
             .setAudioOffloadPreferences(
@@ -168,6 +173,10 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
                     setSmallIcon(R.drawable.ic_notification_small_icon)
                 }
         )
+
+        Util.generateAudioSessionIdV21(this).let {
+            exoPlayer.audioSessionId = it
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -189,6 +198,9 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
     override fun onDestroy() {
         dispatcher.onServicePreSuperOnDestroy()
 
+        closeAudioEffectSession()
+
+        mediaLibrarySession?.player?.removeListener(this)
         mediaLibrarySession?.player?.release()
         mediaLibrarySession?.release()
         mediaLibrarySession = null
@@ -197,6 +209,50 @@ class PlaybackService : MediaLibraryService(), LifecycleOwner {
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = mediaLibrarySession
+
+    override fun onAudioSessionIdChanged(audioSessionId: Int) {
+        (application as TwelveApplication).audioSessionId = audioSessionId
+    }
+
+    override fun onEvents(player: Player, events: Player.Events) {
+        if (events.containsAny(
+                Player.EVENT_PLAYBACK_STATE_CHANGED,
+                Player.EVENT_PLAY_WHEN_READY_CHANGED,
+                Player.EVENT_IS_PLAYING_CHANGED,
+                Player.EVENT_POSITION_DISCONTINUITY
+            )
+        ) {
+            if (player.playbackState != Player.STATE_ENDED && player.playWhenReady) {
+                openAudioEffectSession()
+            } else {
+                closeAudioEffectSession()
+            }
+        }
+    }
+
+    private fun openAudioEffectSession() {
+        Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
+            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, application.packageName)
+            putExtra(
+                AudioEffect.EXTRA_AUDIO_SESSION,
+                (application as TwelveApplication).audioSessionId
+            )
+            putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+            sendBroadcast(this)
+        }
+    }
+
+    private fun closeAudioEffectSession() {
+        Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
+            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, application.packageName)
+            putExtra(
+                AudioEffect.EXTRA_AUDIO_SESSION,
+                (application as TwelveApplication).audioSessionId
+            )
+            putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+            sendBroadcast(this)
+        }
+    }
 
     private fun getSingleTopActivity() = PendingIntent.getActivity(
         this,
