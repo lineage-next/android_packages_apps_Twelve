@@ -15,6 +15,7 @@ import androidx.media3.exoplayer.audio.DefaultAudioSink
 class TurntableRenderersFactory(context: Context) : DefaultRenderersFactory(context) {
     init {
         setEnableAudioFloatOutput(true)
+        setEnableAudioTrackPlaybackParams(true)
     }
 
     override fun buildAudioSink(
