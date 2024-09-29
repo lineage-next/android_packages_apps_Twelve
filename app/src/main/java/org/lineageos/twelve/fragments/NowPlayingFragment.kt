@@ -17,6 +17,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.ViewCompat
@@ -80,6 +81,12 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     // Progress slider state
     private var isProgressSliderDragging = false
     private var animator: ValueAnimator? = null
+
+    // AudioFX
+    private val audioEffectsStartForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            // Empty
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -158,15 +165,13 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
             val activity = requireActivity()
 
             // Open system equalizer
-            val intent = Intent.createChooser(
+            audioEffectsStartForResult.launch(
                 Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
                     putExtra(AudioEffect.EXTRA_PACKAGE_NAME, activity.packageName)
                     putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
                 },
                 null
             )
-
-            activity.startActivity(intent)
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
