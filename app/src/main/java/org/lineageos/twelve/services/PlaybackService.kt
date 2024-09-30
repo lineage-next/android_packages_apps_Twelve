@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ServiceLifecycleDispatcher
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -31,6 +32,7 @@ import kotlinx.coroutines.launch
 import org.lineageos.twelve.MainActivity
 import org.lineageos.twelve.R
 import org.lineageos.twelve.TwelveApplication
+import org.lineageos.twelve.ui.widgets.NowPlayingAppWidgetProvider
 
 @OptIn(UnstableApi::class)
 class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
@@ -272,6 +274,18 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
                     player.currentMediaItemIndex,
                     player.currentPosition
                 )
+            }
+        }
+
+        // Update the now playing widget
+        if (events.containsAny(
+                Player.EVENT_MEDIA_METADATA_CHANGED,
+                Player.EVENT_PLAYBACK_STATE_CHANGED,
+                Player.EVENT_PLAY_WHEN_READY_CHANGED,
+            )
+        ) {
+            lifecycleScope.launch {
+                NowPlayingAppWidgetProvider.update(this@PlaybackService)
             }
         }
     }

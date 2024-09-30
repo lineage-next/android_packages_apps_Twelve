@@ -57,11 +57,28 @@
         </service>
 
         <receiver
+            android:name=".services.PlaybackServiceActionsReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name="androidx.media3.session.MediaButtonReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".ui.widgets.NowPlayingAppWidgetProvider"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/app_widget_now_playing" />
+
         </receiver>
 
         <meta-data
