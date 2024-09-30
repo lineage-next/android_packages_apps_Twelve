@@ -103,4 +103,9 @@
     <string name="audio_bitrate">Bitrate</string>
     <string name="audio_bitrate_unknown">Unknown</string>
     <string name="audio_bitrate_format">%1$s kbps</string>
+
+    <!-- Now playing widget -->
+    <string name="now_playing_widget_dummy_title">Title</string>
+    <string name="now_playing_widget_dummy_artist">Artist</string>
+    <string name="now_playing_widget_dummy_album">Album</string>
 </resources>
