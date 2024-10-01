@@ -12,8 +12,8 @@ import org.lineageos.twelve.repositories.MediaRepository
 import kotlin.properties.Delegates
 
 class TwelveApplication : Application() {
-    private val database by lazy { TwelveDatabase.getInstance(this) }
-    val mediaRepository by lazy { MediaRepository(this, database) }
+    private val database by lazy { TwelveDatabase.getInstance(applicationContext) }
+    val mediaRepository by lazy { MediaRepository(applicationContext, database) }
     var audioSessionId by Delegates.notNull<Int>()
 
     override fun onCreate() {
