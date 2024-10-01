@@ -6,15 +6,17 @@
 package org.lineageos.twelve
 
 import android.app.Application
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
 import com.google.android.material.color.DynamicColors
 import org.lineageos.twelve.database.TwelveDatabase
 import org.lineageos.twelve.repositories.MediaRepository
-import kotlin.properties.Delegates
 
+@UnstableApi
 class TwelveApplication : Application() {
     private val database by lazy { TwelveDatabase.getInstance(applicationContext) }
     val mediaRepository by lazy { MediaRepository(applicationContext, database) }
-    var audioSessionId by Delegates.notNull<Int>()
+    val audioSessionId by lazy { Util.generateAudioSessionIdV21(applicationContext) }
 
     override fun onCreate() {
         super.onCreate()

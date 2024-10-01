@@ -20,7 +20,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionParameters.AudioOffloadPreferences
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.LibraryResult
@@ -174,9 +173,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
                 }
         )
 
-        Util.generateAudioSessionIdV21(this).let {
-            exoPlayer.audioSessionId = it
-        }
+        exoPlayer.audioSessionId = (application as TwelveApplication).audioSessionId
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -209,10 +206,6 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = mediaLibrarySession
-
-    override fun onAudioSessionIdChanged(audioSessionId: Int) {
-        (application as TwelveApplication).audioSessionId = audioSessionId
-    }
 
     override fun onEvents(player: Player, events: Player.Events) {
         if (events.containsAny(
