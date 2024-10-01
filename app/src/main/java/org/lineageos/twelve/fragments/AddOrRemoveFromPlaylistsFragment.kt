@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getParcelable
@@ -42,6 +43,7 @@ import org.lineageos.twelve.viewmodels.PlaylistsViewModel
 /**
  * Fragment from which you can add or remove a specific audio from a list of playlists.
  */
+@AndroidEntryPoint
 class AddOrRemoveFromPlaylistsFragment : Fragment(R.layout.fragment_add_or_remove_from_playlists) {
     // View models
     private val playlistsViewModel by viewModels<PlaylistsViewModel>()

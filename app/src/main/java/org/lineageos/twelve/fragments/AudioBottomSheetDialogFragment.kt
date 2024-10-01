@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getParcelable
@@ -31,6 +32,7 @@ import org.lineageos.twelve.viewmodels.AudioViewModel
 /**
  * Audio information.
  */
+@AndroidEntryPoint
 class AudioBottomSheetDialogFragment : BottomSheetDialogFragment(
     R.layout.fragment_audio_bottom_sheet_dialog
 ) {

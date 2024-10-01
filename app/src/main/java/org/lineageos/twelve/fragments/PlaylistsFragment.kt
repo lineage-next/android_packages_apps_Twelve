@@ -20,6 +20,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -38,6 +39,7 @@ import org.lineageos.twelve.viewmodels.PlaylistsViewModel
 /**
  * View all music playlists.
  */
+@AndroidEntryPoint
 class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     // View models
     private val viewModel by viewModels<PlaylistsViewModel>()

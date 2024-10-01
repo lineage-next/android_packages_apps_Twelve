@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -34,6 +35,7 @@ import org.lineageos.twelve.viewmodels.GenresViewModel
 /**
  * View all music genres.
  */
+@AndroidEntryPoint
 class GenresFragment : Fragment(R.layout.fragment_genres) {
     // View models
     private val viewModel by viewModels<GenresViewModel>()

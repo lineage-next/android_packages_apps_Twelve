@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -47,6 +48,7 @@ import org.lineageos.twelve.viewmodels.SearchViewModel
 /**
  * Search across all contents.
  */
+@AndroidEntryPoint
 class SearchFragment : Fragment(R.layout.fragment_search) {
     // View models
     private val viewModel by viewModels<SearchViewModel>()

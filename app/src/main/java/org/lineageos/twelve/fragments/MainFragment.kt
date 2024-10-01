@@ -18,6 +18,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -28,6 +29,7 @@ import org.lineageos.twelve.viewmodels.NowPlayingViewModel
 /**
  * The home page.
  */
+@AndroidEntryPoint
 class MainFragment : Fragment(R.layout.fragment_main) {
     // View models
     private val viewModel by viewModels<NowPlayingViewModel>()

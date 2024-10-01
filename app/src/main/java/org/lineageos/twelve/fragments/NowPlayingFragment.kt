@@ -36,20 +36,23 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.slider.Slider
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
-import org.lineageos.twelve.TwelveApplication
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.RepeatMode
+import org.lineageos.twelve.modules.AudioSessionIdModule
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
 import java.util.Locale
+import javax.inject.Inject
 import kotlin.math.roundToLong
 
 /**
  * Now playing fragment.
  */
+@AndroidEntryPoint
 class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     // View models
     private val viewModel by viewModels<NowPlayingViewModel>()
@@ -88,6 +91,9 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             // Empty
         }
+
+    @Inject
+    lateinit var audioSessionId: AudioSessionIdModule.AudioSessionId
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -171,7 +177,7 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                     putExtra(AudioEffect.EXTRA_PACKAGE_NAME, activity.packageName)
                     putExtra(
                         AudioEffect.EXTRA_AUDIO_SESSION,
-                        (activity.application as TwelveApplication).audioSessionId
+                        audioSessionId.id
                     )
                     putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
                 },

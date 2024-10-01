@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kapt)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt)
 }
 
 apply {
@@ -43,6 +44,10 @@ android {
                 arg("room.schemaLocation", "$projectDir/schemas")
             }
         }
+    }
+
+    kapt {
+        correctErrorTypes = true
     }
 
     buildTypes {
@@ -92,6 +97,8 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.material)
+    implementation(libs.hilt)
+    kapt(libs.hilt.compiler)
 }
 
 configure<GenerateBpPluginExtension> {

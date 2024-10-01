@@ -5,15 +5,23 @@
 
 package org.lineageos.twelve.viewmodels
 
-import android.app.Application
 import androidx.lifecycle.viewModelScope
+import androidx.media3.session.MediaController
+import com.google.common.util.concurrent.ListenableFuture
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import org.lineageos.twelve.models.RequestStatus
+import org.lineageos.twelve.repositories.MediaRepository
+import javax.inject.Inject
 
-class ArtistsViewModel(application: Application) : TwelveViewModel(application) {
+@HiltViewModel
+class ArtistsViewModel @Inject constructor(
+    mediaRepository: MediaRepository,
+    futureMediaController: ListenableFuture<MediaController>
+) : TwelveViewModel(mediaRepository, futureMediaController) {
     val artists = mediaRepository.artists()
         .flowOn(Dispatchers.IO)
         .stateIn(

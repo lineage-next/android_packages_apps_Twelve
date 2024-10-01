@@ -20,19 +20,21 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionParameters.AudioOffloadPreferences
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionError
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.guava.future
 import org.lineageos.twelve.MainActivity
 import org.lineageos.twelve.R
-import org.lineageos.twelve.TwelveApplication
+import org.lineageos.twelve.modules.AudioSessionIdModule
+import javax.inject.Inject
 
 @OptIn(UnstableApi::class)
+@AndroidEntryPoint
 class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
     private val dispatcher = ServiceLifecycleDispatcher(this)
     override val lifecycle: Lifecycle
@@ -40,12 +42,11 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
 
     private var mediaLibrarySession: MediaLibrarySession? = null
 
-    private val mediaRepositoryTree by lazy {
-        MediaRepositoryTree(
-            applicationContext,
-            (application as TwelveApplication).mediaRepository,
-        )
-    }
+    @Inject
+    lateinit var mediaRepositoryTree: MediaRepositoryTree
+
+    @Inject
+    lateinit var audioSessionId: AudioSessionIdModule.AudioSessionId
 
     private val mediaLibrarySessionCallback = object : MediaLibrarySession.Callback {
         override fun onPlaybackResumption(
@@ -174,9 +175,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
                 }
         )
 
-        Util.generateAudioSessionIdV21(this).let {
-            exoPlayer.audioSessionId = it
-        }
+        exoPlayer.audioSessionId = audioSessionId.id
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -210,10 +209,6 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = mediaLibrarySession
 
-    override fun onAudioSessionIdChanged(audioSessionId: Int) {
-        (application as TwelveApplication).audioSessionId = audioSessionId
-    }
-
     override fun onEvents(player: Player, events: Player.Events) {
         if (events.containsAny(
                 Player.EVENT_PLAYBACK_STATE_CHANGED,
@@ -235,7 +230,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, application.packageName)
             putExtra(
                 AudioEffect.EXTRA_AUDIO_SESSION,
-                (application as TwelveApplication).audioSessionId
+                audioSessionId.id
             )
             putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
             sendBroadcast(this)
@@ -247,7 +242,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, application.packageName)
             putExtra(
                 AudioEffect.EXTRA_AUDIO_SESSION,
-                (application as TwelveApplication).audioSessionId
+                audioSessionId.id
             )
             putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
             sendBroadcast(this)
