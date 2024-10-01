@@ -27,6 +27,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -47,6 +48,7 @@ import org.lineageos.twelve.viewmodels.ArtistViewModel
 /**
  * Single artist viewer.
  */
+@AndroidEntryPoint
 class ArtistFragment : Fragment(R.layout.fragment_artist) {
     // View models
     private val viewModel by viewModels<ArtistViewModel>()

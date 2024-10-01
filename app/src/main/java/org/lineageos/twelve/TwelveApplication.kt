@@ -7,15 +7,10 @@ package org.lineageos.twelve
 
 import android.app.Application
 import com.google.android.material.color.DynamicColors
-import org.lineageos.twelve.database.TwelveDatabase
-import org.lineageos.twelve.repositories.MediaRepository
-import kotlin.properties.Delegates
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class TwelveApplication : Application() {
-    private val database by lazy { TwelveDatabase.getInstance(applicationContext) }
-    val mediaRepository by lazy { MediaRepository(applicationContext, database) }
-    var audioSessionId by Delegates.notNull<Int>()
-
     override fun onCreate() {
         super.onCreate()
 

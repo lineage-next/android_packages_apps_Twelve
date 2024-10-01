@@ -5,11 +5,19 @@
 
 package org.lineageos.twelve.viewmodels
 
-import android.app.Application
+import androidx.media3.session.MediaController
+import com.google.common.util.concurrent.ListenableFuture
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.lineageos.twelve.ext.next
 import org.lineageos.twelve.ext.typedRepeatMode
+import org.lineageos.twelve.repositories.MediaRepository
+import javax.inject.Inject
 
-class NowPlayingViewModel(application: Application) : TwelveViewModel(application) {
+@HiltViewModel
+class NowPlayingViewModel @Inject constructor(
+    mediaRepository: MediaRepository,
+    futureMediaController: ListenableFuture<MediaController>
+) : TwelveViewModel(mediaRepository, futureMediaController) {
     enum class PlaybackSpeed(val value: Float) {
         ONE(1f),
         ONE_POINT_FIVE(1.5f),

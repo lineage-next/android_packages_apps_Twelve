@@ -5,16 +5,14 @@
 
 package org.lineageos.twelve.viewmodels
 
-import android.app.Application
-import android.content.ComponentName
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
-import androidx.media3.session.SessionToken
+import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -29,8 +27,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.guava.await
-import org.lineageos.twelve.TwelveApplication
-import org.lineageos.twelve.ext.applicationContext
 import org.lineageos.twelve.ext.availableCommandsFlow
 import org.lineageos.twelve.ext.isPlayingFlow
 import org.lineageos.twelve.ext.mediaItemFlow
@@ -42,29 +38,19 @@ import org.lineageos.twelve.ext.tracksFlow
 import org.lineageos.twelve.ext.typedRepeatMode
 import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.RepeatMode
-import org.lineageos.twelve.services.PlaybackService
+import org.lineageos.twelve.repositories.MediaRepository
 
 /**
  * Base view model for all app view models.
  * Here we keep the shared stuff every fragment could use, like access to the repository and
  * the media controller to interact with the playback service.
  */
-abstract class TwelveViewModel(application: Application) : AndroidViewModel(application) {
-    protected val mediaRepository = getApplication<TwelveApplication>().mediaRepository
-
-    final override fun <T : Application> getApplication() = super.getApplication<T>()
-
-    private val sessionToken by lazy {
-        SessionToken(
-            applicationContext,
-            ComponentName(applicationContext, PlaybackService::class.java)
-        )
-    }
-
+abstract class TwelveViewModel(
+    protected val mediaRepository: MediaRepository,
+    private val futureMediaController: ListenableFuture<MediaController>
+) : ViewModel() {
     private val mediaControllerFlow = channelFlow {
-        val mediaController = MediaController.Builder(applicationContext, sessionToken)
-            .buildAsync()
-            .await()
+        val mediaController = futureMediaController.await()
 
         trySend(mediaController)
 

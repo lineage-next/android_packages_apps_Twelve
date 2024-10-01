@@ -14,12 +14,14 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getViewProperty
 
 /**
  * Music library.
  */
+@AndroidEntryPoint
 class LibraryFragment : Fragment(R.layout.fragment_library) {
     // Views
     private val tabLayout by getViewProperty<TabLayout>(R.id.tabLayout)

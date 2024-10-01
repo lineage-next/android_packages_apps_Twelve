@@ -5,12 +5,14 @@
 
 package org.lineageos.twelve.viewmodels
 
-import android.app.Application
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.audio.DefaultAudioSink
+import androidx.media3.session.MediaController
+import com.google.common.util.concurrent.ListenableFuture
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,10 +23,16 @@ import kotlinx.coroutines.flow.stateIn
 import org.lineageos.twelve.models.AudioOutputMode
 import org.lineageos.twelve.models.AudioStreamInformation
 import org.lineageos.twelve.models.Encoding
+import org.lineageos.twelve.repositories.MediaRepository
 import org.lineageos.twelve.services.ProxyAudioProcessor
 import org.lineageos.twelve.services.ProxyDefaultAudioTrackBufferSizeProvider
+import javax.inject.Inject
 
-class NowPlayingStatsViewModel(application: Application) : TwelveViewModel(application) {
+@HiltViewModel
+class NowPlayingStatsViewModel @Inject constructor(
+    mediaRepository: MediaRepository,
+    futureMediaController: ListenableFuture<MediaController>
+) : TwelveViewModel(mediaRepository, futureMediaController) {
     /**
      * [AudioStreamInformation] parsed from the currently selected audio track returned by the
      * player.

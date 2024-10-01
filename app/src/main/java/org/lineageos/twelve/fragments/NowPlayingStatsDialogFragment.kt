@@ -17,6 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -29,6 +30,7 @@ import java.util.Locale
  * A fragment showing playback statistics for nerds and audiophiles thinking that audio files
  * with a sample rate higher than 48 kHz is better.
  */
+@AndroidEntryPoint
 class NowPlayingStatsDialogFragment : DialogFragment(R.layout.fragment_now_playing_stats_dialog) {
     // View models
     private val viewModel by viewModels<NowPlayingStatsViewModel>()
