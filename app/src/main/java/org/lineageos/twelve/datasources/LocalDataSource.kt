@@ -34,9 +34,9 @@ import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.query.Query
 import org.lineageos.twelve.query.and
+import org.lineageos.twelve.query.query
 import org.lineageos.twelve.query.eq
 import org.lineageos.twelve.query.`in`
-import org.lineageos.twelve.query.join
 import org.lineageos.twelve.query.like
 import org.lineageos.twelve.query.neq
 
@@ -201,8 +201,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             albumsUri,
             albumsProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.AlbumColumns.ALBUM like Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.AlbumColumns.ALBUM like Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(query),
             )
         ).mapEachRow(albumsProjection, mapAlbum),
@@ -210,8 +211,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             artistsUri,
             artistsProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.ArtistColumns.ARTIST like Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.ArtistColumns.ARTIST like Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(query),
             )
         ).mapEachRow(artistsProjection, mapArtist),
@@ -219,8 +221,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             audiosUri,
             audiosProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.AudioColumns.TITLE like Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.AudioColumns.TITLE like Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(query),
             )
         ).mapEachRow(audiosProjection, mapAudio),
@@ -228,8 +231,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             genresUri,
             genresProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.GenresColumns.NAME like Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.GenresColumns.NAME like Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(query),
             )
         ).mapEachRow(genresProjection, mapGenre),
@@ -241,8 +245,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
         audiosUri,
         audiosProjection,
         bundleOf(
-            ContentResolver.QUERY_ARG_SQL_SELECTION to
-                    (MediaStore.Audio.AudioColumns._ID eq Query.ARG).build(),
+            ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                MediaStore.Audio.AudioColumns._ID eq Query.ARG
+            },
             ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                 ContentUris.parseId(audioUri).toString(),
             ),
@@ -258,8 +263,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             albumsUri,
             albumsProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.AudioColumns._ID eq Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.AudioColumns._ID eq Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                     ContentUris.parseId(albumUri).toString(),
                 ),
@@ -269,8 +275,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             audiosUri,
             audiosProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.AudioColumns.ALBUM_ID eq Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.AudioColumns.ALBUM_ID eq Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                     ContentUris.parseId(albumUri).toString(),
                 ),
@@ -287,8 +294,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             artistsUri,
             artistsProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.AudioColumns._ID eq Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.AudioColumns._ID eq Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                     ContentUris.parseId(artistUri).toString(),
                 ),
@@ -298,8 +306,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             albumsUri,
             albumsProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.AlbumColumns.ARTIST_ID eq Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.AlbumColumns.ARTIST_ID eq Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                     ContentUris.parseId(artistUri).toString(),
                 ),
@@ -309,8 +318,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             audiosUri,
             audioAlbumIdsProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.AudioColumns.ARTIST_ID eq Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.AudioColumns.ARTIST_ID eq Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                     ContentUris.parseId(artistUri).toString(),
                 ),
@@ -324,12 +334,12 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
                 albumsUri,
                 albumsProjection,
                 bundleOf(
-                    ContentResolver.QUERY_ARG_SQL_SELECTION to listOf(
-                        MediaStore.Audio.AudioColumns.ARTIST_ID neq Query.ARG,
-                        MediaStore.Audio.AudioColumns._ID `in` List(albumIds.size) {
-                            Query.ARG
-                        },
-                    ).join(Query::and).build(),
+                    ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                        (MediaStore.Audio.AudioColumns.ARTIST_ID neq Query.ARG) and
+                                (MediaStore.Audio.AudioColumns._ID `in` List(albumIds.size) {
+                                    Query.ARG
+                                })
+                    },
                     ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                         ContentUris.parseId(artistUri).toString(),
                         *albumIds
@@ -356,8 +366,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             genresUri,
             genresProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.AudioColumns._ID eq Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.AudioColumns._ID eq Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                     ContentUris.parseId(genreUri).toString(),
                 ),
@@ -367,8 +378,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             audiosUri,
             audiosProjection,
             bundleOf(
-                ContentResolver.QUERY_ARG_SQL_SELECTION to
-                        (MediaStore.Audio.AudioColumns.GENRE_ID eq Query.ARG).build(),
+                ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                    MediaStore.Audio.AudioColumns.GENRE_ID eq Query.ARG
+                },
                 ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to arrayOf(
                     ContentUris.parseId(genreUri).toString(),
                 ),
@@ -455,10 +467,11 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
         audiosUri,
         audiosProjection,
         bundleOf(
-            ContentResolver.QUERY_ARG_SQL_SELECTION to
-                    (MediaStore.Audio.AudioColumns._ID `in` List(audioUris.size) {
-                        Query.ARG
-                    }).build(),
+            ContentResolver.QUERY_ARG_SQL_SELECTION to query {
+                MediaStore.Audio.AudioColumns._ID `in` List(audioUris.size) {
+                    Query.ARG
+                }
+            },
             ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS to audioUris.map {
                 ContentUris.parseId(it).toString()
             }.toTypedArray(),

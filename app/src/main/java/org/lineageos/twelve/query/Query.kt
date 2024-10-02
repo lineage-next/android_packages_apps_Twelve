@@ -7,49 +7,36 @@ package org.lineageos.twelve.query
 
 typealias Column = String
 
-sealed interface Node {
-    fun build(): String = when (this) {
-        is And -> "(${lhs.build()}) AND (${rhs.build()})"
-        is Eq -> "${lhs.build()} = ${rhs.build()}"
-        is Neq -> "${lhs.build()} != ${rhs.build()}"
-        is In<*> -> "$value IN (${values.joinToString(", ")})"
-        is Like -> "${lhs.build()} LIKE ${rhs.build()}"
-        is Literal<*> -> "$`val`"
-        is Or -> "(${lhs.build()}) OR (${rhs.build()})"
-    }
-}
-
-private class And(val lhs: Node, val rhs: Node) : Node
-private class Eq(val lhs: Node, val rhs: Node) : Node
-private class Neq(val lhs: Node, val rhs: Node) : Node
-private class In<T>(val value: T, val values: Collection<T>) : Node
-private class Like(val lhs: Node, val rhs: Node) : Node
-private class Literal<T>(val `val`: T) : Node
-private class Or(val lhs: Node, val rhs: Node) : Node
-
-class Query(val root: Node) {
-    fun build() = root.build()
+sealed interface Query {
+    fun build(): String
 
     companion object {
         const val ARG = "?"
     }
 }
 
-infix fun Query.and(other: Query) = Query(And(this.root, other.root))
-infix fun Query.eq(other: Query) = Query(Eq(this.root, other.root))
-infix fun Query.neq(other: Query) = Query(Neq(this.root, other.root))
-infix fun Query.like(other: Query) = Query(Like(this.root, other.root))
-infix fun Query.or(other: Query) = Query(Or(this.root, other.root))
+enum class Operator(val symbol: String) {
+    AND("AND"), OR("OR"), EQUALS("="), NOT_EQUALS("!="), LIKE("LIKE"),
+}
 
-infix fun <T> Column.eq(other: T) = Query(Literal(this)) eq Query(Literal(other))
-infix fun <T> Column.neq(other: T) = Query(Literal(this)) neq Query(Literal(other))
-infix fun <T> Column.`in`(values: Collection<T>) = Query(In(this, values))
-infix fun <T> Column.like(other: T) = Query(Literal(this)) like Query(Literal(other))
+class LogicalOp(private val lhs: Query, private val op: Operator, private val rhs: Query) : Query {
+    override fun build() = "(${lhs.build()}) ${op.symbol} (${rhs.build()})"
+}
 
-fun Iterable<Query>.join(
-    func: Query.(other: Query) -> Query,
-) = reduce(func)
+class StringOp<T>(private val lhs: Column, private val op: Operator, private val rhs: T) : Query {
+    override fun build() = "$lhs ${op.symbol} $rhs"
+}
 
-fun Iterable<Query>.joinNullable(
-    func: Query.(other: Query) -> Query,
-) = reduceOrNull(func)
+class In<T>(private val value: T, private val values: Collection<T>) : Query {
+    override fun build() = "$value IN (${values.joinToString(", ")})"
+}
+
+infix fun Query.and(other: Query) = LogicalOp(this, Operator.AND, other)
+infix fun Query.or(other: Query) = LogicalOp(this, Operator.OR, other)
+
+infix fun Column.eq(other: String) = StringOp(this, Operator.EQUALS, other)
+infix fun Column.neq(other: String) = StringOp(this, Operator.NOT_EQUALS, other)
+infix fun Column.like(other: String) = StringOp(this, Operator.LIKE, other)
+infix fun <T> Column.`in`(values: Collection<T>) = In(this, values)
+
+inline fun query(block: () -> Query) = block().build()
