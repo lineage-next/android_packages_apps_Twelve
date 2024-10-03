@@ -44,6 +44,7 @@ import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.RepeatMode
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
+import org.lineageos.twelve.viewmodels.VisualizerViewModel
 import java.util.Locale
 import kotlin.math.roundToLong
 
@@ -53,6 +54,7 @@ import kotlin.math.roundToLong
 class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     // View models
     private val viewModel by viewModels<NowPlayingViewModel>()
+    private val visualizerViewModel by viewModels<VisualizerViewModel>()
 
     // Views
     private val addOrRemoveFromPlaylistsMaterialButton by getViewProperty<MaterialButton>(R.id.addOrRemoveFromPlaylistsMaterialButton)
@@ -189,6 +191,19 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                 false -> R.drawable.ic_play_arrow
                             }
                         )
+
+                        if (isPlaying) {
+                            launch {
+                                visualizerViewModel.amplitude.collectLatest {
+                                    println("amplitude $it")
+                                }
+                            }
+                            launch {
+                                visualizerViewModel.energy.collectLatest {
+                                    println("energy $it")
+                                }
+                            }
+                        }
                     }
                 }
 
