@@ -22,6 +22,8 @@ import org.lineageos.twelve.database.entities.Playlist
 import org.lineageos.twelve.database.entities.PlaylistItemCrossRef
 import org.lineageos.twelve.database.entities.ResumptionItem
 import org.lineageos.twelve.database.entities.ResumptionPlaylist
+import org.lineageos.twelve.database.dao.SubsonicProviderDao
+import org.lineageos.twelve.database.entities.SubsonicProvider
 
 @Database(
     entities = [
@@ -33,10 +35,14 @@ import org.lineageos.twelve.database.entities.ResumptionPlaylist
         /* Resumption */
         ResumptionItem::class,
         ResumptionPlaylist::class,
+
+        /* Providers */
+        SubsonicProvider::class,
     ],
-    version = 2,
+    version = 3,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
     ],
 )
 @TypeConverters(UriConverter::class)
@@ -46,6 +52,7 @@ abstract class TwelveDatabase : RoomDatabase() {
     abstract fun getPlaylistItemCrossRefDao(): PlaylistItemCrossRefDao
     abstract fun getPlaylistWithItemsDao(): PlaylistWithItemsDao
     abstract fun getResumptionPlaylistDao(): ResumptionPlaylistDao
+    abstract fun getSubsonicProviderDao(): SubsonicProviderDao
 
     companion object {
         @Volatile
