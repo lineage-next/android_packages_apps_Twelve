@@ -1,0 +1,21 @@
+/*
+ * SPDX-FileCopyrightText: 2024 The LineageOS Project
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+package org.lineageos.twelve.datasources.subsonic.models
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ArtistID3(
+    val id: String,
+    val name: String,
+    val coverArt: String? = null,
+    val artistImageUrl: UriAsString? = null,
+    val albumCount: Int,
+    val starred: Boolean? = null,
+
+    // OpenSubsonic
+    val sortName: String? = null,
+)
