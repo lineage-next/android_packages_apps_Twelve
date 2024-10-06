@@ -6,6 +6,7 @@
 package org.lineageos.twelve.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -15,17 +16,23 @@ import org.lineageos.twelve.database.dao.ItemDao
 import org.lineageos.twelve.database.dao.PlaylistDao
 import org.lineageos.twelve.database.dao.PlaylistItemCrossRefDao
 import org.lineageos.twelve.database.dao.PlaylistWithItemsDao
+import org.lineageos.twelve.database.dao.SubsonicProviderDao
 import org.lineageos.twelve.database.entities.Item
 import org.lineageos.twelve.database.entities.Playlist
 import org.lineageos.twelve.database.entities.PlaylistItemCrossRef
+import org.lineageos.twelve.database.entities.SubsonicProvider
 
 @Database(
     entities = [
         Playlist::class,
         Item::class,
         PlaylistItemCrossRef::class,
+        SubsonicProvider::class,
     ],
-    version = 1,
+    version = 2,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+    ]
 )
 @TypeConverters(UriConverter::class)
 abstract class TwelveDatabase : RoomDatabase() {
@@ -33,6 +40,7 @@ abstract class TwelveDatabase : RoomDatabase() {
     abstract fun getPlaylistDao(): PlaylistDao
     abstract fun getPlaylistItemCrossRefDao(): PlaylistItemCrossRefDao
     abstract fun getPlaylistWithItemsDao(): PlaylistWithItemsDao
+    abstract fun getSubsonicProviderDao(): SubsonicProviderDao
 
     companion object {
         @Volatile
