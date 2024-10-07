@@ -7,12 +7,15 @@ package org.lineageos.twelve.models
 
 import android.net.Uri
 import androidx.media3.common.MediaMetadata
+import androidx.media3.exoplayer.source.MediaSource
 import org.lineageos.twelve.ext.buildMediaItem
 
 /**
  * An audio.
  *
  * @param uri The URI of the audio
+ * @param playbackUri A URI that is understood by Media3 to play the audio. If required, this can be
+ *   equal to [uri] and a proper [MediaSource.Factory] can be implemented
  * @param mimeType The MIME type of the audio
  * @param title The title of the audio
  * @param type The type of the audio
@@ -28,6 +31,7 @@ import org.lineageos.twelve.ext.buildMediaItem
  */
 data class Audio(
     override val uri: Uri,
+    val playbackUri: Uri,
     val mimeType: String,
     val title: String,
     val type: Type,
@@ -90,7 +94,7 @@ data class Audio(
         album = albumTitle,
         artist = artistName,
         genre = genreName,
-        sourceUri = uri,
+        sourceUri = playbackUri,
         mimeType = mimeType,
     )
 

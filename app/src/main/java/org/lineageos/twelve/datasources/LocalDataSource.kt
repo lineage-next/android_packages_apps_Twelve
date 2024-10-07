@@ -155,6 +155,7 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
 
         Audio(
             uri,
+            uri,
             mimeType,
             title,
             audioType,
