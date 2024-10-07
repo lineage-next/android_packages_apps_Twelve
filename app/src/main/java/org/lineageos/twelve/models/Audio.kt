@@ -23,6 +23,7 @@ import org.lineageos.twelve.ext.buildMediaItem
  * @param albumTitle The title of the album of the audio
  * @param albumTrack The track number of the audio in the album
  * @param genreUri The URI of the genre of the audio
+ * @param genreName The name of the genre of the audio
  * @param year The year of release of the audio
  */
 data class Audio(
@@ -36,9 +37,9 @@ data class Audio(
     val albumUri: Uri,
     val albumTitle: String,
     val albumTrack: Int,
-    val genreUri: Uri,
-    val genre: String?,
-    val year: Int,
+    val genreUri: Uri?,
+    val genreName: String?,
+    val year: Int?,
 ) : MediaItem<Audio> {
     enum class Type(
         val media3MediaType: @MediaMetadata.MediaType Int,
@@ -76,7 +77,7 @@ data class Audio(
         Audio::albumTitle,
         Audio::albumTrack,
         Audio::genreUri,
-        Audio::genre,
+        Audio::genreName,
         Audio::year,
     ) == 0
 
@@ -88,7 +89,7 @@ data class Audio(
         mediaType = type.media3MediaType,
         album = albumTitle,
         artist = artistName,
-        genre = genre,
+        genre = genreName,
         sourceUri = uri,
         mimeType = mimeType,
     )

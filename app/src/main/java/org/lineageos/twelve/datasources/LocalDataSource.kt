@@ -166,7 +166,7 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             track,
             genreUri,
             genre,
-            year,
+            year.takeIf { it != 0 },
         )
     }
 
