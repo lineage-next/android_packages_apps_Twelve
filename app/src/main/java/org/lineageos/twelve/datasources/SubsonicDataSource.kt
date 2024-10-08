@@ -58,6 +58,10 @@ class SubsonicDataSource(arguments: Bundle) : MediaDataSource {
         .appendPath(PLAYLISTS_PATH)
         .build()
 
+    override fun isMediaItemCompatible(mediaItemUri: Uri) = mediaItemUri.toString().startsWith(
+        dataSourceBaseUri.toString()
+    )
+
     override fun albums() = suspend {
         subsonicClient.getAlbumList2("alphabeticalByName", 500).toRequestStatus {
             album.map { it.toMediaItem() }
