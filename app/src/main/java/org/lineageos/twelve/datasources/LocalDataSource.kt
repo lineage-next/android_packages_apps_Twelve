@@ -34,11 +34,11 @@ import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.query.Query
 import org.lineageos.twelve.query.and
-import org.lineageos.twelve.query.query
 import org.lineageos.twelve.query.eq
 import org.lineageos.twelve.query.`in`
 import org.lineageos.twelve.query.like
 import org.lineageos.twelve.query.neq
+import org.lineageos.twelve.query.query
 
 /**
  * [MediaStore.Audio] backed data source.
