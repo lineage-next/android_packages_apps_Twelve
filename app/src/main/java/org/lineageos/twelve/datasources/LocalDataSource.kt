@@ -533,16 +533,20 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
         /**
          * Dummy internal database scheme.
          */
-        private const val DATABASE_SCHEME = "twelvedatabase"
+        private const val DATABASE_SCHEME = "twelve_database"
 
         /**
-         * Dummy internal database [Uri].
+         * Dummy database playlists authority.
          */
-        private val playlistsBaseUri = Uri.fromParts(
-            DATABASE_SCHEME,
-            "playlist",
-            null
-        )
+        private const val PLAYLISTS_AUTHORITY = "playlists"
+
+        /**
+         * Dummy internal database playlists [Uri].
+         */
+        private val playlistsBaseUri = Uri.Builder()
+            .scheme(DATABASE_SCHEME)
+            .authority(PLAYLISTS_AUTHORITY)
+            .build()
 
         private fun org.lineageos.twelve.database.entities.Playlist.toModel() = Playlist(
             ContentUris.withAppendedId(playlistsBaseUri, id),
