@@ -73,6 +73,12 @@ class MediaRepository(context: Context, database: TwelveDatabase) {
         localDataSource.playlist(playlistUri)
 
     /**
+     * @see MediaDataSource.audioPlaylistsStatus
+     */
+    fun audioPlaylistsStatus(audioUri: Uri): Flow<RequestStatus<List<Pair<Playlist, Boolean>>>> =
+        localDataSource.audioPlaylistsStatus(audioUri)
+
+    /**
      * @see MediaDataSource.createPlaylist
      */
     suspend fun createPlaylist(name: String): RequestStatus<Uri> =
@@ -101,10 +107,4 @@ class MediaRepository(context: Context, database: TwelveDatabase) {
      */
     suspend fun removeAudioFromPlaylist(playlistUri: Uri, audioUri: Uri): RequestStatus<Unit> =
         localDataSource.removeAudioFromPlaylist(playlistUri, audioUri)
-
-    /**
-     * @see MediaDataSource.audioPlaylistsStatus
-     */
-    fun audioPlaylistsStatus(audioUri: Uri): Flow<RequestStatus<List<Pair<Playlist, Boolean>>>> =
-        localDataSource.audioPlaylistsStatus(audioUri)
 }
