@@ -90,6 +90,8 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.viewpager2)
+    implementation(libs.coil)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.material)
 }
@@ -107,6 +109,8 @@ configure<GenerateBpPluginExtension> {
             module.group == "com.google.code.findbugs" -> true
             module.group == "com.google.errorprone" -> true
             module.group == "com.google.guava" -> true
+            module.group == "com.squareup.okhttp3" -> true
+            module.group == "com.squareup.okio" -> true
             module.group == "junit" -> true
             else -> false
         }
