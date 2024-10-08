@@ -32,6 +32,7 @@ import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.Genre
 import org.lineageos.twelve.models.Playlist
 import org.lineageos.twelve.models.RequestStatus
+import org.lineageos.twelve.models.Thumbnail
 import org.lineageos.twelve.query.Query
 import org.lineageos.twelve.query.and
 import org.lineageos.twelve.query.eq
@@ -68,7 +69,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             contentResolver.loadThumbnail(
                 uri, Size(512, 512), null
             )
-        }.getOrNull()
+        }.getOrNull()?.let {
+            Thumbnail(bitmap = it)
+        }
 
         Album(
             uri,
@@ -92,7 +95,9 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
             contentResolver.loadThumbnail(
                 uri, Size(512, 512), null
             )
-        }.getOrNull()
+        }.getOrNull()?.let {
+            Thumbnail(bitmap = it)
+        }
 
         Artist(
             uri,

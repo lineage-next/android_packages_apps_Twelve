@@ -5,7 +5,6 @@
 
 package org.lineageos.twelve.models
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.media3.common.MediaMetadata
 import org.lineageos.twelve.ext.buildMediaItem
@@ -26,7 +25,7 @@ data class Album(
     val artistUri: Uri,
     val artistName: String,
     val year: Int?,
-    val thumbnail: Bitmap?,
+    val thumbnail: Thumbnail?,
 ) : MediaItem<Album> {
     override fun areContentsTheSame(other: Album) = compareValuesBy(
         this, other,
@@ -34,7 +33,7 @@ data class Album(
         Album::artistUri,
         Album::artistName,
         Album::year,
-        { it.thumbnail?.sameAs(other.thumbnail) ?: (other.thumbnail == null) },
+        Album::thumbnail,
     ) == 0
 
     override fun toMedia3MediaItem() = buildMediaItem(

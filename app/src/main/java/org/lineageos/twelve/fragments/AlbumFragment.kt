@@ -5,6 +5,7 @@
 
 package org.lineageos.twelve.fragments
 
+import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -27,7 +28,6 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -177,9 +177,18 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
                     toolbar.title = album.title
                     albumTitleTextView.text = album.title
 
-                    coroutineScope {
-                        thumbnailImageView.setImageBitmap(album.thumbnail)
-                    }
+                    album.thumbnail?.uri?.also { uri ->
+                        ImageDecoder.createSource(
+                            requireContext().contentResolver,
+                            uri
+                        ).let { source ->
+                            ImageDecoder.decodeBitmap(source)
+                        }.also { bitmap ->
+                            thumbnailImageView.setImageBitmap(bitmap)
+                        }
+                    } ?: album.thumbnail?.bitmap?.also { bitmap ->
+                        thumbnailImageView.setImageBitmap(bitmap)
+                    } ?: thumbnailImageView.setImageResource(R.drawable.ic_album)
 
                     artistNameTextView.text = album.artistName
                     artistNameTextView.setOnClickListener {
