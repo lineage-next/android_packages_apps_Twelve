@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2024 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_provider_selector_dialog"
+    app:startDestination="@id/providerSelectorDialogFragment">
+
+    <dialog
+        android:id="@+id/providerSelectorDialogFragment"
+        android:name="org.lineageos.twelve.fragments.ProviderSelectorDialogFragment"
+        android:label="@string/providers"
+        tools:layout="@layout/fragment_provider_selector_dialog">
+
+        <action
+            android:id="@+id/action_providerSelectorDialogFragment_to_fragment_manage_provider"
+            app:destination="@+id/fragment_manage_provider"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
+    </dialog>
+
+</navigation>

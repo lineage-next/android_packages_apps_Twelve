@@ -104,9 +104,29 @@
     <string name="audio_bitrate_unknown">Unknown</string>
     <string name="audio_bitrate_format">%1$s kbps</string>
 
+    <!-- Provider types -->
+    <string name="provider_type_local">Local</string>
+    <string name="provider_type_subsonic" translatable="false">Subsonic / OpenSubsonic</string>
+
     <!-- Provider arguments -->
     <string name="provider_argument_server">Server</string>
     <string name="provider_argument_username">Username</string>
     <string name="provider_argument_password">Password</string>
     <string name="provider_argument_use_legacy_authentication">Use legacy authentication</string>
+
+    <!-- Provider selector dialog fragment -->
+    <string name="providers">Providers</string>
+    <string name="add_provider_action">Add</string>
+
+    <!-- Manage provider fragment -->
+    <string name="add_provider">Add provider</string>
+    <string name="manage_provider">Manage provider</string>
+    <string name="save_provider_action">Save</string>
+    <string name="delete_provider_action">Delete</string>
+    <string name="delete_provider_confirmation">Are you sure you want to delete this provider?</string>
+    <string name="provider_name">Name</string>
+    <string name="provider_name_error">Enter a name</string>
+    <string name="provider_type">Provider type</string>
+    <string name="provider_type_error">Select a provider type</string>
+    <string name="missing_provider_arguments">The following arguments are required: %1$s</string>
 </resources>

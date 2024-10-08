@@ -18,6 +18,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -25,6 +26,7 @@ import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.views.NowPlayingBar
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
+import org.lineageos.twelve.viewmodels.ProvidersViewModel
 
 /**
  * The home page.
@@ -32,10 +34,12 @@ import org.lineageos.twelve.viewmodels.NowPlayingViewModel
 class MainFragment : Fragment(R.layout.fragment_main) {
     // View models
     private val viewModel by viewModels<NowPlayingViewModel>()
+    private val providersViewModel by viewModels<ProvidersViewModel>()
 
     // Views
     private val bottomNavigationView by getViewProperty<BottomNavigationView>(R.id.bottomNavigationView)
     private val nowPlayingBar by getViewProperty<NowPlayingBar>(R.id.nowPlayingBar)
+    private val providerMaterialButton by getViewProperty<MaterialButton>(R.id.providerMaterialButton)
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
     private val viewPager2 by getViewProperty<ViewPager2>(R.id.viewPager2)
 
@@ -54,6 +58,12 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar.setupWithNavController(findNavController())
+
+        providerMaterialButton.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_mainFragment_to_fragment_provider_selector_dialog
+            )
+        }
 
         viewPager2.isUserInputEnabled = false
         viewPager2.adapter = object : FragmentStateAdapter(this) {
@@ -94,6 +104,15 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    providersViewModel.navigationProvider.collectLatest {
+                        it?.let {
+                            providerMaterialButton.text = it.name
+                            providerMaterialButton.setIconResource(it.type.iconDrawableResId)
+                        }
+                    }
+                }
+
                 launch {
                     viewModel.durationCurrentPositionMs.collectLatest {
                         nowPlayingBar.updateDurationCurrentPositionMs(it.first, it.second)

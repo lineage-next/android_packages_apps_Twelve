@@ -21,6 +21,14 @@ import org.lineageos.twelve.models.RequestStatus
  */
 interface MediaDataSource {
     /**
+     * Check whether this data source can handle the given media item.
+     *
+     * @param mediaItemUri The media item to check
+     * @return Whether this data source can handle the given media item
+     */
+    fun isMediaItemCompatible(mediaItemUri: Uri): Boolean
+
+    /**
      * Get all the albums. All albums must have at least one audio associated with them.
      */
     fun albums(): Flow<RequestStatus<List<Album>>>
