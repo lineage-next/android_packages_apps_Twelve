@@ -8,6 +8,7 @@ agp = "8.7.0"
 kotlin = "1.9.23"
 activity = "1.9.2"
 appcompat = "1.7.0"
+coil = "3.0.0-rc01"
 constraintlayout = "2.1.4"
 core = "1.13.1"
 fragment = "1.8.3"
@@ -40,6 +41,8 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "kotlinx-coroutines" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 nier-visualizer = { group = "com.github.bogerchan", name = "Nier-Visualizer", version.ref = "nier-visualizer" }

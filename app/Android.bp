@@ -39,13 +39,11 @@ android_app {
 
     static_libs: [
         // DO NOT EDIT THIS SECTION MANUALLY
-        "kotlin-stdlib",
         "androidx.activity_activity",
         "androidx.appcompat_appcompat",
         "androidx-constraintlayout_constraintlayout",
         "androidx.core_core-ktx",
         "androidx.fragment_fragment-ktx",
-        "androidx.lifecycle_lifecycle-service",
         "Twelve_androidx.media3_media3-common-ktx",
         "Twelve_androidx.media3_media3-exoplayer",
         "Twelve_androidx.media3_media3-exoplayer-midi",
@@ -57,9 +55,13 @@ android_app {
         "androidx.room_room-runtime",
         "androidx.room_room-ktx",
         "androidx.viewpager2_viewpager2",
-        "kotlinx_coroutines_guava",
+        "Twelve_io.coil-kt.coil3_coil",
+        "Twelve_io.coil-kt.coil3_coil-network-okhttp",
         "Twelve_com.google.android.material_material",
         "Twelve_com.github.bogerchan_Nier-Visualizer",
+        "kotlin-stdlib",
+        "androidx.lifecycle_lifecycle-service",
+        "kotlinx_coroutines_guava",
     ],
 
     optimize: {
