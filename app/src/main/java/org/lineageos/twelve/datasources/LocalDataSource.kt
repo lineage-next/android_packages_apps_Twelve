@@ -176,6 +176,16 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
         )
     }
 
+    override fun isMediaItemCompatible(mediaItemUri: Uri) = listOf(
+        albumsUri,
+        artistsUri,
+        genresUri,
+        audiosUri,
+        playlistsBaseUri,
+    ).any {
+        mediaItemUri.toString().startsWith(it.toString())
+    }
+
     override fun albums() = contentResolver.queryFlow(
         albumsUri,
         albumsProjection,

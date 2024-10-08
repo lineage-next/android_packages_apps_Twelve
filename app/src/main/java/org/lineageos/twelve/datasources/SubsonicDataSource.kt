@@ -66,6 +66,10 @@ class SubsonicDataSource(arguments: Bundle) : MediaDataSource {
      */
     private val _playlistsChanged = MutableStateFlow(Any())
 
+    override fun isMediaItemCompatible(mediaItemUri: Uri) = mediaItemUri.toString().startsWith(
+        dataSourceBaseUri.toString()
+    )
+
     override fun albums() = suspend {
         subsonicClient.getAlbumList2("alphabeticalByName", 500).toRequestStatus {
             album.map { it.toMediaItem() }
