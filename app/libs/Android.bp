@@ -529,6 +529,272 @@ android_library {
 }
 
 java_import {
+    name: "Twelve_com.squareup.okhttp3_okhttp-nodeps",
+    jars: ["com/squareup/okhttp3/okhttp/4.12.0/okhttp-4.12.0.jar"],
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+}
+
+java_library_static {
+    name: "Twelve_com.squareup.okhttp3_okhttp",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_com.squareup.okhttp3_okhttp-nodeps",
+        "Twelve_com.squareup.okio_okio",
+        "kotlin-stdlib-jdk8",
+    ],
+    java_version: "1.7",
+}
+
+java_library_static {
+    name: "Twelve_com.squareup.okio_okio",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_com.squareup.okio_okio-jvm",
+    ],
+    java_version: "1.7",
+}
+
+java_import {
+    name: "Twelve_com.squareup.okio_okio-jvm-nodeps",
+    jars: ["com/squareup/okio/okio-jvm/3.9.1/okio-jvm-3.9.1.jar"],
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+}
+
+java_library_static {
+    name: "Twelve_com.squareup.okio_okio-jvm",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_com.squareup.okio_okio-jvm-nodeps",
+        "kotlin-stdlib",
+    ],
+    java_version: "1.7",
+}
+
+java_library_static {
+    name: "Twelve_io.coil-kt.coil3_coil",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-android",
+    ],
+    java_version: "1.7",
+}
+
+android_library_import {
+    name: "Twelve_io.coil-kt.coil3_coil-android-nodeps",
+    aars: ["io/coil-kt/coil3/coil-android/3.0.0-rc01/coil-release.aar"],
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-core",
+        "kotlin-stdlib",
+    ],
+}
+
+android_library {
+    name: "Twelve_io.coil-kt.coil3_coil-android",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    manifest: "io/coil-kt/coil3/coil-android/3.0.0-rc01/AndroidManifest.xml",
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-android-nodeps",
+        "Twelve_io.coil-kt.coil3_coil-core",
+        "kotlin-stdlib",
+    ],
+    java_version: "1.7",
+}
+
+java_library_static {
+    name: "Twelve_io.coil-kt.coil3_coil-core",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-core-android",
+    ],
+    java_version: "1.7",
+}
+
+android_library_import {
+    name: "Twelve_io.coil-kt.coil3_coil-core-android-nodeps",
+    aars: ["io/coil-kt/coil3/coil-core-android/3.0.0-rc01/coil-core-release.aar"],
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_com.squareup.okio_okio",
+        "androidx.annotation_annotation",
+        "androidx.appcompat_appcompat-resources",
+        "androidx.core_core-ktx",
+        "androidx.exifinterface_exifinterface",
+        "androidx.lifecycle_lifecycle-runtime",
+        "androidx.profileinstaller_profileinstaller",
+        "kotlin-stdlib",
+        "kotlinx-coroutines-android",
+        "kotlinx-coroutines-core",
+    ],
+}
+
+android_library {
+    name: "Twelve_io.coil-kt.coil3_coil-core-android",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    manifest: "io/coil-kt/coil3/coil-core-android/3.0.0-rc01/AndroidManifest.xml",
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-core-android-nodeps",
+        "Twelve_com.squareup.okio_okio",
+        "androidx.annotation_annotation",
+        "androidx.appcompat_appcompat-resources",
+        "androidx.core_core-ktx",
+        "androidx.exifinterface_exifinterface",
+        "androidx.lifecycle_lifecycle-runtime",
+        "androidx.profileinstaller_profileinstaller",
+        "kotlin-stdlib",
+        "kotlinx-coroutines-android",
+        "kotlinx-coroutines-core",
+    ],
+    java_version: "1.7",
+}
+
+java_library_static {
+    name: "Twelve_io.coil-kt.coil3_coil-network-core",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-network-core-android",
+    ],
+    java_version: "1.7",
+}
+
+android_library_import {
+    name: "Twelve_io.coil-kt.coil3_coil-network-core-android-nodeps",
+    aars: ["io/coil-kt/coil3/coil-network-core-android/3.0.0-rc01/coil-network-core-release.aar"],
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-core",
+        "androidx.core_core-ktx",
+        "kotlin-stdlib",
+    ],
+}
+
+android_library {
+    name: "Twelve_io.coil-kt.coil3_coil-network-core-android",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    manifest: "io/coil-kt/coil3/coil-network-core-android/3.0.0-rc01/AndroidManifest.xml",
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-network-core-android-nodeps",
+        "Twelve_io.coil-kt.coil3_coil-core",
+        "androidx.core_core-ktx",
+        "kotlin-stdlib",
+    ],
+    java_version: "1.7",
+}
+
+java_library_static {
+    name: "Twelve_io.coil-kt.coil3_coil-network-okhttp",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-network-okhttp-jvm",
+    ],
+    java_version: "1.7",
+}
+
+java_import {
+    name: "Twelve_io.coil-kt.coil3_coil-network-okhttp-jvm-nodeps",
+    jars: ["io/coil-kt/coil3/coil-network-okhttp-jvm/3.0.0-rc01/coil-network-okhttp-jvm-3.0.0-rc01.jar"],
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+}
+
+java_library_static {
+    name: "Twelve_io.coil-kt.coil3_coil-network-okhttp-jvm",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "Twelve_io.coil-kt.coil3_coil-network-okhttp-jvm-nodeps",
+        "Twelve_com.squareup.okhttp3_okhttp",
+        "Twelve_io.coil-kt.coil3_coil-core",
+        "Twelve_io.coil-kt.coil3_coil-network-core",
+        "kotlin-stdlib",
+    ],
+    java_version: "1.7",
+}
+
+java_import {
     name: "Twelve_org.checkerframework_checker-qual-nodeps",
     jars: ["org/checkerframework/checker-qual/3.41.0/checker-qual-3.41.0.jar"],
     sdk_version: "35",

@@ -90,6 +90,8 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.viewpager2)
+    implementation(libs.coil)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.material)
     implementation(libs.nier.visualizer) {
