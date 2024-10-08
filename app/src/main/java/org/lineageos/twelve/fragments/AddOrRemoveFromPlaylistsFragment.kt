@@ -37,14 +37,12 @@ import org.lineageos.twelve.ui.views.ListItem
 import org.lineageos.twelve.utils.PermissionsChecker
 import org.lineageos.twelve.utils.PermissionsUtils
 import org.lineageos.twelve.viewmodels.AddOrRemoveFromPlaylistsViewModel
-import org.lineageos.twelve.viewmodels.PlaylistsViewModel
 
 /**
  * Fragment from which you can add or remove a specific audio from a list of playlists.
  */
 class AddOrRemoveFromPlaylistsFragment : Fragment(R.layout.fragment_add_or_remove_from_playlists) {
     // View models
-    private val playlistsViewModel by viewModels<PlaylistsViewModel>()
     private val viewModel by viewModels<AddOrRemoveFromPlaylistsViewModel>()
 
     // Views
@@ -177,7 +175,7 @@ class AddOrRemoveFromPlaylistsFragment : Fragment(R.layout.fragment_add_or_remov
     private fun openCreateNewPlaylistDialog() {
         EditTextMaterialAlertDialogBuilder(requireContext())
             .setPositiveButton(R.string.create_playlist_confirm) { text ->
-                playlistsViewModel.createPlaylist(text)
+                viewModel.createPlaylist(text)
             }
             .setTitle(R.string.create_playlist)
             .setNegativeButton(android.R.string.cancel, null)

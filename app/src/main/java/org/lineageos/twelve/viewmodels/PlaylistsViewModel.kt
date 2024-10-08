@@ -24,6 +24,6 @@ class PlaylistsViewModel(application: Application) : TwelveViewModel(application
         )
 
     fun createPlaylist(name: String) = viewModelScope.launch {
-        mediaRepository.createPlaylist(name)
+        mediaRepository.createPlaylist(mediaRepository.navigationProvider.value, name)
     }
 }
