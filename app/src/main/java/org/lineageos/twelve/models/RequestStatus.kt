@@ -8,13 +8,13 @@ package org.lineageos.twelve.models
 /**
  * Request status for flows.
  */
-sealed class RequestStatus<T : Any> {
+sealed class RequestStatus<T> {
     /**
      * Result is not ready yet.
      *
      * @param progress An optional percentage of the request progress
      */
-    class Loading<T : Any>(
+    class Loading<T>(
         @androidx.annotation.IntRange(from = 0, to = 100) val progress: Int? = null
     ) : RequestStatus<T>()
 
@@ -23,14 +23,14 @@ sealed class RequestStatus<T : Any> {
      *
      * @param data The obtained data
      */
-    class Success<T : Any>(val data: T) : RequestStatus<T>()
+    class Success<T>(val data: T) : RequestStatus<T>()
 
     /**
      * The request failed.
      *
      * @param type The error type
      */
-    class Error<T : Any>(val type: Type) : RequestStatus<T>() {
+    class Error<T>(val type: Type) : RequestStatus<T>() {
         enum class Type {
             /**
              * This feature isn't implemented.
