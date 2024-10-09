@@ -24,7 +24,7 @@ import org.lineageos.twelve.models.Encoding
 import org.lineageos.twelve.services.ProxyAudioProcessor
 import org.lineageos.twelve.services.ProxyDefaultAudioTrackBufferSizeProvider
 
-class NowPlayingStatsViewModel(application: Application) : TwelveViewModel(application) {
+class NowPlayingStatsViewModel(application: Application) : NowPlayingViewModel(application) {
     /**
      * [AudioStreamInformation] parsed from the currently selected audio track returned by the
      * player.
