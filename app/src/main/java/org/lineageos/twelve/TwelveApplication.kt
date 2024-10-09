@@ -12,7 +12,7 @@ import com.google.android.material.color.DynamicColors
 import org.lineageos.twelve.database.TwelveDatabase
 import org.lineageos.twelve.repositories.MediaRepository
 
-@UnstableApi
+@androidx.annotation.OptIn(UnstableApi::class)
 class TwelveApplication : Application() {
     private val database by lazy { TwelveDatabase.getInstance(applicationContext) }
     val mediaRepository by lazy { MediaRepository(applicationContext, database) }
