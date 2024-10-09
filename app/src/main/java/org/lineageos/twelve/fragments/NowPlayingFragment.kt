@@ -387,7 +387,7 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                 }
 
                 launch {
-                    viewModel.availableCommands().collectLatest {
+                    viewModel.availableCommands.collectLatest {
                         it?.let {
                             playbackSpeedMaterialButton.isVisible =
                                 it.contains(Player.COMMAND_SET_SPEED_AND_PITCH)

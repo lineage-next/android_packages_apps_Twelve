@@ -208,7 +208,7 @@ abstract class TwelveViewModel(application: Application) : AndroidViewModel(appl
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun availableCommands() = mediaController
+    val availableCommands = mediaController
         .filterNotNull()
         .flatMapLatest { it.availableCommandsFlow() }
         .flowOn(Dispatchers.Main)
