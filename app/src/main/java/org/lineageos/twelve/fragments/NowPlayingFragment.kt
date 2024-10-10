@@ -400,8 +400,29 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                 launch {
                     viewModel.availableCommands.collectLatest {
                         it?.let {
-                            playbackSpeedMaterialButton.isVisible =
-                                it.contains(Player.COMMAND_SET_SPEED_AND_PITCH)
+                            shuffleMaterialButton.isEnabled = it.contains(
+                                Player.COMMAND_SET_SHUFFLE_MODE
+                            )
+
+                            previousTrackMaterialButton.isEnabled = it.contains(
+                                Player.COMMAND_SEEK_TO_PREVIOUS
+                            )
+
+                            playPauseMaterialButton.isEnabled = it.contains(
+                                Player.COMMAND_PLAY_PAUSE
+                            )
+
+                            nextTrackMaterialButton.isEnabled = it.contains(
+                                Player.COMMAND_SEEK_TO_NEXT
+                            )
+
+                            repeatMaterialButton.isEnabled = it.contains(
+                                Player.COMMAND_SET_REPEAT_MODE
+                            )
+
+                            playbackSpeedMaterialButton.isEnabled = it.contains(
+                                Player.COMMAND_SET_SPEED_AND_PITCH
+                            )
                         }
                     }
                 }
