@@ -35,12 +35,14 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.TwelveApplication
 import org.lineageos.twelve.ext.getViewProperty
+import org.lineageos.twelve.models.PlaybackState
 import org.lineageos.twelve.models.RepeatMode
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
@@ -66,6 +68,7 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     private val equalizerMaterialButton by getViewProperty<MaterialButton>(R.id.equalizerMaterialButton)
     private val fileTypeMaterialCardView by getViewProperty<MaterialCardView>(R.id.fileTypeMaterialCardView)
     private val fileTypeTextView by getViewProperty<TextView>(R.id.fileTypeTextView)
+    private val linearProgressIndicator by getViewProperty<LinearProgressIndicator>(R.id.linearProgressIndicator)
     private val moreMaterialButton by getViewProperty<MaterialButton>(R.id.moreMaterialButton)
     private val nestedScrollView by getViewProperty<NestedScrollView>(R.id.nestedScrollView)
     private val nextTrackMaterialButton by getViewProperty<MaterialButton>(R.id.nextTrackMaterialButton)
@@ -189,6 +192,14 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                 false -> R.drawable.ic_play_arrow
                             }
                         )
+                    }
+                }
+
+                launch {
+                    viewModel.playbackState.collectLatest { playbackState ->
+                        playbackState?.let {
+                            linearProgressIndicator.isVisible = it == PlaybackState.BUFFERING
+                        }
                     }
                 }
 

@@ -28,6 +28,7 @@ import org.lineageos.twelve.ext.mediaItemFlow
 import org.lineageos.twelve.ext.mediaMetadataFlow
 import org.lineageos.twelve.ext.next
 import org.lineageos.twelve.ext.playbackParametersFlow
+import org.lineageos.twelve.ext.playbackStateFlow
 import org.lineageos.twelve.ext.repeatModeFlow
 import org.lineageos.twelve.ext.shuffleModeFlow
 import org.lineageos.twelve.ext.tracksFlow
@@ -63,6 +64,17 @@ open class NowPlayingViewModel(application: Application) : TwelveViewModel(appli
     val mediaItem = mediaController
         .filterNotNull()
         .flatMapLatest { it.mediaItemFlow() }
+        .flowOn(Dispatchers.Main)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val playbackState = mediaController
+        .filterNotNull()
+        .flatMapLatest { it.playbackStateFlow() }
         .flowOn(Dispatchers.Main)
         .stateIn(
             viewModelScope,

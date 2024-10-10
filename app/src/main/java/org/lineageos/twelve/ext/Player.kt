@@ -13,6 +13,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import kotlinx.coroutines.channels.awaitClose
+import org.lineageos.twelve.models.PlaybackState
 import org.lineageos.twelve.models.RepeatMode
 
 @OptIn(UnstableApi::class)
@@ -40,6 +41,21 @@ fun Player.mediaItemFlow() = conflatedCallbackFlow {
 
     addListener(listener)
     trySend(currentMediaItem)
+
+    awaitClose {
+        removeListener(listener)
+    }
+}
+
+fun Player.playbackStateFlow() = conflatedCallbackFlow {
+    val listener = object : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            trySend(typedPlaybackState)
+        }
+    }
+
+    addListener(listener)
+    trySend(typedPlaybackState)
 
     awaitClose {
         removeListener(listener)
@@ -149,4 +165,13 @@ var Player.typedRepeatMode: RepeatMode
             RepeatMode.ONE -> Player.REPEAT_MODE_ONE
             RepeatMode.ALL -> Player.REPEAT_MODE_ALL
         }
+    }
+
+val Player.typedPlaybackState: PlaybackState
+    get() = when (playbackState) {
+        Player.STATE_IDLE -> PlaybackState.IDLE
+        Player.STATE_BUFFERING -> PlaybackState.BUFFERING
+        Player.STATE_READY -> PlaybackState.READY
+        Player.STATE_ENDED -> PlaybackState.ENDED
+        else -> throw Exception("Unknown playback state")
     }
