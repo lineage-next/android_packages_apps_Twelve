@@ -16,6 +16,8 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import coil3.load
+import coil3.request.ImageRequest
 import org.lineageos.twelve.R
 
 /**
@@ -49,6 +51,10 @@ class HorizontalListItem @JvmOverloads constructor(
     init {
         inflate(context, R.layout.horizontal_list_item, this)
     }
+
+    fun loadThumbnailImage(
+        data: Any?, builder: ImageRequest.Builder.() -> Unit = {}
+    ) = thumbnailImageView.load(data, builder = builder)
 
     fun setThumbnailImage(bm: Bitmap) = thumbnailImageView.setImageBitmap(bm)
     fun setThumbnailImage(icon: Icon) = thumbnailImageView.setImageIcon(icon)

@@ -5,7 +5,6 @@
 
 package org.lineageos.twelve.fragments
 
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -26,6 +25,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
@@ -83,16 +83,9 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
 
             override fun ViewHolder.onBindView(item: Album) {
                 item.thumbnail?.uri?.also { uri ->
-                    ImageDecoder.createSource(
-                        requireContext().contentResolver,
-                        uri
-                    ).let { source ->
-                        ImageDecoder.decodeBitmap(source)
-                    }.also { bitmap ->
-                        view.setThumbnailImage(bitmap)
-                    }
+                    view.loadThumbnailImage(uri)
                 } ?: item.thumbnail?.bitmap?.also { bitmap ->
-                    view.setThumbnailImage(bitmap)
+                    view.loadThumbnailImage(bitmap)
                 } ?: view.setThumbnailImage(R.drawable.ic_album)
 
                 view.headlineText = item.title
@@ -197,16 +190,9 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
                     toolbar.title = artist.name
 
                     artist.thumbnail?.uri?.also { uri ->
-                        ImageDecoder.createSource(
-                            requireContext().contentResolver,
-                            uri
-                        ).let { source ->
-                            ImageDecoder.decodeBitmap(source)
-                        }.also { bitmap ->
-                            thumbnailImageView.setImageBitmap(bitmap)
-                        }
+                        thumbnailImageView.load(uri)
                     } ?: artist.thumbnail?.bitmap?.also { bitmap ->
-                        thumbnailImageView.setImageBitmap(bitmap)
+                        thumbnailImageView.load(bitmap)
                     } ?: thumbnailImageView.setImageResource(R.drawable.ic_person)
 
                     albumsAdapter.submitList(artistWorks.albums)

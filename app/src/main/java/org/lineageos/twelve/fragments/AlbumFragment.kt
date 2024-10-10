@@ -5,7 +5,6 @@
 
 package org.lineageos.twelve.fragments
 
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -26,6 +25,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
@@ -178,16 +178,9 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
                     albumTitleTextView.text = album.title
 
                     album.thumbnail?.uri?.also { uri ->
-                        ImageDecoder.createSource(
-                            requireContext().contentResolver,
-                            uri
-                        ).let { source ->
-                            ImageDecoder.decodeBitmap(source)
-                        }.also { bitmap ->
-                            thumbnailImageView.setImageBitmap(bitmap)
-                        }
+                        thumbnailImageView.load(uri)
                     } ?: album.thumbnail?.bitmap?.also { bitmap ->
-                        thumbnailImageView.setImageBitmap(bitmap)
+                        thumbnailImageView.load(bitmap)
                     } ?: thumbnailImageView.setImageResource(R.drawable.ic_album)
 
                     artistNameTextView.text = album.artistName
