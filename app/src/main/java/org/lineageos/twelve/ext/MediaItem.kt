@@ -20,7 +20,9 @@ fun buildMediaItem(
     genre: String? = null,
     sourceUri: Uri? = null,
     mimeType: String? = null,
-    imageUri: Uri? = null
+    artworkData: ByteArray? = null,
+    artworkType: @MediaMetadata.PictureType Int? = null,
+    artworkUri: Uri? = null,
 ): MediaItem {
     val metadata =
         MediaMetadata.Builder()
@@ -30,7 +32,8 @@ fun buildMediaItem(
             .setGenre(genre)
             .setIsBrowsable(isBrowsable)
             .setIsPlayable(isPlayable)
-            .setArtworkUri(imageUri)
+            .setArtworkData(artworkData, artworkType)
+            .setArtworkUri(artworkUri)
             .setMediaType(mediaType)
             .build()
 

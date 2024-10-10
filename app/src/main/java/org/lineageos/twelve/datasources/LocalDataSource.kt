@@ -70,7 +70,7 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
                 uri, Size(512, 512), null
             )
         }.getOrNull()?.let {
-            Thumbnail(bitmap = it)
+            Thumbnail(bitmap = it, type = Thumbnail.Type.FRONT_COVER)
         }
 
         Album(
@@ -96,7 +96,7 @@ class LocalDataSource(context: Context, private val database: TwelveDatabase) : 
                 uri, Size(512, 512), null
             )
         }.getOrNull()?.let {
-            Thumbnail(bitmap = it)
+            Thumbnail(bitmap = it, type = Thumbnail.Type.BAND_ARTIST_LOGO)
         }
 
         Artist(
