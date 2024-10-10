@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.getViewProperty
+import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.views.NowPlayingBar
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
 
@@ -114,6 +115,24 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 launch {
                     viewModel.mediaMetadata.collectLatest {
                         nowPlayingBar.updateMediaMetadata(it)
+                    }
+                }
+
+                launch {
+                    viewModel.mediaArtwork.collectLatest {
+                        when (it) {
+                            is RequestStatus.Loading -> {
+                                // Do nothing
+                            }
+
+                            is RequestStatus.Success -> {
+                                nowPlayingBar.updateMediaArtwork(it.data)
+                            }
+
+                            is RequestStatus.Error -> throw Exception(
+                                "Error while getting media artwork"
+                            )
+                        }
                     }
                 }
             }

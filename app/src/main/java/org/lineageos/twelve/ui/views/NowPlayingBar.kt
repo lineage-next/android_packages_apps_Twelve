@@ -6,7 +6,6 @@
 package org.lineageos.twelve.ui.views
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.util.AttributeSet
 import android.widget.FrameLayout
@@ -21,6 +20,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import org.lineageos.twelve.R
 import org.lineageos.twelve.ext.slideDown
 import org.lineageos.twelve.ext.slideUp
+import org.lineageos.twelve.models.Thumbnail
 
 class NowPlayingBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -64,23 +64,6 @@ class NowPlayingBar @JvmOverloads constructor(
     }
 
     fun updateMediaMetadata(mediaMetadata: MediaMetadata) {
-        mediaMetadata.artworkData?.also { artworkData ->
-            BitmapFactory.decodeByteArray(
-                artworkData, 0, artworkData.size
-            )?.let { bitmap ->
-                thumbnailImageView.setImageBitmap(bitmap)
-            }
-        } ?: mediaMetadata.artworkUri?.also { artworkUri ->
-            ImageDecoder.createSource(
-                context.contentResolver,
-                artworkUri
-            ).let { source ->
-                ImageDecoder.decodeBitmap(source)
-            }.also { bitmap ->
-                thumbnailImageView.setImageBitmap(bitmap)
-            }
-        } ?: thumbnailImageView.setImageResource(R.drawable.ic_music_note)
-
         mediaMetadata.title?.also {
             titleTextView.text = it
             titleTextView.isVisible = true
@@ -101,6 +84,21 @@ class NowPlayingBar @JvmOverloads constructor(
         } ?: run {
             albumTitleTextView.isVisible = false
         }
+    }
+
+    fun updateMediaArtwork(artwork: Thumbnail?) {
+        artwork?.bitmap?.also { bitmap ->
+            thumbnailImageView.setImageBitmap(bitmap)
+        } ?: artwork?.uri?.also { artworkUri ->
+            ImageDecoder.createSource(
+                context.contentResolver,
+                artworkUri
+            ).let { source ->
+                ImageDecoder.decodeBitmap(source)
+            }.also { bitmap ->
+                thumbnailImageView.setImageBitmap(bitmap)
+            }
+        } ?: thumbnailImageView.setImageResource(R.drawable.ic_music_note)
     }
 
     fun updateDurationCurrentPositionMs(durationMs: Long?, currentPositionMs: Long?) {
