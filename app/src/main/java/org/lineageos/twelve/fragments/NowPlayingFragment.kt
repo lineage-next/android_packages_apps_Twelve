@@ -7,7 +7,6 @@ package org.lineageos.twelve.fragments
 
 import android.animation.ValueAnimator
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.icu.text.DecimalFormat
 import android.icu.text.DecimalFormatSymbols
@@ -44,6 +43,7 @@ import org.lineageos.twelve.TwelveApplication
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.models.PlaybackState
 import org.lineageos.twelve.models.RepeatMode
+import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.utils.TimestampFormatter
 import org.lineageos.twelve.viewmodels.NowPlayingViewModel
 import java.util.Locale
@@ -218,23 +218,6 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
 
                 launch {
                     viewModel.mediaMetadata.collectLatest { mediaMetadata ->
-                        mediaMetadata.artworkData?.also { artworkData ->
-                            BitmapFactory.decodeByteArray(
-                                artworkData, 0, artworkData.size
-                            )?.let { bitmap ->
-                                albumArtImageView.setImageBitmap(bitmap)
-                            }
-                        } ?: mediaMetadata.artworkUri?.also { artworkUri ->
-                            ImageDecoder.createSource(
-                                requireContext().contentResolver,
-                                artworkUri
-                            ).let { source ->
-                                ImageDecoder.decodeBitmap(source)
-                            }.also { bitmap ->
-                                albumArtImageView.setImageBitmap(bitmap)
-                            }
-                        } ?: albumArtImageView.setImageResource(R.drawable.ic_music_note)
-
                         val audioTitle = mediaMetadata.displayTitle
                             ?: mediaMetadata.title
                         audioTitle?.let { title ->
@@ -262,6 +245,35 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                             albumTitleTextView.isVisible = true
                         } ?: run {
                             albumTitleTextView.isVisible = false
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.mediaArtwork.collectLatest {
+                        when (it) {
+                            is RequestStatus.Loading -> {
+                                // Do nothing
+                            }
+
+                            is RequestStatus.Success -> {
+                                it.data?.bitmap?.also { bitmap ->
+                                    albumArtImageView.setImageBitmap(bitmap)
+                                } ?: it.data?.uri?.also { artworkUri ->
+                                    ImageDecoder.createSource(
+                                        requireContext().contentResolver,
+                                        artworkUri
+                                    ).let { source ->
+                                        ImageDecoder.decodeBitmap(source)
+                                    }.also { bitmap ->
+                                        albumArtImageView.setImageBitmap(bitmap)
+                                    }
+                                } ?: albumArtImageView.setImageResource(R.drawable.ic_music_note)
+                            }
+
+                            is RequestStatus.Error -> throw Exception(
+                                "Error while getting media artwork"
+                            )
                         }
                     }
                 }

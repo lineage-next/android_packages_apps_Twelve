@@ -6,6 +6,7 @@
 package org.lineageos.twelve.viewmodels
 
 import android.app.Application
+import android.graphics.BitmapFactory
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
@@ -33,7 +34,10 @@ import org.lineageos.twelve.ext.repeatModeFlow
 import org.lineageos.twelve.ext.shuffleModeFlow
 import org.lineageos.twelve.ext.tracksFlow
 import org.lineageos.twelve.ext.typedRepeatMode
+import org.lineageos.twelve.models.PlaybackState
 import org.lineageos.twelve.models.RepeatMode
+import org.lineageos.twelve.models.RequestStatus
+import org.lineageos.twelve.models.Thumbnail
 
 open class NowPlayingViewModel(application: Application) : TwelveViewModel(application) {
     enum class PlaybackSpeed(val value: Float) {
@@ -124,6 +128,29 @@ open class NowPlayingViewModel(application: Application) : TwelveViewModel(appli
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = null
+        )
+
+    val mediaArtwork = combine(
+        mediaMetadata,
+        playbackState,
+    ) { mediaMetadata, playbackState ->
+        when (playbackState) {
+            PlaybackState.BUFFERING -> RequestStatus.Loading()
+
+            else -> RequestStatus.Success(
+                mediaMetadata.artworkUri?.let {
+                    Thumbnail(uri = it)
+                } ?: mediaMetadata.artworkData?.let {
+                    Thumbnail(bitmap = BitmapFactory.decodeByteArray(it, 0, it.size))
+                }
+            )
+        }
+    }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = RequestStatus.Loading()
         )
 
     @androidx.annotation.OptIn(UnstableApi::class)
