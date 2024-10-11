@@ -409,6 +409,36 @@ android_library {
     java_version: "1.7",
 }
 
+android_library_import {
+    name: "Twelve_com.github.bogerchan_Nier-Visualizer-nodeps",
+    aars: ["com/github/bogerchan/Nier-Visualizer/v0.1.3/Nier-Visualizer-v0.1.3.aar"],
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    static_libs: [
+        "org.jetbrains.kotlin_kotlin-stdlib-jre7",
+    ],
+}
+
+android_library {
+    name: "Twelve_com.github.bogerchan_Nier-Visualizer",
+    sdk_version: "35",
+    min_sdk_version: "14",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    manifest: "com/github/bogerchan/Nier-Visualizer/v0.1.3/AndroidManifest.xml",
+    static_libs: [
+        "Twelve_com.github.bogerchan_Nier-Visualizer-nodeps",
+        "org.jetbrains.kotlin_kotlin-stdlib-jre7",
+    ],
+    java_version: "1.7",
+}
+
 java_import {
     name: "Twelve_com.github.philburk_jsyn-nodeps",
     jars: ["com/github/philburk/jsyn/40a41092cbab558d7d410ec43d93bb1e4121e86a/jsyn-40a41092cbab558d7d410ec43d93bb1e4121e86a.jar"],

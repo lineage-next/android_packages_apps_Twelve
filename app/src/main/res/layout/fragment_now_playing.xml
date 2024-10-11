@@ -104,6 +104,17 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <SurfaceView
+                        android:id="@+id/visualizerSurfaceView"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="#55000000"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="@+id/albumArtImageView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -319,12 +330,12 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/equalizerMaterialButton"
                         style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
-                        app:icon="@drawable/ic_graphic_eq" />
+                        app:icon="@drawable/ic_audiofx" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/castMaterialButton"
+                        android:id="@+id/visualizerMaterialButton"
                         style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
-                        app:icon="@drawable/ic_cast" />
+                        app:icon="@drawable/ic_graphic_eq" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/moreMaterialButton"

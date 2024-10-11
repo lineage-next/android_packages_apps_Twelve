@@ -92,6 +92,9 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.material)
+    implementation(libs.nier.visualizer) {
+        exclude(group = "com.android.support")
+    }
 }
 
 configure<GenerateBpPluginExtension> {

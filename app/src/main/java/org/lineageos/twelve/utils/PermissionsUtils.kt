@@ -15,11 +15,13 @@ object PermissionsUtils {
     /**
      * Permissions required to run the app
      */
-    val mainPermissions = mutableListOf<String>().apply {
+    val mainPermissions = buildList {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(Manifest.permission.READ_MEDIA_AUDIO)
         } else {
             add(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
+
+        add(Manifest.permission.RECORD_AUDIO)
     }.toTypedArray()
 }

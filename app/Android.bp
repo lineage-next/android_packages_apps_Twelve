@@ -56,6 +56,7 @@ android_app {
         "androidx.viewpager2_viewpager2",
         "kotlinx_coroutines_guava",
         "Twelve_com.google.android.material_material",
+        "Twelve_com.github.bogerchan_Nier-Visualizer",
     ],
 
     optimize: {

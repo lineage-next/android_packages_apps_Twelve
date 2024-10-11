@@ -15,6 +15,7 @@ import androidx.media3.common.util.UnstableApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -23,6 +24,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import me.bogerchan.niervisualizer.renderer.IRenderer
+import me.bogerchan.niervisualizer.renderer.circle.CircleBarRenderer
+import me.bogerchan.niervisualizer.renderer.circle.CircleRenderer
+import me.bogerchan.niervisualizer.renderer.columnar.ColumnarType1Renderer
+import me.bogerchan.niervisualizer.renderer.columnar.ColumnarType2Renderer
+import me.bogerchan.niervisualizer.renderer.columnar.ColumnarType3Renderer
+import me.bogerchan.niervisualizer.renderer.columnar.ColumnarType4Renderer
+import me.bogerchan.niervisualizer.renderer.line.LineRenderer
 import org.lineageos.twelve.ext.availableCommandsFlow
 import org.lineageos.twelve.ext.isPlayingFlow
 import org.lineageos.twelve.ext.mediaItemFlow
@@ -51,6 +60,17 @@ open class NowPlayingViewModel(application: Application) : TwelveViewModel(appli
                 it.value == value
             }
         }
+    }
+
+    enum class VisualizerType(val factory: () -> Array<IRenderer>?) {
+        NONE({ null }),
+        TYPE_1({ arrayOf(ColumnarType1Renderer()) }),
+        TYPE_2({ arrayOf(ColumnarType2Renderer()) }),
+        TYPE_3({ arrayOf(ColumnarType3Renderer()) }),
+        TYPE_4({ arrayOf(ColumnarType4Renderer()) }),
+        LINE({ arrayOf(LineRenderer(true)) }),
+        CIRCLE_BAR({ arrayOf(CircleBarRenderer()) }),
+        CIRCLE({ arrayOf(CircleRenderer(true)) }),
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -249,6 +269,20 @@ open class NowPlayingViewModel(application: Application) : TwelveViewModel(appli
             initialValue = Triple(null, null, 1f)
         )
 
+    private val _currentVisualizerType = MutableStateFlow(VisualizerType.entries.first())
+    val currentVisualizerType = combine(
+        _currentVisualizerType,
+        isPlaying,
+    ) { currentVisualizerType, isPlaying ->
+        currentVisualizerType.takeIf { isPlaying } ?: VisualizerType.NONE
+    }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = VisualizerType.NONE
+        )
+
     fun togglePlayPause() {
         mediaController.value?.let {
             if (it.isPlaying) {
@@ -300,5 +334,13 @@ open class NowPlayingViewModel(application: Application) : TwelveViewModel(appli
 
             it.setPlaybackSpeed(playbackSpeed.next().value)
         }
+    }
+
+    fun nextVisualizerType() {
+        _currentVisualizerType.value = _currentVisualizerType.value.next()
+    }
+
+    fun disableVisualizer() {
+        _currentVisualizerType.value = VisualizerType.NONE
     }
 }

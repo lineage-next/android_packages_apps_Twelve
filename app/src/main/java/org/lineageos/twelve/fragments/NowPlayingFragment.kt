@@ -8,10 +8,12 @@ package org.lineageos.twelve.fragments
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.ImageDecoder
+import android.graphics.PixelFormat
 import android.icu.text.DecimalFormat
 import android.icu.text.DecimalFormatSymbols
 import android.media.audiofx.AudioEffect
 import android.os.Bundle
+import android.view.SurfaceView
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
@@ -26,7 +28,9 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.Player
@@ -38,6 +42,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import me.bogerchan.niervisualizer.NierVisualizerManager
 import org.lineageos.twelve.R
 import org.lineageos.twelve.TwelveApplication
 import org.lineageos.twelve.ext.getViewProperty
@@ -62,7 +67,6 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     private val albumTitleTextView by getViewProperty<TextView>(R.id.albumTitleTextView)
     private val audioTitleTextView by getViewProperty<TextView>(R.id.audioTitleTextView)
     private val artistNameTextView by getViewProperty<TextView>(R.id.artistNameTextView)
-    private val castMaterialButton by getViewProperty<MaterialButton>(R.id.castMaterialButton)
     private val currentTimestampTextView by getViewProperty<TextView>(R.id.currentTimestampTextView)
     private val durationTimestampTextView by getViewProperty<TextView>(R.id.durationTimestampTextView)
     private val equalizerMaterialButton by getViewProperty<MaterialButton>(R.id.equalizerMaterialButton)
@@ -81,16 +85,74 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     private val shuffleMarkerImageView by getViewProperty<ImageView>(R.id.shuffleMarkerImageView)
     private val shuffleMaterialButton by getViewProperty<MaterialButton>(R.id.shuffleMaterialButton)
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
+    private val visualizerMaterialButton by getViewProperty<MaterialButton>(R.id.visualizerMaterialButton)
+    private val visualizerSurfaceView by getViewProperty<SurfaceView>(R.id.visualizerSurfaceView)
 
     // Progress slider state
     private var isProgressSliderDragging = false
     private var animator: ValueAnimator? = null
 
     // AudioFX
+    private val audioSessionId: Int
+        get() = (requireActivity().application as TwelveApplication).audioSessionId
     private val audioEffectsStartForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             // Empty
         }
+
+    // Visualizer
+    private val visualizerManager = NierVisualizerManager()
+    private val visualizerViewLifecycleObserver = object : DefaultLifecycleObserver {
+        private var isVisualizerInitialized = false
+        private var isVisualizerStarted = false
+
+        override fun onCreate(owner: LifecycleOwner) {
+            val initResult = visualizerManager.init(audioSessionId)
+            isVisualizerInitialized = initResult == NierVisualizerManager.SUCCESS
+
+            owner.lifecycleScope.launch {
+                owner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.currentVisualizerType.collectLatest { currentVisualizerType ->
+                        if (isVisualizerInitialized) {
+                            currentVisualizerType.factory.invoke()?.let {
+                                visualizerManager.start(visualizerSurfaceView, it)
+                                isVisualizerStarted = true
+                            } ?: run {
+                                visualizerManager.stop()
+                                isVisualizerStarted = false
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        override fun onResume(owner: LifecycleOwner) {
+            if (isVisualizerStarted) {
+                visualizerManager.resume()
+            }
+        }
+
+        override fun onPause(owner: LifecycleOwner) {
+            if (isVisualizerStarted) {
+                visualizerManager.pause()
+            }
+        }
+
+        override fun onStop(owner: LifecycleOwner) {
+            if (isVisualizerStarted) {
+                visualizerManager.stop()
+            }
+            isVisualizerStarted = false
+        }
+
+        override fun onDestroy(owner: LifecycleOwner) {
+            if (isVisualizerInitialized) {
+                visualizerManager.release()
+            }
+            isVisualizerInitialized = false
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -116,6 +178,12 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                 R.id.action_nowPlayingFragment_to_fragment_now_playing_stats_dialog
             )
         }
+
+        // Visualizer
+        visualizerSurfaceView.setZOrderOnTop(true)
+        visualizerSurfaceView.holder.setFormat(PixelFormat.TRANSPARENT)
+
+        viewLifecycleOwner.lifecycle.addObserver(visualizerViewLifecycleObserver)
 
         // Audio informations
         audioTitleTextView.isSelected = true
@@ -166,20 +234,23 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
         }
 
         equalizerMaterialButton.setOnClickListener {
-            val activity = requireActivity()
-
             // Open system equalizer
             audioEffectsStartForResult.launch(
                 Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
-                    putExtra(AudioEffect.EXTRA_PACKAGE_NAME, activity.packageName)
-                    putExtra(
-                        AudioEffect.EXTRA_AUDIO_SESSION,
-                        (activity.application as TwelveApplication).audioSessionId
-                    )
+                    putExtra(AudioEffect.EXTRA_PACKAGE_NAME, requireContext().packageName)
+                    putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId)
                     putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
                 },
                 null
             )
+        }
+
+        visualizerMaterialButton.setOnClickListener {
+            viewModel.nextVisualizerType()
+        }
+        visualizerMaterialButton.setOnLongClickListener {
+            viewModel.disableVisualizer()
+            true
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -436,6 +507,13 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                                 Player.COMMAND_SET_SPEED_AND_PITCH
                             )
                         }
+                    }
+                }
+
+                launch {
+                    viewModel.currentVisualizerType.collectLatest {
+                        visualizerSurfaceView.isVisible =
+                            it != NowPlayingViewModel.VisualizerType.NONE
                     }
                 }
             }
