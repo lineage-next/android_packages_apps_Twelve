@@ -27,6 +27,7 @@ import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionError
 import kotlinx.coroutines.guava.future
+import kotlinx.coroutines.launch
 import org.lineageos.twelve.MainActivity
 import org.lineageos.twelve.R
 import org.lineageos.twelve.TwelveApplication
@@ -46,14 +47,46 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
         )
     }
 
+    private val resumptionPlaylistRepository by lazy {
+        (application as TwelveApplication).resumptionPlaylistRepository
+    }
+
     private val mediaLibrarySessionCallback = object : MediaLibrarySession.Callback {
         override fun onPlaybackResumption(
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo
         ) = lifecycle.coroutineScope.future {
-            MediaSession.MediaItemsWithStartPosition(
-                mediaRepositoryTree.getResumptionPlaylist(), 0, 0
-            )
+            val resumptionPlaylist = resumptionPlaylistRepository.getResumptionPlaylist()
+
+            var startIndex = resumptionPlaylist.startIndex
+            var startPositionMs = resumptionPlaylist.startPositionMs
+
+            val mediaItems = resumptionPlaylist.mediaItemIds.mapIndexed { index, itemId ->
+                when (val mediaItem = mediaRepositoryTree.getItem(itemId)) {
+                    null -> {
+                        if (index == resumptionPlaylist.startIndex) {
+                            // The playback position is now invalid
+                            startPositionMs = 0
+
+                            // Let's try the next item, this is done automatically since
+                            // the next item will take this item's index
+                        } else if (index < resumptionPlaylist.startIndex) {
+                            // The missing media is before the start index, we have to offset
+                            // the start by 1 entry
+                            startIndex -= 1
+                        }
+
+                        null
+                    }
+
+                    else -> mediaItem
+                }
+            }.filterNotNull()
+
+            // Shouldn't be needed, but just to be sure
+            startIndex = startIndex.coerceIn(0, mediaItems.size - 1)
+
+            MediaSession.MediaItemsWithStartPosition(mediaItems, startIndex, startPositionMs)
         }
 
         override fun onGetLibraryRoot(
@@ -102,8 +135,18 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
             startIndex: Int,
             startPositionMs: Long,
         ) = lifecycle.coroutineScope.future {
+            val resolvedMediaItems = mediaRepositoryTree.resolveMediaItems(mediaItems)
+
+            launch {
+                resumptionPlaylistRepository.onMediaItemsChanged(
+                    resolvedMediaItems.map { it.mediaId },
+                    startIndex,
+                    startPositionMs,
+                )
+            }
+
             MediaSession.MediaItemsWithStartPosition(
-                mediaRepositoryTree.resolveMediaItems(mediaItems),
+                resolvedMediaItems,
                 startIndex,
                 startPositionMs
             )
@@ -219,6 +262,16 @@ class PlaybackService : MediaLibraryService(), Player.Listener, LifecycleOwner {
                 openAudioEffectSession()
             } else {
                 closeAudioEffectSession()
+            }
+        }
+
+        // Update startIndex and startPositionMs in resumption playlist.
+        if (events.containsAny(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
+            lifecycle.coroutineScope.launch {
+                resumptionPlaylistRepository.onPlaybackPositionChanged(
+                    player.currentMediaItemIndex,
+                    player.currentPosition
+                )
             }
         }
     }

@@ -33,12 +33,6 @@ class MediaRepositoryTree(
     fun getRootMediaItem() = rootMediaItem
 
     /**
-     * Get the resumption playlist of the tree.
-     * TODO
-     */
-    fun getResumptionPlaylist() = listOf<MediaItem>()
-
-    /**
      * Given a media ID, gets it's corresponding media item.
      */
     suspend fun getItem(mediaId: String) = when (mediaId) {
