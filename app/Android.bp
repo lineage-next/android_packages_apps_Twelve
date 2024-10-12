@@ -37,6 +37,10 @@ android_app {
         "-Aroom.schemaLocation=packages/apps/Twelve/app/schemas",
     ],
 
+    kotlin_plugins: [
+        "kotlin-serialize-compiler-plugin",
+    ],
+
     static_libs: [
         // DO NOT EDIT THIS SECTION MANUALLY
         "androidx.activity_activity",
