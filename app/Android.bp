@@ -33,6 +33,9 @@ android_app {
     plugins: [
         "androidx.room_room-compiler-plugin",
     ],
+    javacflags: [
+        "-Aroom.schemaLocation=packages/apps/Twelve/app/schemas",
+    ],
 
     static_libs: [
         // DO NOT EDIT THIS SECTION MANUALLY
