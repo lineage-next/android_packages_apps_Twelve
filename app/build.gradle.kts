@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kapt)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 apply {
@@ -90,11 +91,15 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.viewpager2)
+    implementation(libs.coil)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.kotlinx.coroutines.guava)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.material)
     implementation(libs.nier.visualizer) {
         exclude(group = "com.android.support")
     }
+    implementation(libs.okhttp)
 }
 
 configure<GenerateBpPluginExtension> {
