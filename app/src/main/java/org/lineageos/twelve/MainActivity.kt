@@ -5,9 +5,11 @@
 
 package org.lineageos.twelve
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.util.Consumer
 import androidx.navigation.fragment.NavHostFragment
 import kotlin.reflect.cast
 
@@ -20,12 +22,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
     private val navController by lazy { navHostFragment.navController }
 
+    // Intents
+    private val intentListener = Consumer<Intent> { handleIntent(it) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Enable edge-to-edge
         enableEdgeToEdge()
 
+        handleIntent(intent)
+        addOnNewIntentListener(intentListener)
+    }
+
+    override fun onDestroy() {
+        removeOnNewIntentListener(intentListener)
+
+        super.onDestroy()
+    }
+
+    private fun handleIntent(intent: Intent) {
         // Handle now playing
         if (intent.getBooleanExtra(EXTRA_OPEN_NOW_PLAYING, false)) {
             navController.navigate(R.id.fragment_now_playing)
