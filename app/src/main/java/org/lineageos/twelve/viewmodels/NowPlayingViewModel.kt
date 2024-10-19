@@ -161,7 +161,9 @@ open class NowPlayingViewModel(application: Application) : TwelveViewModel(appli
                 mediaMetadata.artworkUri?.let {
                     Thumbnail(uri = it)
                 } ?: mediaMetadata.artworkData?.let {
-                    Thumbnail(bitmap = BitmapFactory.decodeByteArray(it, 0, it.size))
+                    BitmapFactory.decodeByteArray(it, 0, it.size)?.let { bitmap ->
+                        Thumbnail(bitmap = bitmap)
+                    }
                 }
             )
         }
