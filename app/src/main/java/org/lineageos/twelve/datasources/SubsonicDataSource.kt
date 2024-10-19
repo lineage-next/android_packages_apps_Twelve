@@ -135,7 +135,7 @@ class SubsonicDataSource(arguments: Bundle) : MediaDataSource {
 
     override fun playlist(playlistUri: Uri) = _playlistsChanged.mapLatest {
         subsonicClient.getPlaylist(playlistUri.lastPathSegment!!.toInt()).toRequestStatus {
-            toPlaylist().toMediaItem() to entry.map {
+            toPlaylist().toMediaItem() to entry.orEmpty().map {
                 it.toMediaItem()
             } as List<Audio?>
         }
@@ -147,7 +147,7 @@ class SubsonicDataSource(arguments: Bundle) : MediaDataSource {
         subsonicClient.getPlaylists().toRequestStatus {
             playlist.map { playlist ->
                 playlist.toMediaItem() to subsonicClient.getPlaylist(playlist.id).toRequestStatus {
-                    entry.any { child -> child.id == audioId }
+                    entry.orEmpty().any { child -> child.id == audioId }
                 }.let { requestStatus ->
                     (requestStatus as? RequestStatus.Success)?.data ?: false
                 }
@@ -190,7 +190,7 @@ class SubsonicDataSource(arguments: Bundle) : MediaDataSource {
     ).toRequestStatus {
         val audioId = audioUri.lastPathSegment!!
 
-        val audioIndexes = entry.mapIndexedNotNull { index, child ->
+        val audioIndexes = entry.orEmpty().mapIndexedNotNull { index, child ->
             index.takeIf { child.id == audioId }
         }
 

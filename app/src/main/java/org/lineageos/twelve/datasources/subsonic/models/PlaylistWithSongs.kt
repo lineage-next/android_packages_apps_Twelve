@@ -14,7 +14,7 @@ data class PlaylistWithSongs(
     val allowedUser: List<String>? = null,
     val id: Int,
     val name: String,
-    val comment: String?,
+    val comment: String? = null,
     val owner: String? = null,
     val public: Boolean? = null,
     val songCount: Int,
@@ -24,7 +24,7 @@ data class PlaylistWithSongs(
     val coverArt: String? = null,
     // Playlist end
 
-    val entry: List<Child>,
+    val entry: List<Child>? = null,
 ) {
     fun toPlaylist() = Playlist(
         allowedUser = allowedUser,
