@@ -33,7 +33,7 @@ import org.lineageos.twelve.ext.getSerializable
 import org.lineageos.twelve.ext.getViewProperty
 import org.lineageos.twelve.ext.selectItem
 import org.lineageos.twelve.models.ProviderArgument
-import org.lineageos.twelve.models.ProviderArgument.Companion.getArgument
+import org.lineageos.twelve.models.ProviderArgument.Companion.validateArgument
 import org.lineageos.twelve.models.ProviderType
 import org.lineageos.twelve.models.RequestStatus
 import org.lineageos.twelve.ui.recyclerview.SimpleListAdapter
@@ -169,14 +169,14 @@ class ManageProviderFragment : Fragment(R.layout.fragment_manage_provider) {
                 return@setOnClickListener
             }
 
-            val wrongArguments = providerType.arguments.filter { argument ->
-                val value = providerArguments.getArgument(argument)
-
-                (value ?: argument.defaultValue) == null && argument.required
+            val wrongArguments = providerType.arguments.mapNotNull { argument ->
+                providerArguments.validateArgument(argument)?.let {
+                    argument to it
+                }
             }
 
             if (wrongArguments.isNotEmpty()) {
-                showMissingArgumentsDialog(wrongArguments)
+                showArgumentValidationErrorDialog(wrongArguments)
                 return@setOnClickListener
             }
 
@@ -303,13 +303,20 @@ class ManageProviderFragment : Fragment(R.layout.fragment_manage_provider) {
         super.onDestroyView()
     }
 
-    private fun showMissingArgumentsDialog(wrongArguments: List<ProviderArgument<*>>) {
+    private fun showArgumentValidationErrorDialog(
+        wrongArguments: List<Pair<ProviderArgument<*>, ProviderArgument.ValidationError>>
+    ) {
         MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.argument_validation_error_title)
             .setMessage(
                 getString(
-                    R.string.missing_provider_arguments,
-                    wrongArguments.joinToString {
-                        getString(it.nameStringResId)
+                    R.string.argument_validation_error_message,
+                    wrongArguments.joinToString(separator = "\n") {
+                        getString(
+                            R.string.argument_validation_error_item,
+                            getString(it.first.nameStringResId),
+                            getString(it.second.messageStringResId),
+                        )
                     }
                 )
             )

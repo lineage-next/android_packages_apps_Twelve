@@ -11,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.mapLatest
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.lineageos.twelve.R
 import org.lineageos.twelve.datasources.subsonic.SubsonicClient
 import org.lineageos.twelve.datasources.subsonic.models.AlbumID3
@@ -325,6 +326,16 @@ class SubsonicDataSource(arguments: Bundle) : MediaDataSource {
             R.string.provider_argument_server,
             required = true,
             hidden = false,
+            validate = {
+                when (it.toHttpUrlOrNull()) {
+                    null -> ProviderArgument.ValidationError(
+                        "Invalid URL",
+                        R.string.provider_argument_validation_error_malformed_http_uri,
+                    )
+
+                    else -> null
+                }
+            }
         )
 
         val ARG_USERNAME = ProviderArgument(
