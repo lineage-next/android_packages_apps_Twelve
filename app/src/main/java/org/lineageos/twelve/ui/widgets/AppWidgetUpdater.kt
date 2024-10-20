@@ -10,7 +10,16 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.widget.RemoteViews
+import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import coil3.Image
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.allowHardware
+import coil3.request.maxBitmapSize
+import coil3.size.Size
+import coil3.target.Target
+import coil3.toBitmap
 import kotlin.reflect.KClass
 
 /**
@@ -46,5 +55,34 @@ abstract class AppWidgetUpdater<T : AppWidgetProvider>(
                 ComponentName(context, appWidgetProviderKClass.java)
             ),
         )
+    }
+
+    suspend fun RemoteViews.fetchImage(
+        context: Context,
+        data: Any,
+        @IdRes imageViewResId: Int
+    ) {
+        val imageLoader = context.imageLoader
+
+        val imageRequest = ImageRequest.Builder(context)
+            .target(RemoteViewsTarget(this, imageViewResId))
+            .data(data)
+            .maxBitmapSize(Size(512, 512))
+            .allowHardware(false)
+            .build()
+
+        imageLoader.execute(imageRequest)
+    }
+
+    private inner class RemoteViewsTarget(
+        private val remoteViews: RemoteViews,
+        @IdRes private val imageViewResId: Int
+    ) : Target {
+        override fun onStart(placeholder: Image?) = setDrawable(placeholder)
+        override fun onError(error: Image?) = setDrawable(error)
+        override fun onSuccess(result: Image) = setDrawable(result)
+        private fun setDrawable(image: Image?) {
+            remoteViews.setImageViewBitmap(imageViewResId, image?.toBitmap())
+        }
     }
 }

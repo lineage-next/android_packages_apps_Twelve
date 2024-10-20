@@ -9,16 +9,10 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import coil3.imageLoader
-import coil3.request.ImageRequest
-import coil3.toBitmap
 import kotlinx.coroutines.guava.await
 import org.lineageos.twelve.MainActivity
 import org.lineageos.twelve.R
@@ -81,13 +75,9 @@ class NowPlayingAppWidgetProvider : BaseAppWidgetProvider<NowPlayingAppWidgetPro
                     }
 
                     else -> mediaMetadata.artworkData?.let {
-                        BitmapFactory.decodeByteArray(it, 0, it.size)?.also { bitmap ->
-                            setImageViewBitmap(R.id.thumbnailImageView, bitmap)
-                        }
+                        fetchImage(context, it, R.id.thumbnailImageView)
                     } ?: mediaMetadata.artworkUri?.let {
-                        downloadBitmap(context, it)?.also { bitmap ->
-                            setImageViewBitmap(R.id.thumbnailImageView, bitmap)
-                        }
+                        fetchImage(context, it, R.id.thumbnailImageView)
                     } ?: run {
                         setImageViewResource(R.id.thumbnailImageView, R.drawable.ic_music_note)
                     }
@@ -114,18 +104,6 @@ class NowPlayingAppWidgetProvider : BaseAppWidgetProvider<NowPlayingAppWidgetPro
             block(mediaController)
 
             mediaController.release()
-        }
-
-        private suspend fun downloadBitmap(context: Context, uri: Uri): Bitmap? {
-            val imageLoader = context.imageLoader
-
-            val imageRequest = ImageRequest.Builder(context)
-                .data(uri)
-                .build()
-
-            val result = imageLoader.execute(imageRequest)
-
-            return result.image?.toBitmap()
         }
     }
 }
