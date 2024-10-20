@@ -19,6 +19,7 @@ import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.ViewCompat
@@ -63,6 +64,7 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
 
     // Views
     private val addOrRemoveFromPlaylistsMaterialButton by getViewProperty<MaterialButton>(R.id.addOrRemoveFromPlaylistsMaterialButton)
+    private val albumArtConstraintLayout by getViewProperty<ConstraintLayout?>(R.id.albumArtConstraintLayout)
     private val albumArtImageView by getViewProperty<ImageView>(R.id.albumArtImageView)
     private val albumTitleTextView by getViewProperty<TextView>(R.id.albumTitleTextView)
     private val audioTitleTextView by getViewProperty<TextView>(R.id.audioTitleTextView)
@@ -158,6 +160,19 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
         super.onViewCreated(view, savedInstanceState)
 
         // Insets
+        albumArtConstraintLayout?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { v, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+                v.updatePadding(
+                    left = insets.left,
+                    bottom = insets.bottom,
+                )
+
+                windowInsets
+            }
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(nestedScrollView) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
