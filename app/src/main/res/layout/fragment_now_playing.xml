@@ -119,232 +119,53 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <LinearLayout
+            <include
                 android:id="@+id/labelsLinearLayout"
+                layout="@layout/now_playing_labels"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="40dp"
                 android:layout_marginBottom="20dp"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@+id/progressSliderLinearLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/albumArtMaterialCardView"
-                app:layout_constraintVertical_bias="0.5">
+                app:layout_constraintVertical_bias="0.5" />
 
-                <TextView
-                    android:id="@+id/audioTitleTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                    android:textColor="?attr/colorOnSurface"
-                    tools:text="Tokyo Story" />
-
-                <TextView
-                    android:id="@+id/artistNameTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textAppearance="?attr/textAppearanceLabelLarge"
-                    android:textColor="?attr/colorOnSurface"
-                    tools:text="Ryuichi Sakamoto" />
-
-                <TextView
-                    android:id="@+id/albumTitleTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textAppearance="?attr/textAppearanceLabelLarge"
-                    android:textColor="?attr/colorOnSurface"
-                    tools:text="Sweet Revenge" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <include
                 android:id="@+id/progressSliderLinearLayout"
+                layout="@layout/now_playing_progress_slider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@+id/mediaControlsLinearLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/labelsLinearLayout"
-                app:layout_constraintVertical_bias="0.5">
+                app:layout_constraintVertical_bias="0.5" />
 
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/progressSlider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="24dp"
-                    android:valueFrom="0.0" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="40dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/currentTimestampTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceLabelMedium"
-                        android:textColor="?attr/colorOnSurface"
-                        tools:text="0:13" />
-
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:id="@+id/durationTimestampTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceLabelMedium"
-                        android:textColor="?attr/colorOnSurface"
-                        tools:text="1:16" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <include
                 android:id="@+id/mediaControlsLinearLayout"
+                layout="@layout/now_playing_media_controls"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="40dp"
                 android:layout_marginBottom="24dp"
-                android:gravity="center"
-                android:orientation="horizontal"
                 app:layout_constraintBottom_toTopOf="@+id/bottomBarMaterialCardView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/progressSliderLinearLayout"
-                app:layout_constraintVertical_bias="0.5">
+                app:layout_constraintVertical_bias="0.5" />
 
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageView
-                        android:id="@+id/shuffleMarkerImageView"
-                        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary.Marker"
-                        android:importantForAccessibility="no" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/shuffleMaterialButton"
-                        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary"
-                        app:icon="@drawable/ic_shuffle" />
-
-                </FrameLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/previousTrackMaterialButton"
-                    style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Secondary"
-                    app:icon="@drawable/ic_skip_previous"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/playPauseMaterialButton"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/playPauseMaterialButton"
-                    style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Primary"
-                    app:icon="@drawable/ic_play_arrow"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/nextTrackMaterialButton"
-                    style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Secondary"
-                    app:icon="@drawable/ic_skip_next"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/playPauseMaterialButton"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageView
-                        android:id="@+id/repeatMarkerImageView"
-                        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary.Marker"
-                        android:importantForAccessibility="no" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/repeatMaterialButton"
-                        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary"
-                        app:icon="@drawable/ic_repeat" />
-
-                </FrameLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <com.google.android.material.card.MaterialCardView
+            <include
                 android:id="@+id/bottomBarMaterialCardView"
-                style="@style/Widget.Material3.CardView.Filled"
+                layout="@layout/now_playing_bottom_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginBottom="24dp"
-                app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                app:cardCornerRadius="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/playbackSpeedMaterialButton"
-                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
-                        tools:text="1×" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/addOrRemoveFromPlaylistsMaterialButton"
-                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
-                        app:icon="@drawable/ic_playlist_add" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/equalizerMaterialButton"
-                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
-                        app:icon="@drawable/ic_audiofx" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/visualizerMaterialButton"
-                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
-                        app:icon="@drawable/ic_graphic_eq" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/moreMaterialButton"
-                        style="@style/Theme.Twelve.NowPlayingFragment.BottomBarButton"
-                        app:icon="@drawable/ic_more_vert" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

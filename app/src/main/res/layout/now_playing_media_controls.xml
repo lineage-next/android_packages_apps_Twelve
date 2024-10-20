@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2024 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/previousTrackMaterialButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/shuffleMarkerImageView"
+            style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary.Marker"
+            android:importantForAccessibility="no" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shuffleMaterialButton"
+            style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary"
+            app:icon="@drawable/ic_shuffle" />
+
+    </FrameLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/previousTrackMaterialButton"
+        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Secondary"
+        app:icon="@drawable/ic_skip_previous"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/playPauseMaterialButton"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/playPauseMaterialButton"
+        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Primary"
+        app:icon="@drawable/ic_play_arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/nextTrackMaterialButton"
+        style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Secondary"
+        app:icon="@drawable/ic_skip_next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/playPauseMaterialButton"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/nextTrackMaterialButton"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/repeatMarkerImageView"
+            style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary.Marker"
+            android:importantForAccessibility="no" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/repeatMaterialButton"
+            style="@style/Theme.Twelve.NowPlayingFragment.MediaButton.Tertiary"
+            app:icon="@drawable/ic_repeat" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
