@@ -105,4 +105,9 @@
         <item name="android:visibility">gone</item>
         <item name="tint">?attr/colorOnSecondaryContainer</item>
     </style>
+
+    <!-- App widget -->
+    <style name="Theme.Twelve.AppWidgetContainer" parent="Theme.Material3.DynamicColors.DayNight">
+        <item name="appWidgetRadius">28dp</item>
+    </style>
 </resources>

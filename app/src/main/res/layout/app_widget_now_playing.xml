@@ -8,20 +8,23 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@drawable/bg_app_widget"
+    android:backgroundTint="?attr/colorSurface"
     android:baselineAligned="false"
+    android:clipToOutline="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="16dp"
-    android:theme="@style/Theme.Material3.DynamicColors.DayNight">
+    android:theme="@style/Theme.Twelve.AppWidgetContainer"
+    tools:targetApi="s">
 
     <ImageView
         android:id="@+id/thumbnailImageView"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:background="@drawable/bg_app_widget_round_view"
         android:backgroundTint="?attr/colorSecondaryContainer"
         android:clipToOutline="true"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
         android:src="@drawable/ic_music_note"
         tools:targetApi="s" />
 
