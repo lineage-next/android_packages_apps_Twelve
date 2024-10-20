@@ -39,10 +39,12 @@ class AudioBottomSheetDialogFragment : BottomSheetDialogFragment(
 
     // Views
     private val addOrRemoveFromPlaylistsListItem by getViewProperty<ListItem>(R.id.addOrRemoveFromPlaylistsListItem)
+    private val addToQueueListItem by getViewProperty<ListItem>(R.id.addToQueueListItem)
     private val artistNameTextView by getViewProperty<TextView>(R.id.artistNameTextView)
     private val albumTitleTextView by getViewProperty<TextView>(R.id.albumTitleTextView)
     private val openAlbumListItem by getViewProperty<ListItem>(R.id.openAlbumListItem)
     private val openArtistListItem by getViewProperty<ListItem>(R.id.openArtistListItem)
+    private val playNextListItem by getViewProperty<ListItem>(R.id.playNextListItem)
     private val removeFromPlaylistListItem by getViewProperty<ListItem>(R.id.removeFromPlaylistListItem)
     private val titleTextView by getViewProperty<TextView>(R.id.titleTextView)
 
@@ -108,6 +110,18 @@ class AudioBottomSheetDialogFragment : BottomSheetDialogFragment(
                     titleTextView.text = audio.title
                     artistNameTextView.text = audio.artistName
                     albumTitleTextView.text = audio.albumTitle
+
+                    addToQueueListItem.setOnClickListener {
+                        viewModel.addToQueue(audio)
+
+                        findNavController().navigateUp()
+                    }
+
+                    playNextListItem.setOnClickListener {
+                        viewModel.playNext(audio)
+
+                        findNavController().navigateUp()
+                    }
 
                     openAlbumListItem.setOnClickListener {
                         findNavController().navigate(

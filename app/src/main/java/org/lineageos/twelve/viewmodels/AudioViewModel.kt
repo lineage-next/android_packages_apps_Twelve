@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.lineageos.twelve.models.Audio
 import org.lineageos.twelve.models.RequestStatus
 
 open class AudioViewModel(application: Application) : TwelveViewModel(application) {
@@ -37,6 +38,19 @@ open class AudioViewModel(application: Application) : TwelveViewModel(applicatio
 
     fun loadAudio(audioUri: Uri) {
         this.audioUri.value = audioUri
+    }
+
+    fun addToQueue(audio: Audio) = viewModelScope.launch {
+        mediaController.value?.addMediaItem(audio.toMedia3MediaItem())
+    }
+
+    fun playNext(audio: Audio) = viewModelScope.launch {
+        mediaController.value?.let { controller ->
+            controller.addMediaItem(
+                controller.currentMediaItemIndex + 1,
+                audio.toMedia3MediaItem()
+            )
+        }
     }
 
     fun addToPlaylist(playlistUri: Uri) = viewModelScope.launch {
