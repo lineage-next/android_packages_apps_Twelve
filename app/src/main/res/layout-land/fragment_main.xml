@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/navigationBarView"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -44,25 +44,26 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/nowPlayingBar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/navigationBarView"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
     <org.lineageos.twelve.ui.views.NowPlayingBar
         android:id="@+id/nowPlayingBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/navigationBarView"
+        android:layout_marginHorizontal="24dp"
+        app:applyNavigationBarInsets="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <com.google.android.material.navigationrail.NavigationRailView
         android:id="@+id/navigationBarView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/nowPlayingBar"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/navigation_bar_view_fragment_main" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

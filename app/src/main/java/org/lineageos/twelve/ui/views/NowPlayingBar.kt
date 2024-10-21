@@ -12,6 +12,8 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -33,8 +35,37 @@ class NowPlayingBar @JvmOverloads constructor(
     private val thumbnailImageView by lazy { findViewById<ImageView>(R.id.thumbnailImageView) }
     private val titleTextView by lazy { findViewById<TextView>(R.id.titleTextView) }
 
+    private var applyNavigationBarInsets = false
+
     init {
         inflate(context, R.layout.now_playing_bar, this)
+
+        context.obtainStyledAttributes(attrs, R.styleable.NowPlayingBar, 0, 0).apply {
+            try {
+                applyNavigationBarInsets = getBoolean(
+                    R.styleable.NowPlayingBar_applyNavigationBarInsets,
+                    false
+                )
+            } finally {
+                recycle()
+            }
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            materialCardView.setContentPadding(
+                0,
+                0,
+                0,
+                when (applyNavigationBarInsets) {
+                    true -> insets.bottom
+                    false -> 0
+                }
+            )
+
+            windowInsets
+        }
 
         circularProgressIndicator.min = 0
     }
