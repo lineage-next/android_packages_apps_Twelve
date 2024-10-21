@@ -54,6 +54,7 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
     // Views
     private val albumTitleTextView by getViewProperty<TextView>(R.id.albumTitleTextView)
     private val artistNameTextView by getViewProperty<TextView>(R.id.artistNameTextView)
+    private val infoNestedScrollView by getViewProperty<NestedScrollView?>(R.id.infoNestedScrollView)
     private val linearProgressIndicator by getViewProperty<LinearProgressIndicator>(R.id.linearProgressIndicator)
     private val noElementsNestedScrollView by getViewProperty<NestedScrollView>(R.id.noElementsNestedScrollView)
     private val recyclerView by getViewProperty<RecyclerView>(R.id.recyclerView)
@@ -117,6 +118,19 @@ class AlbumFragment : Fragment(R.layout.fragment_album) {
         super.onViewCreated(view, savedInstanceState)
 
         // Insets
+        infoNestedScrollView?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { v, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+                v.updatePadding(
+                    left = insets.left,
+                    bottom = insets.bottom,
+                )
+
+                windowInsets
+            }
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
