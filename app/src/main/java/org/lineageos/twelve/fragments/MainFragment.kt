@@ -17,8 +17,8 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.navigation.NavigationBarView
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.lineageos.twelve.R
@@ -37,7 +37,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private val providersViewModel by viewModels<ProvidersViewModel>()
 
     // Views
-    private val bottomNavigationView by getViewProperty<BottomNavigationView>(R.id.bottomNavigationView)
+    private val navigationBarView by getViewProperty<NavigationBarView>(R.id.navigationBarView)
     private val nowPlayingBar by getViewProperty<NowPlayingBar>(R.id.nowPlayingBar)
     private val providerMaterialButton by getViewProperty<MaterialButton>(R.id.providerMaterialButton)
     private val toolbar by getViewProperty<MaterialToolbar>(R.id.toolbar)
@@ -49,7 +49,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
-                bottomNavigationView.menu.getItem(position).isChecked = true
+                navigationBarView.menu.getItem(position).isChecked = true
             }
         }
     }
@@ -73,7 +73,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         viewPager2.offscreenPageLimit = fragments.size
         viewPager2.registerOnPageChangeCallback(onPageChangeCallback)
 
-        bottomNavigationView.setOnItemSelectedListener { item ->
+        navigationBarView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.activityFragment -> {
                     viewPager2.currentItem = 0
